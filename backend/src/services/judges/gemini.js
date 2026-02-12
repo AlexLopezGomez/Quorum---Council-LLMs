@@ -1,0 +1,69 @@
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { CONTEXT_RELEVANCY_PROMPT, formatPrompt } from '../../utils/prompts.js';
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+
+const MODEL = 'gemini-1.5-flash';
+const INPUT_COST_PER_1K = 0.000075;
+const OUTPUT_COST_PER_1K = 0.0003;
+
+export async function evaluateContextRelevancy(testCase) {
+  const startTime = Date.now();
+
+  const prompt = formatPrompt(CONTEXT_RELEVANCY_PROMPT, {
+    input: testCase.input,
+    actualOutput: testCase.actualOutput,
+    retrievalContext: testCase.retrievalContext,
+  });
+
+  const model = genAI.getGenerativeModel({
+    model: MODEL,
+    generationConfig: {
+      temperature: 0,
+      responseMimeType: 'application/json',
+    },
+  });
+
+  const result = await model.generateContent([
+    {
+      role: 'user',
+      parts: [{ text: 'You are an expert RAG evaluator. Always respond with valid JSON only.\n\n' + prompt }],
+    },
+  ]);
+
+  const latency = Date.now() - startTime;
+  const response = result.response;
+  const content = response.text();
+  const usageMetadata = response.usageMetadata;
+
+  const inputTokens = usageMetadata?.promptTokenCount || 0;
+  const outputTokens = usageMetadata?.candidatesTokenCount || 0;
+  const cost = (inputTokens / 1000) * INPUT_COST_PER_1K + (outputTokens / 1000) * OUTPUT_COST_PER_1K;
+
+  let parsed;
+  try {
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('No JSON found in response');
+    }
+    parsed = JSON.parse(jsonMatch[0]);
+  } catch {
+    throw new Error(`Failed to parse Gemini response: ${content}`);
+  }
+
+  return {
+    judge: 'gemini',
+    metric: 'contextRelevancy',
+    model: MODEL,
+    score: parsed.score,
+    reason: parsed.reason,
+    details: parsed.details,
+    tokens: {
+      input: inputTokens,
+      output: outputTokens,
+      total: inputTokens + outputTokens,
+    },
+    cost: Math.round(cost * 1000000) / 1000000,
+    latency,
+  };
+}

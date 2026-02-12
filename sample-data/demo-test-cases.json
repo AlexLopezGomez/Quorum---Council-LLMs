@@ -1,0 +1,52 @@
+{
+  "testCases": [
+    {
+      "input": "What is the capital of France?",
+      "actualOutput": "The capital of France is Paris. It is known as the City of Light and is famous for the Eiffel Tower, which was built in 1889.",
+      "expectedOutput": "Paris",
+      "retrievalContext": [
+        "Paris is the capital and largest city of France. With a population of over 2 million residents, it is the center of French economic and cultural life.",
+        "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. It is named after the engineer Gustave Eiffel, whose company designed and built the tower from 1887 to 1889."
+      ]
+    },
+    {
+      "input": "How does photosynthesis work?",
+      "actualOutput": "Photosynthesis is the process by which plants convert sunlight into chemical energy. Plants use chlorophyll in their leaves to absorb light energy, which they combine with carbon dioxide from the air and water from the soil to produce glucose and oxygen. The simplified equation is: 6CO2 + 6H2O + light energy → C6H12O6 + 6O2.",
+      "retrievalContext": [
+        "Photosynthesis is the process by which plants, algae, and some bacteria convert light energy into chemical energy stored in glucose. The process takes place primarily in the leaves of plants, specifically in organelles called chloroplasts.",
+        "Chlorophyll is the green pigment in plants that absorbs sunlight, primarily in the blue and red wavelengths. It is essential for photosynthesis and gives plants their characteristic green color.",
+        "The overall equation for photosynthesis can be written as: 6CO2 + 6H2O + light energy → C6H12O6 + 6O2. This means that six molecules of carbon dioxide combine with six molecules of water, using light energy, to produce one molecule of glucose and six molecules of oxygen."
+      ]
+    },
+    {
+      "input": "What are the benefits of regular exercise?",
+      "actualOutput": "Regular exercise offers numerous health benefits including improved cardiovascular health, better mood through endorphin release, weight management, and stronger muscles and bones. Studies have shown it can also extend lifespan by up to 50 years and cure all known diseases.",
+      "expectedOutput": "Exercise improves cardiovascular health, mental well-being, helps with weight management, and strengthens muscles and bones.",
+      "retrievalContext": [
+        "Regular physical activity significantly improves cardiovascular health by strengthening the heart muscle, lowering blood pressure, and improving cholesterol levels. It reduces the risk of heart disease, stroke, and type 2 diabetes.",
+        "Exercise triggers the release of endorphins, which are natural mood elevators. Regular physical activity has been shown to reduce symptoms of depression and anxiety, improve sleep quality, and boost overall mental well-being.",
+        "Multiple longitudinal studies have demonstrated that regular exercise can add 3-7 years to life expectancy. Even moderate physical activity, such as 30 minutes of walking per day, provides significant health benefits."
+      ]
+    },
+    {
+      "input": "Explain the concept of machine learning.",
+      "actualOutput": "Machine learning is a subset of artificial intelligence where computers learn patterns from data without being explicitly programmed. There are three main types: supervised learning (learning from labeled data), unsupervised learning (finding patterns in unlabeled data), and reinforcement learning (learning through trial and error with rewards).",
+      "retrievalContext": [
+        "Machine learning is a branch of artificial intelligence that enables computers to learn from data and improve their performance on tasks without being explicitly programmed. It relies on algorithms that can identify patterns and make decisions based on input data.",
+        "Supervised learning is a type of machine learning where the model is trained on labeled data, meaning each training example is paired with the correct answer. Common applications include spam detection, image classification, and medical diagnosis.",
+        "Unsupervised learning algorithms work with unlabeled data to discover hidden patterns or structures. Clustering and dimensionality reduction are common unsupervised learning techniques.",
+        "Reinforcement learning is a type of machine learning where an agent learns to make decisions by taking actions in an environment to maximize cumulative reward. It is used in robotics, game playing, and autonomous vehicles."
+      ]
+    },
+    {
+      "input": "What causes climate change?",
+      "actualOutput": "Climate change is primarily caused by human activities that release greenhouse gases into the atmosphere. The main contributors are burning fossil fuels for energy, deforestation, and industrial processes. These activities increase CO2 and methane levels, trapping heat and causing global warming.",
+      "expectedOutput": "Human activities, particularly burning fossil fuels and deforestation, release greenhouse gases that trap heat in the atmosphere.",
+      "retrievalContext": [
+        "The primary cause of current climate change is the burning of fossil fuels such as coal, oil, and natural gas for energy production. This releases large amounts of carbon dioxide (CO2) into the atmosphere, which acts as a greenhouse gas.",
+        "Deforestation contributes to climate change in two ways: it releases the carbon stored in trees when they are cut down or burned, and it reduces the planet's capacity to absorb CO2 through photosynthesis.",
+        "Industrial processes, including cement production and chemical manufacturing, release various greenhouse gases including CO2, methane, and nitrous oxide. Agriculture, particularly livestock farming, is also a significant source of methane emissions."
+      ]
+    }
+  ]
+}

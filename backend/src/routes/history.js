@@ -3,6 +3,33 @@ import { Evaluation } from '../models/Evaluation.js';
 
 const router = Router();
 
+/**
+ * @openapi
+ * /api/history:
+ *   get:
+ *     summary: Browse evaluation history
+ *     description: Cursor-based pagination with optional filters for strategy, verdict, and status.
+ *     tags: [History]
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 20, maximum: 50 }
+ *       - in: query
+ *         name: cursor
+ *         schema: { type: string }
+ *       - in: query
+ *         name: strategy
+ *         schema: { type: string, enum: [auto, council, hybrid, single] }
+ *       - in: query
+ *         name: verdict
+ *         schema: { type: string, enum: [PASS, WARN, FAIL] }
+ *       - in: query
+ *         name: status
+ *         schema: { type: string, enum: [processing, complete, failed] }
+ *     responses:
+ *       200:
+ *         description: Paginated evaluation list
+ */
 router.get('/history', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit) || 20, 50);
@@ -51,6 +78,24 @@ router.get('/history', async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/history/{jobId}/cost:
+ *   get:
+ *     summary: Cost breakdown for an evaluation
+ *     description: Per-test-case cost analysis with savings estimate vs all-council baseline.
+ *     tags: [History]
+ *     parameters:
+ *       - in: path
+ *         name: jobId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Cost breakdown with savings estimate
+ *       404:
+ *         description: Evaluation not found
+ */
 router.get('/history/:jobId/cost', async (req, res) => {
   try {
     const evaluation = await Evaluation.findOne({ jobId: req.params.jobId })
@@ -94,6 +139,17 @@ router.get('/history/:jobId/cost', async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/stats:
+ *   get:
+ *     summary: Aggregated evaluation statistics
+ *     description: Stats across the most recent 100 evaluations including strategy distribution and cost totals.
+ *     tags: [History]
+ *     responses:
+ *       200:
+ *         description: Aggregated statistics
+ */
 router.get('/stats', async (req, res) => {
   try {
     const [totalEvals, recentEvals] = await Promise.all([

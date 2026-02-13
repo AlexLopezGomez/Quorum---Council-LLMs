@@ -3,6 +3,26 @@ import { Evaluation } from '../models/Evaluation.js';
 
 const router = Router();
 
+/**
+ * @openapi
+ * /api/results/{jobId}:
+ *   get:
+ *     summary: Get evaluation results
+ *     description: Returns 202 with progress if still processing, or full results if complete.
+ *     tags: [Evaluation]
+ *     parameters:
+ *       - in: path
+ *         name: jobId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Completed evaluation results
+ *       202:
+ *         description: Evaluation still in progress
+ *       404:
+ *         description: Evaluation not found
+ */
 router.get('/:jobId', async (req, res) => {
   const { jobId } = req.params;
 

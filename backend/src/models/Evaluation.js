@@ -114,5 +114,6 @@ const evaluationSchema = new mongoose.Schema({
 
 evaluationSchema.index({ createdAt: -1 });
 evaluationSchema.index({ status: 1 });
+evaluationSchema.index({ status: 1, completedAt: -1 });
 
 export const Evaluation = mongoose.model('Evaluation', evaluationSchema);

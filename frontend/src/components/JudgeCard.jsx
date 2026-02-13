@@ -1,3 +1,5 @@
+import { Brain, Sparkles, Gem } from 'lucide-react';
+
 const JUDGE_CONFIG = {
   openai: {
     name: 'OpenAI',
@@ -8,6 +10,7 @@ const JUDGE_CONFIG = {
     pillBg: 'bg-openai-light',
     pillText: 'text-openai',
     spinnerBorder: 'border-t-openai',
+    icon: Brain,
   },
   anthropic: {
     name: 'Anthropic',
@@ -18,6 +21,7 @@ const JUDGE_CONFIG = {
     pillBg: 'bg-anthropic-light',
     pillText: 'text-anthropic',
     spinnerBorder: 'border-t-anthropic',
+    icon: Sparkles,
   },
   gemini: {
     name: 'Gemini',
@@ -28,6 +32,7 @@ const JUDGE_CONFIG = {
     pillBg: 'bg-gemini-light',
     pillText: 'text-gemini',
     spinnerBorder: 'border-t-gemini',
+    icon: Gem,
   },
 };
 
@@ -49,7 +54,7 @@ export function JudgeCard({ judge, status, result, error }) {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <span className={`w-2 h-2 rounded-full ${config.dot}`} />
+            <config.icon size={16} className={config.pillText} />
             <span className="text-sm font-semibold text-text-primary">{config.name}</span>
             <span className="text-xs text-text-secondary">{result?.model || config.model}</span>
           </div>

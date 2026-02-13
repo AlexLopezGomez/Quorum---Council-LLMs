@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { BarChart3 } from 'lucide-react';
 import { getCostBreakdown } from '../lib/api';
 
 function CostBar({ label, cost, maxCost, color }) {
@@ -60,7 +61,10 @@ export function CostBreakdown({ jobId, summary }) {
   return (
     <div className="bg-surface rounded-xl border border-surface-border shadow-sm">
       <div className="px-6 py-4 border-b border-surface-border">
-        <h3 className="text-sm font-semibold text-text-primary">Cost Breakdown</h3>
+        <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+          <BarChart3 size={14} className="text-text-tertiary" />
+          Cost Breakdown
+        </h3>
         <p className="text-xs text-text-secondary mt-0.5">Per-strategy cost analysis</p>
       </div>
 

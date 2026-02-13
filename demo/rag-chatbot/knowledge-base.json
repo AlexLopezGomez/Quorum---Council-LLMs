@@ -1,0 +1,48 @@
+{
+  "buildings": [
+    {
+      "id": "casa-malasana",
+      "name": "Casa Malasaña",
+      "city": "Madrid",
+      "neighborhood": "Malasaña",
+      "units": {
+        "studio": { "price": 850, "available": 3 },
+        "1bed": { "price": 1100, "available": 1 },
+        "2bed": { "price": 1450, "available": 0 }
+      },
+      "amenities": ["coworking space", "rooftop terrace", "gym", "bike storage", "laundry"],
+      "petPolicy": "Small dogs and cats allowed with €50/month pet fee",
+      "description": "A vibrant coliving space in the heart of Malasaña, Madrid's most creative neighborhood. Walking distance to Gran Vía and the best independent cafés and vintage shops.",
+      "lastUpdated": "2026-02-01"
+    },
+    {
+      "id": "vive-chueca",
+      "name": "Vive Chueca",
+      "city": "Madrid",
+      "neighborhood": "Chueca",
+      "units": {
+        "studio": { "price": 900, "available": 2 },
+        "1bed": { "price": 1200, "available": 2 },
+        "2bed": { "price": 1500, "available": 1 }
+      },
+      "amenities": ["coworking space", "cinema room", "yoga studio", "communal kitchen", "laundry"],
+      "petPolicy": "No pets allowed",
+      "description": "Modern coliving in Chueca, Madrid's most cosmopolitan neighborhood. Steps from Fuencarral street shopping and Reina Sofía museum.",
+      "lastUpdated": "2026-01-15"
+    },
+    {
+      "id": "cotown-eixample",
+      "name": "Cotown Eixample",
+      "city": "Barcelona",
+      "neighborhood": "Eixample",
+      "units": {
+        "studio": { "price": 800, "available": 0 },
+        "1bed": { "price": 1100, "available": 3 }
+      },
+      "amenities": ["coworking space", "swimming pool", "bike rental", "community events", "laundry"],
+      "petPolicy": "Cats allowed, no dogs",
+      "description": "Barcelona coliving in the elegant Eixample district. Near Sagrada Familia and Passeig de Gràcia. The building features modernist architecture with a beautiful interior courtyard.",
+      "lastUpdated": "2025-12-15"
+    }
+  ]
+}

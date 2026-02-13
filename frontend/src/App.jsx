@@ -1,14 +1,17 @@
 import { useState } from 'react';
+import { LayoutDashboard, History, Bell } from 'lucide-react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { TestCaseUpload } from './components/TestCaseUpload';
 import { StreamingEvaluation } from './components/StreamingEvaluation';
 import { EvaluationHistory } from './components/EvaluationHistory';
+import { WebhookManager } from './components/WebhookManager';
 import { useSSE } from './hooks/useSSE';
 import { startEvaluation, getStreamUrl } from './lib/api';
 
 const NAV_ITEMS = [
-  { key: 'upload', label: 'Evaluate' },
-  { key: 'history', label: 'History' },
+  { key: 'upload', label: 'Evaluate', icon: LayoutDashboard },
+  { key: 'history', label: 'History', icon: History },
+  { key: 'webhooks', label: 'Webhooks', icon: Bell },
 ];
 
 function AppContent() {
@@ -21,6 +24,8 @@ function AppContent() {
 
   const streamUrl = jobId ? getStreamUrl(jobId) : null;
   const { events, status: sseStatus, reset: resetSSE } = useSSE(streamUrl);
+
+  const isEvaluating = jobId && (sseStatus === 'connecting' || sseStatus === 'connected');
 
   const handleSubmit = async (cases, options = {}) => {
     setIsLoading(true);
@@ -57,7 +62,6 @@ function AppContent() {
 
   return (
     <div className="flex min-h-screen bg-surface-secondary">
-      {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-screen w-60 bg-surface-secondary border-r border-surface-border flex flex-col z-10">
         <div className="px-5 py-5">
           <span
@@ -79,7 +83,11 @@ function AppContent() {
                   : 'text-text-secondary hover:bg-surface-tertiary hover:text-text-primary'
               }`}
             >
+              <item.icon size={18} />
               {item.label}
+              {item.key === 'upload' && isEvaluating && view !== 'evaluating' && (
+                <span className="ml-auto w-2 h-2 rounded-full bg-verdict-pass animate-pulse" />
+              )}
             </button>
           ))}
         </nav>
@@ -109,7 +117,6 @@ function AppContent() {
         )}
       </aside>
 
-      {/* Main content */}
       <main className="ml-60 flex-1 min-h-screen">
         <div className="max-w-6xl mx-auto px-8 py-8">
           {error && (
@@ -134,6 +141,10 @@ function AppContent() {
 
           {view === 'history' && (
             <EvaluationHistory />
+          )}
+
+          {view === 'webhooks' && (
+            <WebhookManager />
           )}
         </div>
       </main>

@@ -1,4 +1,6 @@
 import { useState, useRef } from 'react';
+import { Upload, Play } from 'lucide-react';
+import { PageHeader } from './PageHeader';
 
 const SAMPLE_DATA = [
   {
@@ -82,13 +84,7 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
 
   return (
     <div>
-      {/* Page header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-semibold text-text-primary">Evaluate</h1>
-          <p className="text-sm text-text-secondary mt-1">Run evaluation on your RAG system outputs</p>
-        </div>
-      </div>
+      <PageHeader title="Evaluate" subtitle="Run evaluation on your RAG system outputs" />
 
       {/* Upload card */}
       <div className="bg-surface rounded-xl border border-surface-border shadow-sm">
@@ -112,6 +108,7 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
                 onClick={() => fileInputRef.current?.click()}
                 className="w-full px-4 py-3 border-2 border-dashed border-surface-border-strong rounded-xl hover:border-accent hover:bg-surface-secondary transition-colors text-sm text-text-secondary"
               >
+                <Upload size={16} className="inline -mt-0.5 mr-2" />
                 Upload JSON File
               </button>
             </div>
@@ -189,7 +186,7 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
                 disabled={isLoading}
                 className="w-full px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Starting Evaluation...' : `Run Evaluation (${strategy})`}
+                {isLoading ? 'Starting Evaluation...' : <><Play size={16} className="inline -mt-0.5 mr-2" />Run Evaluation ({strategy})</>}
               </button>
             </>
           )}

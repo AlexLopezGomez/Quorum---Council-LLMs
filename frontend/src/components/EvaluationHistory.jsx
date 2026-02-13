@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
+import { Filter, Clock } from 'lucide-react';
 import { getHistory } from '../lib/api';
+import { PageHeader } from './PageHeader';
+import { SkeletonRow } from './Skeleton';
 
 function StatusBadge({ status }) {
   const styles = {
@@ -54,13 +57,7 @@ export function EvaluationHistory({ onViewEvaluation }) {
 
   return (
     <div>
-      {/* Page header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-semibold text-text-primary">History</h1>
-          <p className="text-sm text-text-secondary mt-1">Browse past evaluation runs</p>
-        </div>
-      </div>
+      <PageHeader title="History" subtitle="Browse past evaluation runs" />
 
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
@@ -71,7 +68,10 @@ export function EvaluationHistory({ onViewEvaluation }) {
       <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden">
         {/* Table header with filters */}
         <div className="px-6 py-4 border-b border-surface-border flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-text-primary">Evaluation History</h3>
+          <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+            <Filter size={14} className="text-text-tertiary" />
+            Evaluation History
+          </h3>
           <div className="flex items-center gap-3">
             <select
               value={filters.strategy}
@@ -127,7 +127,10 @@ export function EvaluationHistory({ onViewEvaluation }) {
                 <td className="px-6 py-4 text-sm text-text-secondary">
                   {eval_.summary?.totalCost ? `$${eval_.summary.totalCost.toFixed(4)}` : '-'}
                 </td>
-                <td className="px-6 py-4 text-sm text-text-secondary">{formatDate(eval_.createdAt)}</td>
+                <td className="px-6 py-4 text-sm text-text-secondary">
+                  <Clock size={12} className="inline -mt-0.5 mr-1 text-text-tertiary" />
+                  {formatDate(eval_.createdAt)}
+                </td>
               </tr>
             ))}
             {evaluations.length === 0 && !loading && (
@@ -141,8 +144,14 @@ export function EvaluationHistory({ onViewEvaluation }) {
         </table>
       </div>
 
-      {loading && (
-        <div className="text-center py-6 text-sm text-text-tertiary animate-pulse">Loading...</div>
+      {loading && evaluations.length === 0 && (
+        <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden">
+          <table className="w-full">
+            <tbody>
+              {[...Array(5)].map((_, i) => <SkeletonRow key={i} />)}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {hasMore && !loading && (

@@ -1,0 +1,21 @@
+{
+  "name": "@ragscope/sdk",
+  "version": "1.0.0",
+  "description": "Lightweight SDK for capturing RAG interactions and sending them to RAGScope for evaluation",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src/",
+    "README.md"
+  ],
+  "keywords": [
+    "rag",
+    "evaluation",
+    "llm",
+    "observability"
+  ],
+  "license": "MIT"
+}

@@ -1,275 +1,191 @@
 # RAGScope
 
-A production-ready RAG (Retrieval-Augmented Generation) evaluation dashboard using a Council-of-LLMs architecture with **Adaptive Orchestration**. Three independent judges from different providers evaluate RAG outputs in parallel, with an intelligent routing layer that selects the optimal evaluation strategy based on test case risk scoring — reducing cost by 60-80% for low-risk queries while maintaining full council evaluation for high-risk ones.
+**Catch silent RAG failures before your users do.**
+
+RAGScope is an evaluation platform that uses a Council-of-LLMs to evaluate RAG system outputs across multiple quality dimensions — faithfulness, groundedness, and context relevancy — with an adaptive orchestration layer that routes each test case to the optimal evaluation strategy based on risk scoring.
+
+## Why This Exists
+
+RAG systems fail silently. The retriever fetches the wrong documents, the generator hallucinates confident answers, stale data gets served as truth — and nothing breaks. No error, no alert, just a user getting bad information.
+
+RAGScope catches these failures by:
+
+- **Multi-perspective evaluation** — 3 judges from different LLM providers, each checking a different quality dimension
+- **Adaptive cost control** — Not every query needs $0.003 of evaluation. Simple factoid queries get a single judge, complex medical/legal queries get the full council
+- **Real-time streaming** — Watch evaluations happen live with 17 SSE event types
+- **SDK integration** — Drop a 3-line SDK into your RAG pipeline and capture interactions automatically
+- **Webhook alerting** — Get Slack notifications when evaluations fail, scores drop, or costs spike
+
+## Key Features
+
+| Feature | Description |
+|---------|-------------|
+| Council-of-LLMs | OpenAI + Anthropic + Gemini judges with Claude Sonnet aggregator |
+| Adaptive Routing | Risk-based strategy selection — council, hybrid, or single judge |
+| Deterministic Checks | Zero-cost heuristic evaluation (entity match, freshness, overlap, completeness) |
+| SSE Streaming | 17 event types for real-time evaluation progress |
+| SDK | Zero-dependency capture SDK with batching and retry |
+| Webhooks | Configurable alerts for failures, score drops, and cost spikes |
+| API Documentation | Interactive Swagger UI at `/api/docs` |
+
+## Quick Start
+
+```bash
+# 1. Clone and install
+git clone https://github.com/your-org/ragscope.git
+cd ragscope
+cd backend && cp .env.example .env  # Add your API keys
+npm install && cd ../frontend && npm install && cd ..
+
+# 2. Start MongoDB
+docker run -d -p 27017:27017 mongo:7
+
+# 3. Run
+cd backend && npm run dev &
+cd frontend && npm run dev &
+```
+
+Open **http://localhost:5173** — load sample data and run an evaluation.
+
+### Docker (Full Stack)
+
+```bash
+docker-compose up --build
+# Open http://localhost:8080
+```
+
+### With Demo Chatbot
+
+```bash
+docker-compose --profile demo up --build
+# Chatbot at :4000, Dashboard at :8080, API at :3000
+```
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         Frontend (React)                         │
-│  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────────┐ │
-│  │  Upload   │  │  Strategy │  │  History  │  │     Cost      │ │
-│  │   Form    │  │   Badge   │  │   View    │  │   Breakdown   │ │
-│  └───────────┘  └───────────┘  └───────────┘  └───────────────┘ │
-│  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌───────────────┐ │
-│  │ Determin. │  │  OpenAI   │  │ Anthropic │  │    Gemini     │ │
-│  │  Checks   │  │   Card    │  │   Card    │  │     Card      │ │
-│  └───────────┘  └───────────┘  └───────────┘  └───────────────┘ │
-│                     ┌─────────────────────┐                      │
-│                     │   Aggregator Card   │                      │
-│                     └─────────────────────┘                      │
-└────────────────────────────┬────────────────────────────────────┘
-                             │ SSE Stream
-┌────────────────────────────┴────────────────────────────────────┐
-│                      Backend (Express.js)                        │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │                   Adaptive Router                           │ │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐                  │ │
-│  │  │   Risk   │  │ Strategy │  │   Cost   │                  │ │
-│  │  │  Scorer  │→ │ Selector │→ │ Tracker  │                  │ │
-│  │  └──────────┘  └──────────┘  └──────────┘                  │ │
-│  │         ↓              ↓             ↓                      │ │
-│  │  ┌──────────┐  ┌──────────────────────────┐                 │ │
-│  │  │ Determ.  │  │       Orchestrator        │                │ │
-│  │  │  Checks  │  │  ┌──────┐┌──────┐┌─────┐ │                │ │
-│  │  │ (0-cost) │  │  │OpenAI││Anthro││Gemin│ │                │ │
-│  │  └──────────┘  │  └──────┘└──────┘└─────┘ │                │ │
-│  │                │         ↓                 │                │ │
-│  │                │    ┌──────────┐            │                │ │
-│  │                │    │Aggregator│            │                │ │
-│  │                │    └──────────┘            │                │ │
-│  │                └──────────────────────────┘                 │ │
-│  └────────────────────────────────────────────────────────────┘ │
+│                    Frontend (React + Vite)                       │
+│  Upload → Strategy Select → Live Streaming → History → Webhooks │
+└────────────────────────────────┬────────────────────────────────┘
+                                 │ SSE + REST
+┌────────────────────────────────┴────────────────────────────────┐
+│                     Backend (Express + MongoDB)                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │                    Adaptive Router                        │   │
+│  │  Risk Scorer → Strategy Selector → Cost Tracker          │   │
+│  │       ↓               ↓                ↓                 │   │
+│  │  ┌─────────┐  ┌──────────────────────────┐               │   │
+│  │  │Determin.│  │      Orchestrator         │              │   │
+│  │  │ Checks  │  │  OpenAI │ Anthropic │ Gem │              │   │
+│  │  │(0-cost) │  │         ↓                 │              │   │
+│  │  └─────────┘  │      Aggregator           │              │   │
+│  │               └──────────────────────────┘               │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                          ↓                                      │
+│                    Webhook Service → Slack / HTTP                │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Evaluation Strategies
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for Mermaid diagrams and the full SSE event protocol.
 
-| Strategy | Risk Score | Judges Used | Aggregation | Cost |
-|----------|-----------|-------------|-------------|------|
-| **Council** | >= 0.8 (high) | OpenAI + Anthropic + Gemini | Claude Sonnet | $$$ |
-| **Hybrid** | 0.4-0.8 (medium) | Deterministic checks + OpenAI | Local weighted avg | $$ |
-| **Single** | < 0.4 (low) | Gemini only | Local threshold | $ |
-
-## Judges
-
-| Provider   | Model                 | Metric            | Evaluates                                |
-|------------|-----------------------|-------------------|------------------------------------------|
-| OpenAI     | gpt-4o-mini           | Faithfulness      | Unsupported claims in the output         |
-| Anthropic  | claude-3-haiku        | Groundedness      | Claims traced to source passages         |
-| Google     | gemini-1.5-flash      | Context Relevancy | Quality of retrieved context             |
-| Anthropic  | claude-sonnet-4       | Final Verdict     | Synthesizes all judge evaluations        |
-
-## Quick Start
-
-### Prerequisites
-
-- Node.js 20+
-- MongoDB (local or cloud)
-- API keys for OpenAI, Anthropic, and Google AI
-
-### Setup
-
-1. Clone and install dependencies:
+## SDK Usage
 
 ```bash
-# Backend
-cd backend
-cp .env.example .env
-# Edit .env with your API keys
-npm install
-
-# Frontend
-cd ../frontend
-npm install
+cd sdk && npm link  # or use file dependency
 ```
 
-2. Start MongoDB:
+```js
+import { RAGScope } from '@ragscope/sdk';
+
+const ragscope = new RAGScope({ endpoint: 'http://localhost:3000' });
+
+// After each RAG interaction
+ragscope.capture({
+  input: 'What is the capital of France?',
+  actualOutput: 'The capital of France is Paris.',
+  retrievalContext: ['Paris is the capital and largest city of France.'],
+});
+
+// On shutdown
+await ragscope.close();
+```
+
+The SDK batches captures and sends them to `/api/ingest`. Zero dependencies, non-blocking, with exponential backoff retry.
+
+See [sdk/README.md](./sdk/README.md) for Express middleware and LangChain callback examples.
+
+## Demo
+
+The demo simulates a coliving platform chatbot with intentional RAG failures:
 
 ```bash
-# Using Docker
-docker run -d -p 27017:27017 mongo:7
-
-# Or use docker-compose
-docker-compose up mongodb -d
+cd demo/rag-chatbot && npm install
+node server.js &          # Starts chatbot on :4000
+cd .. && node run-scenario.js scenarios/silent-failures.json
 ```
 
-3. Start the services:
+**Scenario files:**
+- `happy-path.json` — 5 test cases that should PASS
+- `silent-failures.json` — 8 specific failure types (wrong retrieval, stale data, hallucination, price errors, city confusion, missing context, cross-entity contamination)
+- `mixed-risk.json` — 10 test cases spanning all risk tiers
 
-```bash
-# Terminal 1 - Backend
-cd backend
-npm run dev
+## API Reference
 
-# Terminal 2 - Frontend
-cd frontend
-npm run dev
-```
+Interactive docs at **http://localhost:3000/api/docs** (Swagger UI).
 
-4. Open http://localhost:5173
-
-### Using Docker Compose
-
-```bash
-# Set environment variables
-export OPENAI_API_KEY=sk-...
-export ANTHROPIC_API_KEY=sk-ant-...
-export GOOGLE_API_KEY=...
-
-# Start all services
-docker-compose up
-```
-
-## API Endpoints
-
-### POST /api/evaluate
-Start a new evaluation job.
-
-**Request:**
-```json
-{
-  "testCases": [
-    {
-      "input": "User query",
-      "actualOutput": "RAG system response",
-      "expectedOutput": "Optional expected response",
-      "retrievalContext": ["Context passage 1", "Context passage 2"]
-    }
-  ],
-  "options": {
-    "strategy": "auto",
-    "riskOverride": 0.9
-  }
-}
-```
-
-**Strategy options:** `"auto"` (default) | `"single"` | `"hybrid"` | `"council"`
-
-**Response:**
-```json
-{
-  "jobId": "abc123xyz",
-  "strategy": "auto",
-  "streamUrl": "/api/stream/abc123xyz",
-  "resultsUrl": "/api/results/abc123xyz"
-}
-```
-
-### GET /api/stream/:jobId
-SSE endpoint for real-time evaluation updates.
-
-**Events:**
-- `evaluation_start` - Evaluation began
-- `risk_scored` - Risk score computed for a test case
-- `strategy_selected` - Evaluation strategy chosen (includes `activeJudges` array)
-- `deterministic_start` - Deterministic checks started
-- `deterministic_complete` - Deterministic checks finished
-- `judge_start` - A judge started evaluating
-- `judge_complete` - A judge finished with results
-- `judge_error` - A judge encountered an error
-- `aggregator_start` - Aggregator started
-- `aggregator_complete` - Final verdict ready
-- `evaluation_complete` - All test cases processed
-
-### GET /api/results/:jobId
-Retrieve completed evaluation results.
-
-### GET /api/history
-Browse past evaluations with cursor-based pagination.
-
-**Query params:** `limit` (default 20, max 50), `cursor`, `strategy`, `verdict`, `status`
-
-### GET /api/history/:jobId/cost
-Detailed cost breakdown for an evaluation, including savings vs. all-council estimate.
-
-### GET /api/stats
-Aggregated statistics across recent evaluations.
-
-## Test Case Format
-
-```json
-{
-  "input": "The user's question or query",
-  "actualOutput": "The RAG system's generated response",
-  "expectedOutput": "Optional: The expected/ideal response",
-  "retrievalContext": [
-    "First retrieved passage from your knowledge base",
-    "Second retrieved passage",
-    "..."
-  ]
-}
-```
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | `/api/evaluate` | Start evaluation (1-10 test cases) |
+| POST | `/api/ingest` | SDK batch capture (1-50 items) |
+| GET | `/api/stream/:jobId` | SSE real-time stream |
+| GET | `/api/results/:jobId` | Poll for results |
+| GET | `/api/history` | Cursor-paginated history |
+| GET | `/api/history/:jobId/cost` | Cost breakdown |
+| GET | `/api/stats` | Aggregated statistics |
+| POST | `/api/webhooks` | Create webhook |
+| GET | `/api/webhooks` | List webhooks |
+| PATCH | `/api/webhooks/:id` | Update webhook |
+| DELETE | `/api/webhooks/:id` | Delete webhook |
+| POST | `/api/webhooks/:id/test` | Test webhook delivery |
 
 ## Configuration
 
-### Environment Variables
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `OPENAI_API_KEY` | OpenAI API key | Required |
+| `ANTHROPIC_API_KEY` | Anthropic API key | Required |
+| `GOOGLE_API_KEY` | Google AI API key | Required |
+| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/ragscope` |
+| `PORT` | Backend port | `3000` |
+| `FRONTEND_URL` | Frontend URL for CORS | `http://localhost:5173` |
+| `ADAPTIVE_MODE` | Enable adaptive routing | `true` |
+| `RISK_HIGH_THRESHOLD` | Council threshold | `0.8` |
+| `RISK_LOW_THRESHOLD` | Single threshold | `0.4` |
+| `EVALUATION_TIMEOUT` | Judge timeout (ms) | `30000` |
 
-| Variable            | Description                          | Default                    |
-|---------------------|--------------------------------------|----------------------------|
-| PORT                | Backend server port                  | 3000                       |
-| MONGODB_URI         | MongoDB connection string            | mongodb://localhost:27017  |
-| FRONTEND_URL        | Frontend URL for CORS                | http://localhost:5173      |
-| OPENAI_API_KEY      | OpenAI API key                       | Required                   |
-| ANTHROPIC_API_KEY   | Anthropic API key                    | Required                   |
-| GOOGLE_API_KEY      | Google AI API key                    | Required                   |
-| EVALUATION_TIMEOUT  | Judge timeout in milliseconds        | 30000                      |
-| ADAPTIVE_MODE       | Enable adaptive orchestration        | true                       |
-| RISK_HIGH_THRESHOLD | Risk score threshold for council     | 0.8                        |
-| RISK_LOW_THRESHOLD  | Risk score threshold for single      | 0.4                        |
+## Evaluation Strategies
 
-### Limits (Demo Mode)
+| Strategy | Risk | Judges | Cost |
+|----------|------|--------|------|
+| **Council** | >= 0.8 | OpenAI + Anthropic + Gemini + Sonnet | ~$0.0035 |
+| **Hybrid** | 0.4-0.8 | Deterministic + OpenAI | ~$0.0008 |
+| **Single** | < 0.4 | Gemini only | ~$0.0003 |
 
-- Max test cases per request: 10
-- Max context passages per test case: 20
-- Max input length: 1,000 characters
-- Max output length: 5,000 characters
-- Max context passage length: 10,000 characters
+## Tech Stack
 
-## Adaptive Orchestration
+**Backend:** Node.js 20+, Express, MongoDB/Mongoose, Zod, SSE, Swagger
+**Frontend:** React 18, Vite 6, TailwindCSS 3, Lucide React
+**SDK:** Zero-dependency ESM module with native fetch
+**LLM Providers:** OpenAI (gpt-4o-mini), Anthropic (claude-3-haiku, claude-sonnet-4), Google (gemini-1.5-flash)
+**Infrastructure:** Docker Compose, nginx
 
-The adaptive router analyzes each test case and selects the optimal evaluation strategy:
+## Documentation
 
-### Risk Scoring Factors
-- **High-risk keywords**: medical, legal, financial, safety domains
-- **Low-risk keywords**: simple factoid queries (what is, who is, capital of)
-- **Output length**: Longer outputs have more claims to verify
-- **Numerical claims**: Numbers with units increase verification complexity
-- **Negation patterns**: Nuanced logic requires careful evaluation
-- **Context count**: More context passages increase verification scope
-- **Expected output**: Having a reference answer reduces risk
-
-### Deterministic Checks (Zero-Cost)
-- **Entity Match**: Verifies output entities exist in context/query
-- **Freshness**: Checks for stale year references in context
-- **Context Overlap**: Jaccard token similarity between output and context
-- **Completeness**: Query terms addressed in the output
-
-## Deployment
-
-### Fly.io
-
-```bash
-fly auth login
-fly launch
-fly secrets set OPENAI_API_KEY=sk-... ANTHROPIC_API_KEY=sk-ant-... GOOGLE_API_KEY=...
-fly deploy
-```
-
-## Scoring
-
-### Individual Metrics (0-1 scale)
-
-- **1.0**: Perfect - all criteria fully met
-- **0.7-0.9**: Good - minor issues
-- **0.4-0.6**: Fair - some significant issues
-- **0.1-0.3**: Poor - major issues
-- **0.0**: Failed - criteria not met
-
-### Final Verdict
-
-- **PASS**: Score >= 0.7 and no critical issues
-- **WARN**: Score 0.4-0.7 or minor issues
-- **FAIL**: Score < 0.4 or critical issues
+- [ARCHITECTURE.md](./ARCHITECTURE.md) — System diagrams, data flow, SSE protocol, cost model
+- [DECISIONS.md](./DECISIONS.md) — 10 architectural decision records
+- [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) — Frontend component patterns and styling guide
+- [sdk/README.md](./sdk/README.md) — SDK quickstart and integration patterns
 
 ## License
 

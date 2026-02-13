@@ -4,6 +4,27 @@ import { sseManager, setSSEHeaders } from '../utils/sse.js';
 
 const router = Router();
 
+/**
+ * @openapi
+ * /api/stream/{jobId}:
+ *   get:
+ *     summary: SSE stream for real-time evaluation updates
+ *     description: Replays stored events then subscribes to live events. Closes on evaluation_complete or evaluation_error.
+ *     tags: [Streaming]
+ *     parameters:
+ *       - in: path
+ *         name: jobId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: SSE event stream
+ *         content:
+ *           text/event-stream:
+ *             schema: { type: string }
+ *       404:
+ *         description: Evaluation not found
+ */
 router.get('/:jobId', async (req, res) => {
   const { jobId } = req.params;
 

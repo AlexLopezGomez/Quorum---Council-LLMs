@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { TestCaseResult } from './TestCaseResult';
 import { CostBreakdown } from './CostBreakdown';
+import { PageHeader } from './PageHeader';
 
 export function StreamingEvaluation({ events, testCases, currentTestCase, onNavigate, jobId }) {
   const testCaseState = useMemo(() => {
@@ -70,31 +71,28 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
 
   return (
     <div className="space-y-6">
-      {/* Page header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-text-primary">Evaluation Results</h1>
-          <p className="text-sm text-text-secondary mt-1">
-            Test case {currentTestCase + 1} of {testCases.length}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => onNavigate(Math.max(0, currentTestCase - 1))}
-            disabled={currentTestCase === 0}
-            className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-tertiary rounded-lg transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => onNavigate(Math.min(testCases.length - 1, currentTestCase + 1))}
-            disabled={currentTestCase === testCases.length - 1}
-            className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-tertiary rounded-lg transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
-          >
-            Next
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Evaluation Results"
+        subtitle={`Test case ${currentTestCase + 1} of ${testCases.length}`}
+        action={
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onNavigate(Math.max(0, currentTestCase - 1))}
+              disabled={currentTestCase === 0}
+              className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-tertiary rounded-lg transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => onNavigate(Math.min(testCases.length - 1, currentTestCase + 1))}
+              disabled={currentTestCase === testCases.length - 1}
+              className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-tertiary rounded-lg transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+            >
+              Next
+            </button>
+          </div>
+        }
+      />
 
       <TestCaseResult
         testCaseState={testCaseState}
@@ -104,32 +102,7 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
 
       {summary && (
         <>
-          {/* Summary stats */}
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-            <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-              <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Faithfulness</p>
-              <div className="mt-2">
-                <span className="text-2xl font-semibold text-text-primary">
-                  {summary.avgFaithfulness !== null ? summary.avgFaithfulness.toFixed(2) : '-'}
-                </span>
-              </div>
-            </div>
-            <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-              <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Groundedness</p>
-              <div className="mt-2">
-                <span className="text-2xl font-semibold text-text-primary">
-                  {summary.avgGroundedness !== null ? summary.avgGroundedness.toFixed(2) : '-'}
-                </span>
-              </div>
-            </div>
-            <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-              <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Relevancy</p>
-              <div className="mt-2">
-                <span className="text-2xl font-semibold text-text-primary">
-                  {summary.avgRelevancy !== null ? summary.avgRelevancy.toFixed(2) : '-'}
-                </span>
-              </div>
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
               <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Final Score</p>
               <div className="mt-2">
@@ -150,19 +123,51 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
                 <span className="text-2xl font-semibold text-text-primary">${summary.totalCost?.toFixed(4) || '0'}</span>
               </div>
             </div>
+            <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
+              <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Strategy</p>
+              <div className="mt-2">
+                {summary.strategyCounts && Object.keys(summary.strategyCounts).length > 0 ? (
+                  <div className="flex flex-wrap gap-x-3 gap-y-1">
+                    {Object.entries(summary.strategyCounts).map(([s, c]) => (
+                      <span key={s} className="text-sm font-medium text-text-primary capitalize">{s}: {c}</span>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-2xl font-semibold text-text-primary">-</span>
+                )}
+              </div>
+            </div>
           </div>
 
-          {summary.strategyCounts && Object.keys(summary.strategyCounts).length > 0 && (
-            <div className="flex items-center gap-4 text-xs text-text-secondary">
-              <span className="font-medium uppercase tracking-wide">Strategies:</span>
-              {Object.entries(summary.strategyCounts).map(([s, c]) => (
-                <span key={s} className="capitalize">{s}: {c}</span>
-              ))}
-              {summary.avgRiskScore !== null && (
-                <span>Avg Risk: {summary.avgRiskScore.toFixed(2)}</span>
-              )}
+          <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
+            <p className="text-xs text-text-secondary font-medium uppercase tracking-wide mb-3">Per-Metric Averages</p>
+            <div className="grid grid-cols-3 gap-6">
+              <div>
+                <span className="text-xs text-text-tertiary">Faithfulness</span>
+                <p className="text-lg font-semibold text-text-primary mt-0.5">
+                  {summary.avgFaithfulness !== null ? summary.avgFaithfulness.toFixed(2) : '-'}
+                </p>
+              </div>
+              <div>
+                <span className="text-xs text-text-tertiary">Groundedness</span>
+                <p className="text-lg font-semibold text-text-primary mt-0.5">
+                  {summary.avgGroundedness !== null ? summary.avgGroundedness.toFixed(2) : '-'}
+                </p>
+              </div>
+              <div>
+                <span className="text-xs text-text-tertiary">Relevancy</span>
+                <p className="text-lg font-semibold text-text-primary mt-0.5">
+                  {summary.avgRelevancy !== null ? summary.avgRelevancy.toFixed(2) : '-'}
+                </p>
+              </div>
             </div>
-          )}
+            {summary.avgRiskScore !== null && (
+              <div className="mt-3 pt-3 border-t border-surface-border">
+                <span className="text-xs text-text-tertiary">Avg Risk Score: </span>
+                <span className="text-sm font-medium text-text-primary">{summary.avgRiskScore.toFixed(2)}</span>
+              </div>
+            )}
+          </div>
 
           <CostBreakdown jobId={jobId} summary={summary} />
         </>

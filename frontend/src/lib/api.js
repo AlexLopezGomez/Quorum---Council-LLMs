@@ -65,3 +65,44 @@ export async function getStats() {
   }
   return response.json();
 }
+
+export async function getWebhooks() {
+  const response = await fetch(`${API_BASE}/webhooks`);
+  if (!response.ok) throw new Error('Failed to fetch webhooks');
+  return response.json();
+}
+
+export async function createWebhook(data) {
+  const response = await fetch(`${API_BASE}/webhooks`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to create webhook');
+  }
+  return response.json();
+}
+
+export async function updateWebhook(id, data) {
+  const response = await fetch(`${API_BASE}/webhooks/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error('Failed to update webhook');
+  return response.json();
+}
+
+export async function deleteWebhook(id) {
+  const response = await fetch(`${API_BASE}/webhooks/${id}`, { method: 'DELETE' });
+  if (!response.ok) throw new Error('Failed to delete webhook');
+  return response.json();
+}
+
+export async function testWebhook(id) {
+  const response = await fetch(`${API_BASE}/webhooks/${id}/test`, { method: 'POST' });
+  if (!response.ok) throw new Error('Failed to test webhook');
+  return response.json();
+}

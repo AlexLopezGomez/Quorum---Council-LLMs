@@ -4,6 +4,7 @@ import { evaluateContextRelevancy } from './judges/gemini.js';
 import { aggregateResults } from './aggregator.js';
 import { routeTestCase } from '../orchestrator/adaptiveRouter.js';
 import { CostTracker } from './costTracker.js';
+import { fireWebhooks } from './webhookService.js';
 
 const EVALUATION_TIMEOUT = parseInt(process.env.EVALUATION_TIMEOUT) || 30000;
 const ADAPTIVE_MODE = process.env.ADAPTIVE_MODE !== 'false';
@@ -196,6 +197,8 @@ export async function runEvaluation(testCases, jobId, emitEvent, saveEvent, upda
     status: 'complete',
     completedAt: new Date(),
   });
+
+  fireWebhooks({ jobId, testCases, results: allResults, summary, config: options }).catch(() => {});
 
   emitEvent('evaluation_complete', {
     jobId,

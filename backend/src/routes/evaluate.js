@@ -7,6 +7,57 @@ import { sseManager } from '../utils/sse.js';
 
 const router = Router();
 
+/**
+ * @openapi
+ * /api/evaluate:
+ *   post:
+ *     summary: Start a new evaluation
+ *     description: Validates test cases, creates an Evaluation document, and fires async evaluation pipeline. Returns 202 immediately.
+ *     tags: [Evaluation]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [testCases]
+ *             properties:
+ *               testCases:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/TestCase'
+ *                 minItems: 1
+ *                 maxItems: 10
+ *               options:
+ *                 type: object
+ *                 properties:
+ *                   strategy:
+ *                     type: string
+ *                     enum: [auto, single, hybrid, council]
+ *                     default: auto
+ *                   riskOverride:
+ *                     type: number
+ *                     minimum: 0
+ *                     maximum: 1
+ *     responses:
+ *       202:
+ *         description: Evaluation started
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 jobId: { type: string }
+ *                 strategy: { type: string }
+ *                 streamUrl: { type: string }
+ *                 resultsUrl: { type: string }
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post('/', validateEvaluateRequest, async (req, res) => {
   try {
     const { testCases, options } = req.validatedBody;

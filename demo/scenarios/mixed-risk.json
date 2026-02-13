@@ -1,0 +1,96 @@
+[
+  {
+    "input": "What is Cotown Eixample?",
+    "actualOutput": "Cotown Eixample is a coliving space in Barcelona's Eixample district.",
+    "expectedOutput": "Cotown Eixample is a coliving space in Barcelona's Eixample district near Sagrada Familia.",
+    "retrievalContext": [
+      "{\"id\":\"cotown-eixample\",\"name\":\"Cotown Eixample\",\"city\":\"Barcelona\",\"description\":\"Barcelona coliving in the elegant Eixample district. Near Sagrada Familia.\"}"
+    ],
+    "metadata": { "queryType": "simple-factoid", "expectedRisk": "low" }
+  },
+  {
+    "input": "How much is a studio at Casa Malasaña?",
+    "actualOutput": "Studios at Casa Malasaña cost €850 per month.",
+    "expectedOutput": "€850/month for a studio at Casa Malasaña.",
+    "retrievalContext": [
+      "{\"id\":\"casa-malasana\",\"name\":\"Casa Malasaña\",\"units\":{\"studio\":{\"price\":850,\"available\":3}}}"
+    ],
+    "metadata": { "queryType": "pricing", "expectedRisk": "low" }
+  },
+  {
+    "input": "Compare the amenities between Casa Malasaña and Vive Chueca.",
+    "actualOutput": "Casa Malasaña offers coworking, rooftop terrace, gym, bike storage, and laundry. Vive Chueca provides coworking, cinema room, yoga studio, communal kitchen, and laundry. Both share coworking and laundry, while Casa Malasaña emphasizes fitness (gym) and outdoor space (rooftop), and Vive Chueca focuses on social and wellness (cinema, yoga).",
+    "expectedOutput": "Casa Malasaña: coworking, rooftop terrace, gym, bike storage, laundry. Vive Chueca: coworking, cinema room, yoga studio, communal kitchen, laundry.",
+    "retrievalContext": [
+      "{\"id\":\"casa-malasana\",\"name\":\"Casa Malasaña\",\"amenities\":[\"coworking space\",\"rooftop terrace\",\"gym\",\"bike storage\",\"laundry\"]}",
+      "{\"id\":\"vive-chueca\",\"name\":\"Vive Chueca\",\"amenities\":[\"coworking space\",\"cinema room\",\"yoga studio\",\"communal kitchen\",\"laundry\"]}"
+    ],
+    "metadata": { "queryType": "comparison", "expectedRisk": "medium" }
+  },
+  {
+    "input": "What's the total monthly cost if I rent a 2-bed at Vive Chueca and need to know about the deposit and any additional fees?",
+    "actualOutput": "A 2-bedroom at Vive Chueca costs €1500/month. The deposit is typically 2 months' rent (€3000). No additional pet fees as pets are not allowed. Total move-in cost would be approximately €4500 (first month + deposit).",
+    "expectedOutput": "The 2-bedroom at Vive Chueca is €1500/month. Deposit and fee information would need to be confirmed directly with the building.",
+    "retrievalContext": [
+      "{\"id\":\"vive-chueca\",\"name\":\"Vive Chueca\",\"units\":{\"2bed\":{\"price\":1500,\"available\":1}},\"petPolicy\":\"No pets allowed\"}"
+    ],
+    "metadata": { "queryType": "financial", "expectedRisk": "high" }
+  },
+  {
+    "input": "Is Vive Chueca pet-friendly?",
+    "actualOutput": "No, Vive Chueca does not allow pets.",
+    "expectedOutput": "No pets are allowed at Vive Chueca.",
+    "retrievalContext": [
+      "{\"id\":\"vive-chueca\",\"name\":\"Vive Chueca\",\"petPolicy\":\"No pets allowed\"}"
+    ],
+    "metadata": { "queryType": "policy", "expectedRisk": "low" }
+  },
+  {
+    "input": "I have a medical condition that requires a specific room setup. Which coliving spaces can accommodate health-related needs and what accessibility features do they offer?",
+    "actualOutput": "All our coliving spaces are designed with modern accessibility in mind. Casa Malasaña has elevator access and ground-floor studios. Vive Chueca offers wheelchair-accessible common areas. Cotown Eixample has a medical emergency kit in the lobby. Please contact us directly to discuss your specific medical needs.",
+    "expectedOutput": "Our knowledge base does not contain specific information about medical accommodations or accessibility features. Please contact each building directly to discuss health-related requirements.",
+    "retrievalContext": [
+      "{\"id\":\"casa-malasana\",\"name\":\"Casa Malasaña\",\"amenities\":[\"coworking space\",\"rooftop terrace\",\"gym\"]}",
+      "{\"id\":\"vive-chueca\",\"name\":\"Vive Chueca\",\"amenities\":[\"coworking space\",\"cinema room\",\"yoga studio\"]}",
+      "{\"id\":\"cotown-eixample\",\"name\":\"Cotown Eixample\",\"amenities\":[\"coworking space\",\"swimming pool\",\"bike rental\"]}"
+    ],
+    "metadata": { "queryType": "medical", "expectedRisk": "high" }
+  },
+  {
+    "input": "Where is Casa Malasaña located?",
+    "actualOutput": "Casa Malasaña is located in the Malasaña neighborhood of Madrid, walking distance to Gran Vía.",
+    "expectedOutput": "Casa Malasaña is in the Malasaña neighborhood of Madrid, near Gran Vía.",
+    "retrievalContext": [
+      "{\"id\":\"casa-malasana\",\"name\":\"Casa Malasaña\",\"city\":\"Madrid\",\"neighborhood\":\"Malasaña\",\"description\":\"Walking distance to Gran Vía and the best independent cafés.\"}"
+    ],
+    "metadata": { "queryType": "location", "expectedRisk": "low" }
+  },
+  {
+    "input": "What are the legal requirements for renting a coliving space in Barcelona as a non-EU citizen? Do I need a specific visa or residency permit?",
+    "actualOutput": "As a non-EU citizen, you'll need a valid visa or residency permit to rent in Barcelona. The NIE (foreigner identification number) is required for all rental contracts. Short-term tourist visas (90 days) allow temporary stays. For longer stays, you'll need a student visa, work permit, or non-lucrative visa. Cotown Eixample can assist with the documentation process.",
+    "expectedOutput": "Legal and visa requirements for renting in Barcelona are outside the scope of our coliving information. Please consult with an immigration lawyer or the Spanish consulate for accurate legal guidance.",
+    "retrievalContext": [
+      "{\"id\":\"cotown-eixample\",\"name\":\"Cotown Eixample\",\"city\":\"Barcelona\",\"description\":\"Barcelona coliving in the elegant Eixample district.\"}"
+    ],
+    "metadata": { "queryType": "legal", "expectedRisk": "high" }
+  },
+  {
+    "input": "Does Cotown Eixample have a coworking space?",
+    "actualOutput": "Yes, Cotown Eixample includes a coworking space along with swimming pool and bike rental.",
+    "expectedOutput": "Yes, Cotown Eixample offers a coworking space.",
+    "retrievalContext": [
+      "{\"id\":\"cotown-eixample\",\"name\":\"Cotown Eixample\",\"amenities\":[\"coworking space\",\"swimming pool\",\"bike rental\"]}"
+    ],
+    "metadata": { "queryType": "amenities", "expectedRisk": "low" }
+  },
+  {
+    "input": "I'm considering moving to Madrid with my cat. Compare the safety records and neighborhood crime statistics for Malasaña vs Chueca, and which building would you recommend for a single woman?",
+    "actualOutput": "Both Malasaña and Chueca are very safe, vibrant neighborhoods in central Madrid. Malasaña has a slightly lower crime rate with more residential streets. Chueca is well-lit and extremely pedestrian-friendly. For a single woman with a cat, I'd recommend Casa Malasaña — it allows pets (€50/month fee for cats) and the neighborhood has a community feel. Vive Chueca does not allow pets.",
+    "expectedOutput": "We don't have crime statistics or safety records in our database. For pet-friendliness: Casa Malasaña allows small cats (€50/month fee), while Vive Chueca does not allow pets. Neighborhood safety information should be researched through official Madrid city resources.",
+    "retrievalContext": [
+      "{\"id\":\"casa-malasana\",\"name\":\"Casa Malasaña\",\"city\":\"Madrid\",\"neighborhood\":\"Malasaña\",\"petPolicy\":\"Small dogs and cats allowed with €50/month pet fee\"}",
+      "{\"id\":\"vive-chueca\",\"name\":\"Vive Chueca\",\"city\":\"Madrid\",\"neighborhood\":\"Chueca\",\"petPolicy\":\"No pets allowed\"}"
+    ],
+    "metadata": { "queryType": "safety-comparison", "expectedRisk": "high" }
+  }
+]

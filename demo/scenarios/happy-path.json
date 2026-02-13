@@ -1,0 +1,27 @@
+[
+  {
+    "input": "What are the prices at Casa Malasaña?",
+    "expectedOutput": "Studios cost €850/month, 1-bedroom €1100/month, and 2-bedroom €1450/month at Casa Malasaña.",
+    "metadata": { "buildingId": "casa-malasana", "queryType": "pricing" }
+  },
+  {
+    "input": "What amenities does Vive Chueca offer?",
+    "expectedOutput": "Vive Chueca offers coworking space, cinema room, yoga studio, communal kitchen, and laundry.",
+    "metadata": { "buildingId": "vive-chueca", "queryType": "amenities" }
+  },
+  {
+    "input": "Are there studios available at Casa Malasaña?",
+    "expectedOutput": "Yes, Casa Malasaña has 3 studios available at €850/month.",
+    "metadata": { "buildingId": "casa-malasana", "queryType": "availability" }
+  },
+  {
+    "input": "Tell me about the Cotown Eixample location in Barcelona.",
+    "expectedOutput": "Cotown Eixample is in the Eixample district of Barcelona, near Sagrada Familia. It features modernist architecture with a swimming pool, bike rental, and coworking space.",
+    "metadata": { "buildingId": "cotown-eixample", "queryType": "general" }
+  },
+  {
+    "input": "What is the pet policy at Vive Chueca?",
+    "expectedOutput": "No pets are allowed at Vive Chueca.",
+    "metadata": { "buildingId": "vive-chueca", "queryType": "policy" }
+  }
+]

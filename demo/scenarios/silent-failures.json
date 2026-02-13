@@ -1,0 +1,75 @@
+[
+  {
+    "input": "What are the prices at Casa Malasaña?",
+    "actualOutput": "Vive Chueca offers studios at €900/month and 2-bedroom apartments at €1500/month. It's located in the vibrant Chueca neighborhood.",
+    "expectedOutput": "Studios at Casa Malasaña cost €850/month, 1-bedroom €1100/month, and 2-bedroom €1450/month.",
+    "retrievalContext": [
+      "{\"id\":\"vive-chueca\",\"name\":\"Vive Chueca\",\"city\":\"Madrid\",\"units\":{\"studio\":{\"price\":900,\"available\":2},\"2bed\":{\"price\":1500,\"available\":1}},\"amenities\":[\"coworking space\",\"cinema room\"]}"
+    ],
+    "metadata": { "buildingId": "casa-malasana", "queryType": "pricing", "failureType": "wrong_building_retrieved" }
+  },
+  {
+    "input": "Is the pricing at Cotown Eixample up to date?",
+    "actualOutput": "Yes, Cotown Eixample studios are €800/month and 1-bedroom apartments are €1100/month. These prices are current.",
+    "expectedOutput": "The pricing data for Cotown Eixample was last updated on December 15, 2025 and may not reflect current rates.",
+    "retrievalContext": [
+      "{\"id\":\"cotown-eixample\",\"name\":\"Cotown Eixample\",\"city\":\"Barcelona\",\"units\":{\"studio\":{\"price\":800},\"1bed\":{\"price\":1100}},\"lastUpdated\":\"2025-12-15\"}"
+    ],
+    "metadata": { "buildingId": "cotown-eixample", "queryType": "pricing", "failureType": "stale_data" }
+  },
+  {
+    "input": "How many 2-bedroom apartments are available at Casa Malasaña?",
+    "actualOutput": "Great news! Casa Malasaña has 3 two-bedroom apartments available at €1450/month. These spacious units include access to the rooftop terrace and gym.",
+    "expectedOutput": "There are currently no 2-bedroom apartments available at Casa Malasaña. The 0 availability means they are fully booked.",
+    "retrievalContext": [
+      "{\"id\":\"casa-malasana\",\"name\":\"Casa Malasaña\",\"city\":\"Madrid\",\"units\":{\"studio\":{\"price\":850,\"available\":3},\"2bed\":{\"price\":1450,\"available\":0}},\"amenities\":[\"rooftop terrace\",\"gym\"]}"
+    ],
+    "metadata": { "buildingId": "casa-malasana", "queryType": "availability", "failureType": "hallucinated_availability" }
+  },
+  {
+    "input": "I'm looking for a 2-bedroom at Vive Chueca. What's available?",
+    "actualOutput": "Vive Chueca has studios available at €900/month. The studios come with access to the cinema room and yoga studio.",
+    "expectedOutput": "Vive Chueca has 1 two-bedroom apartment available at €1500/month with access to cinema room and yoga studio.",
+    "retrievalContext": [
+      "{\"id\":\"vive-chueca\",\"name\":\"Vive Chueca\",\"city\":\"Madrid\",\"units\":{\"studio\":{\"price\":900,\"available\":2},\"2bed\":{\"price\":1500,\"available\":1}},\"amenities\":[\"cinema room\",\"yoga studio\"]}"
+    ],
+    "metadata": { "buildingId": "vive-chueca", "queryType": "availability", "failureType": "wrong_unit_type" }
+  },
+  {
+    "input": "How much does a studio cost at Casa Malasaña?",
+    "actualOutput": "Studios at Casa Malasaña are priced at €750/month, making it one of our most affordable options in Madrid.",
+    "expectedOutput": "Studios at Casa Malasaña cost €850/month.",
+    "retrievalContext": [
+      "{\"id\":\"casa-malasana\",\"name\":\"Casa Malasaña\",\"city\":\"Madrid\",\"units\":{\"studio\":{\"price\":850,\"available\":3}},\"description\":\"A vibrant coliving space in the heart of Malasaña.\"}"
+    ],
+    "metadata": { "buildingId": "casa-malasana", "queryType": "pricing", "failureType": "confident_wrong_price" }
+  },
+  {
+    "input": "Tell me about your Barcelona coliving spaces.",
+    "actualOutput": "Our Barcelona location, Cotown Eixample, is in the heart of Madrid's Eixample district. It features studios from €800/month with a swimming pool and bike rental. The building is near Gran Vía and Puerta del Sol.",
+    "expectedOutput": "Cotown Eixample is located in Barcelona's Eixample district, near Sagrada Familia and Passeig de Gràcia. Studios start at €800/month with amenities including swimming pool and bike rental.",
+    "retrievalContext": [
+      "{\"id\":\"cotown-eixample\",\"name\":\"Cotown Eixample\",\"city\":\"Barcelona\",\"neighborhood\":\"Eixample\",\"units\":{\"studio\":{\"price\":800}},\"amenities\":[\"swimming pool\",\"bike rental\"],\"description\":\"Barcelona coliving in the elegant Eixample district. Near Sagrada Familia and Passeig de Gràcia.\"}"
+    ],
+    "metadata": { "buildingId": "cotown-eixample", "queryType": "general", "failureType": "city_confusion" }
+  },
+  {
+    "input": "Can I bring my large dog to Casa Malasaña?",
+    "actualOutput": "Absolutely! Casa Malasaña welcomes all pets including large dogs. They have a dedicated pet area on the rooftop terrace and no additional fees.",
+    "expectedOutput": "Casa Malasaña allows small dogs and cats with a €50/month pet fee. Large dogs may not be permitted - contact the building directly for specific size restrictions.",
+    "retrievalContext": [
+      "{\"id\":\"casa-malasana\",\"name\":\"Casa Malasaña\",\"city\":\"Madrid\",\"amenities\":[\"rooftop terrace\",\"gym\"],\"description\":\"A vibrant coliving space in the heart of Malasaña.\"}"
+    ],
+    "metadata": { "buildingId": "casa-malasana", "queryType": "policy", "failureType": "missing_context" }
+  },
+  {
+    "input": "Does the Madrid coliving at Casa Malasaña have a swimming pool?",
+    "actualOutput": "Yes! Casa Malasaña features a beautiful swimming pool perfect for cooling off during Madrid's hot summers, along with a coworking space and community events.",
+    "expectedOutput": "No, Casa Malasaña does not have a swimming pool. Its amenities include coworking space, rooftop terrace, gym, bike storage, and laundry. The swimming pool is available at Cotown Eixample in Barcelona.",
+    "retrievalContext": [
+      "{\"id\":\"casa-malasana\",\"name\":\"Casa Malasaña\",\"city\":\"Madrid\",\"amenities\":[\"coworking space\",\"rooftop terrace\",\"gym\",\"bike storage\",\"laundry\"]}",
+      "{\"id\":\"cotown-eixample\",\"name\":\"Cotown Eixample\",\"city\":\"Barcelona\",\"amenities\":[\"swimming pool\",\"bike rental\",\"coworking space\",\"community events\"]}"
+    ],
+    "metadata": { "buildingId": "casa-malasana", "queryType": "amenities", "failureType": "cross_entity_contamination" }
+  }
+]

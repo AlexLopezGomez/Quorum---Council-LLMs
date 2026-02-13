@@ -7,8 +7,12 @@ import evaluateRouter from './routes/evaluate.js';
 import streamRouter from './routes/stream.js';
 import resultsRouter from './routes/results.js';
 import historyRouter from './routes/history.js';
+import webhooksRouter from './routes/webhooks.js';
+import ingestRouter from './routes/ingest.js';
+import swaggerUi from 'swagger-ui-express';
 import { sseManager } from './utils/sse.js';
 import { Evaluation } from './models/Evaluation.js';
+import { spec } from './utils/openapi.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -30,12 +34,15 @@ app.use(
 );
 
 app.use(express.json({ limit: '5mb' }));
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(spec, { customSiteTitle: 'RAGScope API' }));
 app.use('/api', limiter);
 
 app.use('/api/evaluate', evaluateRouter);
 app.use('/api/stream', streamRouter);
 app.use('/api/results', resultsRouter);
 app.use('/api', historyRouter);
+app.use('/api/webhooks', webhooksRouter);
+app.use('/api/ingest', ingestRouter);
 
 app.get('/health', (req, res) => {
   res.json({

@@ -1,15 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Bell, Plus, Trash2, Zap, X } from 'lucide-react';
+import { sileo } from 'sileo';
 import { PageHeader } from './PageHeader';
+import { ErrorAlert } from './ui/ErrorAlert';
+import { WEBHOOK_EVENT_OPTIONS } from '../lib/constants';
 import { getWebhooks, createWebhook, updateWebhook, deleteWebhook, testWebhook } from '../lib/api';
-
-const EVENT_OPTIONS = [
-  { value: 'evaluation_complete', label: 'Evaluation Complete' },
-  { value: 'verdict_fail', label: 'Verdict Fail' },
-  { value: 'score_below_threshold', label: 'Score Below Threshold' },
-  { value: 'high_risk_fail', label: 'High Risk Fail' },
-  { value: 'cost_spike', label: 'Cost Spike' },
-];
+import { useApiQuery } from '../hooks/useApiQuery';
 
 function WebhookCard({ webhook, onToggle, onDelete, onTest }) {
   const [testing, setTesting] = useState(false);
@@ -19,9 +16,14 @@ function WebhookCard({ webhook, onToggle, onDelete, onTest }) {
     setTesting(true);
     try {
       const result = await testWebhook(webhook._id);
-      alert(result.success ? 'Webhook test sent successfully' : `Test failed: ${result.error || `HTTP ${result.status}`}`);
-    } catch {
-      alert('Failed to send test');
+      if (result.success) {
+        sileo.success({ title: 'Webhook test sent successfully' });
+      } else {
+        sileo.error({ title: `Test failed: ${result.error || `HTTP ${result.status}`}` });
+      }
+    } catch (err) {
+      console.error('Webhook test error:', err);
+      sileo.error({ title: 'Failed to send test' });
     }
     setTesting(false);
   };
@@ -84,6 +86,20 @@ function WebhookCard({ webhook, onToggle, onDelete, onTest }) {
     </div>
   );
 }
+
+WebhookCard.propTypes = {
+  webhook: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+    active: PropTypes.bool,
+    events: PropTypes.arrayOf(PropTypes.string).isRequired,
+    lastTriggered: PropTypes.string,
+  }).isRequired,
+  onToggle: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onTest: PropTypes.func,
+};
 
 function AddWebhookForm({ onSubmit, onCancel }) {
   const [form, setForm] = useState({
@@ -161,14 +177,13 @@ function AddWebhookForm({ onSubmit, onCancel }) {
         <div>
           <label className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">Events</label>
           <div className="flex flex-wrap gap-2">
-            {EVENT_OPTIONS.map(opt => (
+            {WEBHOOK_EVENT_OPTIONS.map(opt => (
               <button
                 key={opt.value} type="button" onClick={() => toggleEvent(opt.value)}
-                className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
-                  form.events.includes(opt.value)
-                    ? 'bg-accent text-white border-accent'
-                    : 'bg-surface text-text-secondary border-surface-border hover:bg-surface-secondary'
-                }`}
+                className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${form.events.includes(opt.value)
+                  ? 'bg-accent text-white border-accent'
+                  : 'bg-surface text-text-secondary border-surface-border hover:bg-surface-secondary'
+                  }`}
               >
                 {opt.label}
               </button>
@@ -193,7 +208,7 @@ function AddWebhookForm({ onSubmit, onCancel }) {
             />
           </div>
         </div>
-        {error && <p className="text-sm text-verdict-fail">{error}</p>}
+        <ErrorAlert message={error} />
         <button
           type="submit" disabled={submitting}
           className="w-full px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50"
@@ -205,36 +220,43 @@ function AddWebhookForm({ onSubmit, onCancel }) {
   );
 }
 
+AddWebhookForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+};
+
 export function WebhookManager() {
-  const [webhooks, setWebhooks] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
-  const fetchWebhooks = async () => {
-    setLoading(true);
-    try {
-      const data = await getWebhooks();
-      setWebhooks(data.webhooks || []);
-    } catch { /* ignore */ }
-    setLoading(false);
-  };
+  const fetchFn = useCallback((signal) => getWebhooks(signal), []);
+  const { data, loading, error, refetch } = useApiQuery(fetchFn, []);
 
-  useEffect(() => { fetchWebhooks(); }, []);
+  const webhooks = data?.webhooks || [];
 
-  const handleCreate = async (data) => {
-    await createWebhook(data);
+  const handleCreate = async (webhookData) => {
+    await createWebhook(webhookData);
     setShowForm(false);
-    fetchWebhooks();
+    refetch();
   };
 
   const handleToggle = async (id, active) => {
-    await updateWebhook(id, { active });
-    fetchWebhooks();
+    try {
+      await updateWebhook(id, { active });
+      refetch();
+    } catch (err) {
+      console.error('Toggle webhook error:', err);
+      sileo.error({ title: 'Failed to update webhook' });
+    }
   };
 
   const handleDelete = async (id) => {
-    await deleteWebhook(id);
-    fetchWebhooks();
+    try {
+      await deleteWebhook(id);
+      refetch();
+    } catch (err) {
+      console.error('Delete webhook error:', err);
+      sileo.error({ title: 'Failed to delete webhook' });
+    }
   };
 
   return (
@@ -255,6 +277,8 @@ export function WebhookManager() {
         }
       />
 
+      <ErrorAlert message={error?.message} className="mb-6" />
+
       {showForm && (
         <div className="mb-6">
           <AddWebhookForm onSubmit={handleCreate} onCancel={() => setShowForm(false)} />
@@ -272,7 +296,7 @@ export function WebhookManager() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {webhooks.map(w => (
-            <WebhookCard key={w._id} webhook={w} onToggle={handleToggle} onDelete={handleDelete} onTest={() => {}} />
+            <WebhookCard key={w._id} webhook={w} onToggle={handleToggle} onDelete={handleDelete} onTest={() => { }} />
           ))}
         </div>
       )}

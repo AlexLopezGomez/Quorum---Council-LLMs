@@ -1,18 +1,21 @@
 FROM node:20-alpine
 
-WORKDIR /app
-
-# Copy SDK first for file dependency resolution
+# Copy SDK as a proper package
 COPY sdk/ /sdk/
 
-# Copy demo chatbot
-COPY demo/rag-chatbot/package*.json ./
+WORKDIR /app
 
-# Rewrite file dependency to /sdk for Docker context
-RUN sed -i 's|file:../../sdk|file:/sdk|g' package.json && npm install
+# Copy package.json and rewrite SDK path for Docker context
+COPY demo/rag-chatbot/package.json ./
+RUN sed -i 's|file:../../sdk|file:/sdk|g' package.json
 
+# Install dependencies with --install-links to copy (not symlink) file: deps
+RUN npm install --install-links
+
+# Copy application code
 COPY demo/rag-chatbot/ .
 
 EXPOSE 4000
 
 CMD ["node", "server.js"]
+

@@ -1,6 +1,9 @@
 import { useState, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { Upload, Play } from 'lucide-react';
+import { STRATEGIES, STRATEGY_DESCRIPTIONS } from '../lib/constants';
 import { PageHeader } from './PageHeader';
+import { ErrorAlert } from './ui/ErrorAlert';
 
 const SAMPLE_DATA = [
   {
@@ -33,6 +36,26 @@ const SAMPLE_DATA = [
   },
 ];
 
+/**
+ * Validates that an array of test cases has the required fields.
+ * Throws an error with a descriptive message if validation fails.
+ */
+function validateTestCases(data) {
+  const cases = Array.isArray(data) ? data : data.testCases;
+
+  if (!Array.isArray(cases) || cases.length === 0) {
+    throw new Error('Invalid format: expected an array of test cases');
+  }
+
+  for (const tc of cases) {
+    if (!tc.input || !tc.actualOutput || !tc.retrievalContext) {
+      throw new Error('Each test case must have input, actualOutput, and retrievalContext');
+    }
+  }
+
+  return cases;
+}
+
 export function TestCaseUpload({ onSubmit, isLoading }) {
   const [testCases, setTestCases] = useState([]);
   const [error, setError] = useState(null);
@@ -47,18 +70,7 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
     reader.onload = (event) => {
       try {
         const data = JSON.parse(event.target.result);
-        const cases = Array.isArray(data) ? data : data.testCases;
-
-        if (!Array.isArray(cases) || cases.length === 0) {
-          throw new Error('Invalid format: expected an array of test cases');
-        }
-
-        for (const tc of cases) {
-          if (!tc.input || !tc.actualOutput || !tc.retrievalContext) {
-            throw new Error('Each test case must have input, actualOutput, and retrievalContext');
-          }
-        }
-
+        const cases = validateTestCases(data);
         setTestCases(cases);
         setError(null);
       } catch (err) {
@@ -130,25 +142,17 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
               onChange={(e) => setStrategy(e.target.value)}
               className="w-full px-3 py-2 text-sm bg-surface border border-surface-border rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
             >
-              <option value="auto">Auto (Adaptive routing based on risk)</option>
-              <option value="council">Council (Full 3-judge + aggregator)</option>
-              <option value="hybrid">Hybrid (Deterministic + single judge)</option>
-              <option value="single">Single (Cheapest judge only)</option>
+              {STRATEGIES.map((s) => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
             </select>
             <p className="mt-1.5 text-xs text-text-tertiary">
-              {strategy === 'auto' && 'Each test case will be routed to the optimal strategy based on its risk score.'}
-              {strategy === 'council' && 'All test cases evaluated by 3 judges (OpenAI, Anthropic, Gemini) + Claude aggregator.'}
-              {strategy === 'hybrid' && 'Deterministic checks + single OpenAI judge. Balanced cost and accuracy.'}
-              {strategy === 'single' && 'Gemini judge only. Lowest cost, suitable for simple queries.'}
+              {STRATEGY_DESCRIPTIONS[strategy]}
             </p>
           </div>
 
           {/* Error */}
-          {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
-              {error}
-            </div>
-          )}
+          <ErrorAlert message={error} />
 
           {/* Preview table */}
           {testCases.length > 0 && (
@@ -195,7 +199,7 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
           <div>
             <p className="text-xs text-text-tertiary mb-2">Expected JSON format:</p>
             <pre className="bg-surface-secondary p-3 rounded-lg overflow-x-auto text-xs text-text-secondary">
-{`[
+              {`[
   {
     "input": "User query",
     "actualOutput": "RAG system response",
@@ -210,3 +214,8 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
     </div>
   );
 }
+
+TestCaseUpload.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool,
+};

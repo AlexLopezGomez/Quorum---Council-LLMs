@@ -1,4 +1,7 @@
+import PropTypes from 'prop-types';
 import { CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
+import { safeFixed } from '../lib/utils';
+import { ScoreBar } from './ui/ScoreBar';
 
 const VERDICT_ICONS = {
   PASS: CheckCircle2,
@@ -6,22 +9,26 @@ const VERDICT_ICONS = {
   FAIL: XCircle,
 };
 
+const VERDICT_STYLES = {
+  PASS: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  WARN: 'bg-amber-50 text-amber-700 border-amber-200',
+  FAIL: 'bg-red-50 text-red-700 border-red-200',
+  ERROR: 'bg-surface-tertiary text-text-secondary border-surface-border',
+};
+
 function VerdictBadge({ verdict }) {
   const Icon = VERDICT_ICONS[verdict];
-  const styles = {
-    PASS: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    WARN: 'bg-amber-50 text-amber-700 border-amber-200',
-    FAIL: 'bg-red-50 text-red-700 border-red-200',
-    ERROR: 'bg-surface-tertiary text-text-secondary border-surface-border',
-  };
-
   return (
-    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border ${styles[verdict] || styles.ERROR}`}>
+    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border ${VERDICT_STYLES[verdict] || VERDICT_STYLES.ERROR}`}>
       {Icon && <Icon size={12} />}
       {verdict}
     </span>
   );
 }
+
+VerdictBadge.propTypes = {
+  verdict: PropTypes.string.isRequired,
+};
 
 export function AggregatorCard({ status, result, error }) {
   return (
@@ -35,7 +42,7 @@ export function AggregatorCard({ status, result, error }) {
             <p className="text-xs text-text-secondary mt-0.5">
               {result?.model === 'local-hybrid' ? 'Local Hybrid Aggregation'
                 : result?.model === 'local' ? 'Local Threshold'
-                : 'Claude Sonnet Aggregator'}
+                  : 'Claude Sonnet Aggregator'}
             </p>
           </div>
 
@@ -48,7 +55,7 @@ export function AggregatorCard({ status, result, error }) {
               {result.finalScore !== null && (
                 <div className="flex items-baseline gap-1">
                   <span className="text-3xl font-semibold text-text-primary">
-                    {result.finalScore.toFixed(2)}
+                    {safeFixed(result.finalScore)}
                   </span>
                   <span className="text-sm text-text-secondary">/ 1.0</span>
                 </div>
@@ -69,15 +76,7 @@ export function AggregatorCard({ status, result, error }) {
         {status === 'complete' && result && (
           <div className="space-y-4">
             {result.finalScore !== null && (
-              <div className="w-full h-1.5 bg-surface-tertiary rounded-full">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${
-                    result.finalScore >= 0.7 ? 'bg-verdict-pass' :
-                    result.finalScore >= 0.4 ? 'bg-verdict-warn' : 'bg-verdict-fail'
-                  }`}
-                  style={{ width: `${Math.round(result.finalScore * 100)}%` }}
-                />
-              </div>
+              <ScoreBar score={result.finalScore} />
             )}
 
             <div>
@@ -107,7 +106,7 @@ export function AggregatorCard({ status, result, error }) {
               <span className="text-xs text-text-tertiary">Model: {result.model}</span>
               <span className="text-xs text-text-tertiary">{result.latency}ms</span>
               <span className="text-xs text-text-tertiary">{result.tokens?.total || 0} tokens</span>
-              <span className="text-xs text-text-tertiary">${result.cost?.toFixed(6) || '0'}</span>
+              <span className="text-xs text-text-tertiary">${safeFixed(result.cost, 6)}</span>
             </div>
           </div>
         )}
@@ -119,3 +118,19 @@ export function AggregatorCard({ status, result, error }) {
     </div>
   );
 }
+
+AggregatorCard.propTypes = {
+  status: PropTypes.oneOf(['idle', 'loading', 'complete', 'error']).isRequired,
+  result: PropTypes.shape({
+    finalScore: PropTypes.number,
+    verdict: PropTypes.string,
+    synthesis: PropTypes.string,
+    recommendation: PropTypes.string,
+    disagreements: PropTypes.arrayOf(PropTypes.string),
+    model: PropTypes.string,
+    latency: PropTypes.number,
+    cost: PropTypes.number,
+    tokens: PropTypes.shape({ total: PropTypes.number }),
+  }),
+  error: PropTypes.string,
+};

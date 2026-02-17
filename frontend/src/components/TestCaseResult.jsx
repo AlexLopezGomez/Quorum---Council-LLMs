@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { JudgeCard } from './JudgeCard';
 import { AggregatorCard } from './AggregatorCard';
 import { StrategyBadge } from './StrategyBadge';
@@ -56,3 +57,24 @@ export function TestCaseResult({ testCaseState, testCase, testCaseIndex }) {
     </div>
   );
 }
+
+TestCaseResult.propTypes = {
+  testCaseState: PropTypes.shape({
+    strategy: PropTypes.string,
+    riskScore: PropTypes.number,
+    activeJudges: PropTypes.arrayOf(PropTypes.string),
+    deterministicResults: PropTypes.object,
+    deterministicStatus: PropTypes.string,
+    judges: PropTypes.object.isRequired,
+    aggregator: PropTypes.shape({
+      status: PropTypes.string.isRequired,
+      result: PropTypes.object,
+      error: PropTypes.string,
+    }).isRequired,
+  }).isRequired,
+  testCase: PropTypes.shape({
+    input: PropTypes.string.isRequired,
+    actualOutput: PropTypes.string.isRequired,
+  }),
+  testCaseIndex: PropTypes.number,
+};

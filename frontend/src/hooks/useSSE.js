@@ -1,5 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { SSE_EVENT_TYPES, SSE_TERMINAL_EVENTS } from '../lib/constants';
+import { safeJsonParse } from '../lib/utils';
 
+/**
+ * Hook for consuming Server-Sent Events from an evaluation stream.
+ *
+ * @param {string|null} url — SSE endpoint URL (null = disconnected)
+ * @returns {{ events: Array, status: string, error: string|null, reset: () => void }}
+ */
 export function useSSE(url) {
   const [events, setEvents] = useState([]);
   const [status, setStatus] = useState('disconnected');
@@ -7,7 +15,7 @@ export function useSSE(url) {
   const eventSourceRef = useRef(null);
 
   const connect = useCallback(() => {
-    if (!url) return;
+    if (!url) return undefined;
 
     setStatus('connecting');
     setError(null);
@@ -26,32 +34,14 @@ export function useSSE(url) {
       eventSource.close();
     };
 
-    const eventTypes = [
-      'connected',
-      'evaluation_start',
-      'test_case_start',
-      'judge_start',
-      'judge_complete',
-      'judge_error',
-      'aggregator_start',
-      'aggregator_complete',
-      'aggregator_error',
-      'test_case_complete',
-      'evaluation_complete',
-      'evaluation_error',
-      'replay_complete',
-      'risk_scored',
-      'strategy_selected',
-      'deterministic_start',
-      'deterministic_complete',
-    ];
-
-    eventTypes.forEach((type) => {
+    SSE_EVENT_TYPES.forEach((type) => {
       eventSource.addEventListener(type, (e) => {
-        const data = JSON.parse(e.data);
+        const data = safeJsonParse(e.data);
+        if (!data) return; // skip malformed events
+
         setEvents((prev) => [...prev, { type, data, timestamp: Date.now() }]);
 
-        if (type === 'evaluation_complete' || type === 'evaluation_error' || type === 'replay_complete') {
+        if (SSE_TERMINAL_EVENTS.has(type)) {
           setStatus('complete');
           eventSource.close();
         }
@@ -65,7 +55,9 @@ export function useSSE(url) {
 
   useEffect(() => {
     const cleanup = connect();
-    return cleanup;
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, [connect]);
 
   const reset = useCallback(() => {

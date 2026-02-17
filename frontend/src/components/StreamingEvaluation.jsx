@@ -1,7 +1,102 @@
 import { useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { TestCaseResult } from './TestCaseResult';
 import { CostBreakdown } from './CostBreakdown';
 import { PageHeader } from './PageHeader';
+import { safeFixed } from '../lib/utils';
+
+function SummaryCards({ summary }) {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
+        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Final Score</p>
+        <div className="mt-2">
+          <span className="text-2xl font-semibold text-text-primary">
+            {safeFixed(summary.avgFinalScore)}
+          </span>
+        </div>
+      </div>
+      <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
+        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Pass Rate</p>
+        <div className="mt-2">
+          <span className="text-2xl font-semibold text-text-primary">{summary.passRate}%</span>
+        </div>
+      </div>
+      <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
+        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Total Cost</p>
+        <div className="mt-2">
+          <span className="text-2xl font-semibold text-text-primary">${safeFixed(summary.totalCost, 4)}</span>
+        </div>
+      </div>
+      <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
+        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Strategy</p>
+        <div className="mt-2">
+          {summary.strategyCounts && Object.keys(summary.strategyCounts).length > 0 ? (
+            <div className="flex flex-wrap gap-x-3 gap-y-1">
+              {Object.entries(summary.strategyCounts).map(([s, c]) => (
+                <span key={s} className="text-sm font-medium text-text-primary capitalize">{s}: {c}</span>
+              ))}
+            </div>
+          ) : (
+            <span className="text-2xl font-semibold text-text-primary">-</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+SummaryCards.propTypes = {
+  summary: PropTypes.shape({
+    avgFinalScore: PropTypes.number,
+    passRate: PropTypes.number,
+    totalCost: PropTypes.number,
+    strategyCounts: PropTypes.object,
+  }).isRequired,
+};
+
+function MetricsPanel({ summary }) {
+  return (
+    <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
+      <p className="text-xs text-text-secondary font-medium uppercase tracking-wide mb-3">Per-Metric Averages</p>
+      <div className="grid grid-cols-3 gap-6">
+        <div>
+          <span className="text-xs text-text-tertiary">Faithfulness</span>
+          <p className="text-lg font-semibold text-text-primary mt-0.5">
+            {safeFixed(summary.avgFaithfulness)}
+          </p>
+        </div>
+        <div>
+          <span className="text-xs text-text-tertiary">Groundedness</span>
+          <p className="text-lg font-semibold text-text-primary mt-0.5">
+            {safeFixed(summary.avgGroundedness)}
+          </p>
+        </div>
+        <div>
+          <span className="text-xs text-text-tertiary">Relevancy</span>
+          <p className="text-lg font-semibold text-text-primary mt-0.5">
+            {safeFixed(summary.avgRelevancy)}
+          </p>
+        </div>
+      </div>
+      {summary.avgRiskScore !== null && summary.avgRiskScore !== undefined && (
+        <div className="mt-3 pt-3 border-t border-surface-border">
+          <span className="text-xs text-text-tertiary">Avg Risk Score: </span>
+          <span className="text-sm font-medium text-text-primary">{safeFixed(summary.avgRiskScore)}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+MetricsPanel.propTypes = {
+  summary: PropTypes.shape({
+    avgFaithfulness: PropTypes.number,
+    avgGroundedness: PropTypes.number,
+    avgRelevancy: PropTypes.number,
+    avgRiskScore: PropTypes.number,
+  }).isRequired,
+};
 
 export function StreamingEvaluation({ events, testCases, currentTestCase, onNavigate, jobId }) {
   const testCaseState = useMemo(() => {
@@ -102,76 +197,23 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
 
       {summary && (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-              <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Final Score</p>
-              <div className="mt-2">
-                <span className="text-2xl font-semibold text-text-primary">
-                  {summary.avgFinalScore !== null ? summary.avgFinalScore.toFixed(2) : '-'}
-                </span>
-              </div>
-            </div>
-            <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-              <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Pass Rate</p>
-              <div className="mt-2">
-                <span className="text-2xl font-semibold text-text-primary">{summary.passRate}%</span>
-              </div>
-            </div>
-            <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-              <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Total Cost</p>
-              <div className="mt-2">
-                <span className="text-2xl font-semibold text-text-primary">${summary.totalCost?.toFixed(4) || '0'}</span>
-              </div>
-            </div>
-            <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-              <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Strategy</p>
-              <div className="mt-2">
-                {summary.strategyCounts && Object.keys(summary.strategyCounts).length > 0 ? (
-                  <div className="flex flex-wrap gap-x-3 gap-y-1">
-                    {Object.entries(summary.strategyCounts).map(([s, c]) => (
-                      <span key={s} className="text-sm font-medium text-text-primary capitalize">{s}: {c}</span>
-                    ))}
-                  </div>
-                ) : (
-                  <span className="text-2xl font-semibold text-text-primary">-</span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-            <p className="text-xs text-text-secondary font-medium uppercase tracking-wide mb-3">Per-Metric Averages</p>
-            <div className="grid grid-cols-3 gap-6">
-              <div>
-                <span className="text-xs text-text-tertiary">Faithfulness</span>
-                <p className="text-lg font-semibold text-text-primary mt-0.5">
-                  {summary.avgFaithfulness !== null ? summary.avgFaithfulness.toFixed(2) : '-'}
-                </p>
-              </div>
-              <div>
-                <span className="text-xs text-text-tertiary">Groundedness</span>
-                <p className="text-lg font-semibold text-text-primary mt-0.5">
-                  {summary.avgGroundedness !== null ? summary.avgGroundedness.toFixed(2) : '-'}
-                </p>
-              </div>
-              <div>
-                <span className="text-xs text-text-tertiary">Relevancy</span>
-                <p className="text-lg font-semibold text-text-primary mt-0.5">
-                  {summary.avgRelevancy !== null ? summary.avgRelevancy.toFixed(2) : '-'}
-                </p>
-              </div>
-            </div>
-            {summary.avgRiskScore !== null && (
-              <div className="mt-3 pt-3 border-t border-surface-border">
-                <span className="text-xs text-text-tertiary">Avg Risk Score: </span>
-                <span className="text-sm font-medium text-text-primary">{summary.avgRiskScore.toFixed(2)}</span>
-              </div>
-            )}
-          </div>
-
+          <SummaryCards summary={summary} />
+          <MetricsPanel summary={summary} />
           <CostBreakdown jobId={jobId} summary={summary} />
         </>
       )}
     </div>
   );
 }
+
+StreamingEvaluation.propTypes = {
+  events: PropTypes.arrayOf(PropTypes.shape({
+    type: PropTypes.string.isRequired,
+    data: PropTypes.object,
+    timestamp: PropTypes.number,
+  })).isRequired,
+  testCases: PropTypes.array.isRequired,
+  currentTestCase: PropTypes.number.isRequired,
+  onNavigate: PropTypes.func.isRequired,
+  jobId: PropTypes.string,
+};

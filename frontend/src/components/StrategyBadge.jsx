@@ -1,26 +1,5 @@
-const STRATEGY_CONFIG = {
-  council: {
-    label: 'Council',
-    bg: 'bg-purple-50',
-    text: 'text-purple-700',
-    border: 'border-purple-200',
-    dot: 'bg-purple-500',
-  },
-  hybrid: {
-    label: 'Hybrid',
-    bg: 'bg-amber-50',
-    text: 'text-amber-700',
-    border: 'border-amber-200',
-    dot: 'bg-amber-500',
-  },
-  single: {
-    label: 'Single',
-    bg: 'bg-surface-tertiary',
-    text: 'text-text-secondary',
-    border: 'border-surface-border',
-    dot: 'bg-text-tertiary',
-  },
-};
+import PropTypes from 'prop-types';
+import { STRATEGY_STYLE } from '../lib/constants';
 
 function RiskMeter({ score }) {
   if (score === null || score === undefined) return null;
@@ -38,8 +17,12 @@ function RiskMeter({ score }) {
   );
 }
 
+RiskMeter.propTypes = {
+  score: PropTypes.number,
+};
+
 export function StrategyBadge({ strategy, riskScore }) {
-  const config = STRATEGY_CONFIG[strategy] || STRATEGY_CONFIG.council;
+  const config = STRATEGY_STYLE[strategy] || STRATEGY_STYLE.council;
 
   return (
     <div className="flex items-center gap-3">
@@ -56,3 +39,8 @@ export function StrategyBadge({ strategy, riskScore }) {
     </div>
   );
 }
+
+StrategyBadge.propTypes = {
+  strategy: PropTypes.string.isRequired,
+  riskScore: PropTypes.number,
+};

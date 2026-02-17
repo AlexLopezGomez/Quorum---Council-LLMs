@@ -1,46 +1,7 @@
-import { Brain, Sparkles, Gem } from 'lucide-react';
-
-const JUDGE_CONFIG = {
-  openai: {
-    name: 'OpenAI',
-    metric: 'Faithfulness',
-    model: 'gpt-4o-mini',
-    colorBar: 'bg-openai',
-    dot: 'bg-openai',
-    pillBg: 'bg-openai-light',
-    pillText: 'text-openai',
-    spinnerBorder: 'border-t-openai',
-    icon: Brain,
-  },
-  anthropic: {
-    name: 'Anthropic',
-    metric: 'Groundedness',
-    model: 'claude-3-haiku',
-    colorBar: 'bg-anthropic',
-    dot: 'bg-anthropic',
-    pillBg: 'bg-anthropic-light',
-    pillText: 'text-anthropic',
-    spinnerBorder: 'border-t-anthropic',
-    icon: Sparkles,
-  },
-  gemini: {
-    name: 'Gemini',
-    metric: 'Context Relevancy',
-    model: 'gemini-1.5-flash',
-    colorBar: 'bg-gemini',
-    dot: 'bg-gemini',
-    pillBg: 'bg-gemini-light',
-    pillText: 'text-gemini',
-    spinnerBorder: 'border-t-gemini',
-    icon: Gem,
-  },
-};
-
-function getScoreBarColor(score) {
-  if (score >= 0.7) return 'bg-verdict-pass';
-  if (score >= 0.4) return 'bg-verdict-warn';
-  return 'bg-verdict-fail';
-}
+import PropTypes from 'prop-types';
+import { JUDGE_CONFIG } from '../lib/constants';
+import { safeFixed } from '../lib/utils';
+import { ScoreBar } from './ui/ScoreBar';
 
 export function JudgeCard({ judge, status, result, error }) {
   const config = JUDGE_CONFIG[judge];
@@ -68,15 +29,12 @@ export function JudgeCard({ judge, status, result, error }) {
           <>
             <div className="flex items-baseline gap-1 mb-3">
               <span className="text-3xl font-semibold text-text-primary">
-                {result.score.toFixed(2)}
+                {safeFixed(result.score)}
               </span>
               <span className="text-sm text-text-secondary">/ 1.0</span>
             </div>
-            <div className="w-full h-1.5 bg-surface-tertiary rounded-full mb-4">
-              <div
-                className={`h-full ${getScoreBarColor(result.score)} rounded-full transition-all duration-500`}
-                style={{ width: `${Math.round(result.score * 100)}%` }}
-              />
+            <div className="mb-4">
+              <ScoreBar score={result.score} />
             </div>
           </>
         )}
@@ -99,7 +57,7 @@ export function JudgeCard({ judge, status, result, error }) {
             <div className="flex items-center gap-4 mt-4 pt-3 border-t border-surface-border">
               <span className="text-xs text-text-tertiary">{result.latency}ms</span>
               <span className="text-xs text-text-tertiary">{result.tokens?.total || 0} tokens</span>
-              <span className="text-xs text-text-tertiary">${result.cost?.toFixed(6) || '0'}</span>
+              <span className="text-xs text-text-tertiary">${safeFixed(result.cost, 6)}</span>
             </div>
           </>
         )}
@@ -111,3 +69,17 @@ export function JudgeCard({ judge, status, result, error }) {
     </div>
   );
 }
+
+JudgeCard.propTypes = {
+  judge: PropTypes.oneOf(['openai', 'anthropic', 'gemini']).isRequired,
+  status: PropTypes.oneOf(['idle', 'loading', 'complete', 'error']).isRequired,
+  result: PropTypes.shape({
+    score: PropTypes.number,
+    reason: PropTypes.string,
+    model: PropTypes.string,
+    latency: PropTypes.number,
+    cost: PropTypes.number,
+    tokens: PropTypes.shape({ total: PropTypes.number }),
+  }),
+  error: PropTypes.string,
+};

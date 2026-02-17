@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export function PageHeader({ title, subtitle, action }) {
   return (
     <div className="flex items-center justify-between mb-8">
@@ -9,3 +11,9 @@ export function PageHeader({ title, subtitle, action }) {
     </div>
   );
 }
+
+PageHeader.propTypes = {
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string,
+  action: PropTypes.node,
+};

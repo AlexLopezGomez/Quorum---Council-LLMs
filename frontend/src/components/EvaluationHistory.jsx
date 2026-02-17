@@ -1,69 +1,66 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Filter, Clock } from 'lucide-react';
 import { getHistory } from '../lib/api';
+import { STATUS_BADGE_STYLES } from '../lib/constants';
+import { formatDate } from '../lib/utils';
+import { useApiQuery } from '../hooks/useApiQuery';
 import { PageHeader } from './PageHeader';
 import { SkeletonRow } from './Skeleton';
+import { ErrorAlert } from './ui/ErrorAlert';
 
 function StatusBadge({ status }) {
-  const styles = {
-    complete: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-    processing: 'bg-blue-50 text-blue-700 border-blue-200',
-    failed: 'bg-red-50 text-red-700 border-red-200',
-  };
-
   return (
-    <span className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full border ${styles[status] || 'bg-surface-tertiary text-text-secondary border-surface-border'}`}>
+    <span className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full border ${STATUS_BADGE_STYLES[status] || 'bg-surface-tertiary text-text-secondary border-surface-border'}`}>
       {status}
     </span>
   );
 }
 
-export function EvaluationHistory({ onViewEvaluation }) {
-  const [evaluations, setEvaluations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [cursor, setCursor] = useState(null);
-  const [hasMore, setHasMore] = useState(false);
-  const [filters, setFilters] = useState({ strategy: '', status: '' });
+StatusBadge.propTypes = {
+  status: PropTypes.string.isRequired,
+};
 
-  const fetchHistory = async (append = false) => {
-    try {
-      setLoading(true);
+export function EvaluationHistory({ onViewEvaluation }) {
+  const [filters, setFilters] = useState({ strategy: '', status: '' });
+  const [cursor, setCursor] = useState(null);
+  const [allEvaluations, setAllEvaluations] = useState([]);
+
+  const fetchFn = useCallback(
+    (signal) => {
       const params = { limit: 20 };
-      if (append && cursor) params.cursor = cursor;
       if (filters.strategy) params.strategy = filters.strategy;
       if (filters.status) params.status = filters.status;
+      return getHistory(params, signal);
+    },
+    [filters.strategy, filters.status],
+  );
 
-      const data = await getHistory(params);
-      setEvaluations(prev => append ? [...prev, ...data.evaluations] : data.evaluations);
-      setCursor(data.nextCursor);
-      setHasMore(!!data.nextCursor);
-      setError(null);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  const { data, loading, error } = useApiQuery(fetchFn, [filters.strategy, filters.status]);
+
+  // Merge initial data with any "load more" appended evaluations
+  const evaluations = data ? [...data.evaluations, ...allEvaluations] : allEvaluations;
+  const hasMore = data?.nextCursor || false;
+
+  const handleLoadMore = async () => {
+    if (!data?.nextCursor) return;
+    try {
+      const params = { limit: 20, cursor: data.nextCursor };
+      if (filters.strategy) params.strategy = filters.strategy;
+      if (filters.status) params.status = filters.status;
+      const moreData = await getHistory(params);
+      setAllEvaluations((prev) => [...prev, ...moreData.evaluations]);
+      setCursor(moreData.nextCursor);
+    } catch {
+      // handled by UI
     }
-  };
-
-  useEffect(() => {
-    fetchHistory();
-  }, [filters]);
-
-  const formatDate = (date) => {
-    if (!date) return '-';
-    return new Date(date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
   return (
     <div>
       <PageHeader title="History" subtitle="Browse past evaluation runs" />
 
-      {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
-          {error}
-        </div>
-      )}
+      <ErrorAlert message={error?.message} className="mb-6" />
 
       <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden">
         {/* Table header with filters */}
@@ -75,7 +72,10 @@ export function EvaluationHistory({ onViewEvaluation }) {
           <div className="flex items-center gap-3">
             <select
               value={filters.strategy}
-              onChange={(e) => setFilters(f => ({ ...f, strategy: e.target.value }))}
+              onChange={(e) => {
+                setAllEvaluations([]);
+                setFilters((f) => ({ ...f, strategy: e.target.value }));
+              }}
               className="text-xs text-text-secondary bg-surface-secondary border border-surface-border rounded-lg px-3 py-1.5"
             >
               <option value="">Strategy: All</option>
@@ -86,7 +86,10 @@ export function EvaluationHistory({ onViewEvaluation }) {
             </select>
             <select
               value={filters.status}
-              onChange={(e) => setFilters(f => ({ ...f, status: e.target.value }))}
+              onChange={(e) => {
+                setAllEvaluations([]);
+                setFilters((f) => ({ ...f, status: e.target.value }));
+              }}
               className="text-xs text-text-secondary bg-surface-secondary border border-surface-border rounded-lg px-3 py-1.5"
             >
               <option value="">Status: All</option>
@@ -157,7 +160,7 @@ export function EvaluationHistory({ onViewEvaluation }) {
       {hasMore && !loading && (
         <div className="text-center py-4">
           <button
-            onClick={() => fetchHistory(true)}
+            onClick={handleLoadMore}
             className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-tertiary rounded-lg transition-colors"
           >
             Load More
@@ -167,3 +170,7 @@ export function EvaluationHistory({ onViewEvaluation }) {
     </div>
   );
 }
+
+EvaluationHistory.propTypes = {
+  onViewEvaluation: PropTypes.func,
+};

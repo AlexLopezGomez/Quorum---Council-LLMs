@@ -1,21 +1,7 @@
-function getBarColor(score) {
-  if (score >= 0.7) return 'bg-verdict-pass';
-  if (score >= 0.5) return 'bg-verdict-warn';
-  return 'bg-verdict-fail';
-}
-
-function getTextColor(score) {
-  if (score >= 0.7) return 'text-emerald-600';
-  if (score >= 0.5) return 'text-amber-600';
-  return 'text-red-600';
-}
-
-const CHECK_LABELS = {
-  entityMatch: 'Entity Match',
-  freshness: 'Freshness',
-  contextOverlap: 'Context Overlap',
-  completeness: 'Completeness',
-};
+import PropTypes from 'prop-types';
+import { CHECK_LABELS } from '../lib/constants';
+import { getScoreBarColor, getScoreTextColor, safeFixed } from '../lib/utils';
+import { ScoreBar } from './ui/ScoreBar';
 
 export function DeterministicChecksCard({ results, status }) {
   if (status === 'idle') {
@@ -55,8 +41,8 @@ export function DeterministicChecksCard({ results, status }) {
         </div>
         {results.avgScore !== undefined && (
           <div className="flex items-baseline gap-1">
-            <span className={`text-2xl font-semibold ${getTextColor(results.avgScore)}`}>
-              {results.avgScore.toFixed(2)}
+            <span className={`text-2xl font-semibold ${getScoreTextColor(results.avgScore)}`}>
+              {safeFixed(results.avgScore)}
             </span>
             <span className="text-sm text-text-secondary">/ 1.0</span>
           </div>
@@ -70,16 +56,11 @@ export function DeterministicChecksCard({ results, status }) {
             <div key={key}>
               <div className="flex justify-between text-xs mb-1">
                 <span className="text-text-secondary">{CHECK_LABELS[key]}</span>
-                <span className={`font-medium ${getTextColor(check.score)}`}>
-                  {check.score.toFixed(2)}
+                <span className={`font-medium ${getScoreTextColor(check.score)}`}>
+                  {safeFixed(check.score)}
                 </span>
               </div>
-              <div className="w-full h-1.5 bg-surface-tertiary rounded-full overflow-hidden">
-                <div
-                  className={`h-full ${getBarColor(check.score)} rounded-full transition-all duration-500`}
-                  style={{ width: `${Math.round(check.score * 100)}%` }}
-                />
-              </div>
+              <ScoreBar score={check.score} />
               <p className="text-xs text-text-tertiary mt-0.5">{check.detail}</p>
             </div>
           );
@@ -88,3 +69,11 @@ export function DeterministicChecksCard({ results, status }) {
     </div>
   );
 }
+
+DeterministicChecksCard.propTypes = {
+  results: PropTypes.shape({
+    checks: PropTypes.object,
+    avgScore: PropTypes.number,
+  }),
+  status: PropTypes.oneOf(['idle', 'loading', 'complete']).isRequired,
+};

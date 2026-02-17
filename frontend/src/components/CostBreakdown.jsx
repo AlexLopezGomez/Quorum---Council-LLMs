@@ -1,37 +1,37 @@
-import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { BarChart3 } from 'lucide-react';
 import { getCostBreakdown } from '../lib/api';
+import { STRATEGY_COLORS } from '../lib/constants';
+import { safeFixed } from '../lib/utils';
+import { useApiQuery } from '../hooks/useApiQuery';
+import { ScoreBar } from './ui/ScoreBar';
 
 function CostBar({ label, cost, maxCost, color }) {
-  const pct = maxCost > 0 ? (cost / maxCost) * 100 : 0;
+  const score = maxCost > 0 ? cost / maxCost : 0;
   return (
     <div>
       <div className="flex justify-between text-xs mb-1">
         <span className="text-text-secondary capitalize">{label}</span>
-        <span className="font-medium text-text-primary">${cost.toFixed(6)}</span>
+        <span className="font-medium text-text-primary">${safeFixed(cost, 6)}</span>
       </div>
-      <div className="w-full h-2 bg-surface-tertiary rounded-full">
-        <div
-          className={`h-full ${color} rounded-full transition-all duration-500`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
+      <ScoreBar score={score} color={color} height="h-2" />
     </div>
   );
 }
 
-export function CostBreakdown({ jobId, summary }) {
-  const [costData, setCostData] = useState(null);
-  const [loading, setLoading] = useState(false);
+CostBar.propTypes = {
+  label: PropTypes.string.isRequired,
+  cost: PropTypes.number.isRequired,
+  maxCost: PropTypes.number.isRequired,
+  color: PropTypes.string.isRequired,
+};
 
-  useEffect(() => {
-    if (!jobId) return;
-    setLoading(true);
-    getCostBreakdown(jobId)
-      .then(setCostData)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [jobId]);
+export function CostBreakdown({ jobId, summary }) {
+  const { data: costData, loading } = useApiQuery(
+    (signal) => getCostBreakdown(jobId, signal),
+    [jobId],
+    { enabled: !!jobId },
+  );
 
   if (loading) {
     return (
@@ -48,15 +48,7 @@ export function CostBreakdown({ jobId, summary }) {
 
   const strategyCounts = summary?.strategyCounts || {};
   const costByStrategy = summary?.costByStrategy || {};
-  const totalCost = summary?.totalCost || 0;
-
   const maxStrategyCost = Math.max(...Object.values(costByStrategy), 0.000001);
-
-  const strategyColors = {
-    council: 'bg-strategy-council',
-    hybrid: 'bg-strategy-hybrid',
-    single: 'bg-strategy-single',
-  };
 
   return (
     <div className="bg-surface rounded-xl border border-surface-border shadow-sm">
@@ -77,7 +69,7 @@ export function CostBreakdown({ jobId, summary }) {
                 label={`${strategy} (${strategyCounts[strategy] || 0} cases)`}
                 cost={cost}
                 maxCost={maxStrategyCost}
-                color={strategyColors[strategy] || 'bg-strategy-single'}
+                color={STRATEGY_COLORS[strategy] || 'bg-strategy-single'}
               />
             ))}
           </div>
@@ -103,3 +95,12 @@ export function CostBreakdown({ jobId, summary }) {
     </div>
   );
 }
+
+CostBreakdown.propTypes = {
+  jobId: PropTypes.string,
+  summary: PropTypes.shape({
+    strategyCounts: PropTypes.object,
+    costByStrategy: PropTypes.object,
+    totalCost: PropTypes.number,
+  }),
+};

@@ -7,7 +7,7 @@ const API_BASE = '/api';
  * and throws a structured ApiError on non-2xx responses.
  */
 async function fetchJson(url, options = {}, signal) {
-  const response = await fetch(url, { ...options, signal });
+  const response = await fetch(url, { ...options, signal, credentials: 'include' });
 
   if (!response.ok) {
     let data = null;
@@ -106,3 +106,28 @@ export async function deleteWebhook(id, signal) {
 export async function testWebhook(id, signal) {
   return fetchJson(`${API_BASE}/webhooks/${id}/test`, { method: 'POST' }, signal);
 }
+
+// ─── Auth ───────────────────────────────────────────────────
+
+export const authApi = {
+  register({ email, username, password }) {
+    return fetchJson(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, username, password }),
+    });
+  },
+  login({ email, password }) {
+    return fetchJson(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+  },
+  logout() {
+    return fetchJson(`${API_BASE}/auth/logout`, { method: 'POST' });
+  },
+  me(signal) {
+    return fetchJson(`${API_BASE}/auth/me`, {}, signal);
+  },
+};

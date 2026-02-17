@@ -88,30 +88,36 @@ const summarySchema = new mongoose.Schema(
   { _id: false }
 );
 
-const evaluationSchema = new mongoose.Schema({
-  jobId: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true,
+const evaluationSchema = new mongoose.Schema(
+  {
+    jobId: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+    },
+    status: {
+      type: String,
+      enum: ['processing', 'complete', 'failed'],
+      default: 'processing',
+    },
+    testCases: [testCaseSchema],
+    results: [resultSchema],
+    events: [eventSchema],
+    summary: summarySchema,
+    config: mongoose.Schema.Types.Mixed,
+    completedAt: Date,
   },
-  status: {
-    type: String,
-    enum: ['processing', 'complete', 'failed'],
-    default: 'processing',
-  },
-  testCases: [testCaseSchema],
-  results: [resultSchema],
-  events: [eventSchema],
-  summary: summarySchema,
-  config: mongoose.Schema.Types.Mixed,
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  completedAt: Date,
-});
+  { timestamps: true }
+);
 
+evaluationSchema.index({ userId: 1, createdAt: -1 });
 evaluationSchema.index({ createdAt: -1 });
 evaluationSchema.index({ status: 1 });
 evaluationSchema.index({ status: 1, completedAt: -1 });

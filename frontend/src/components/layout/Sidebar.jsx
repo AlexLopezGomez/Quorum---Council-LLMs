@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
 import { NAV_ITEMS } from '../../lib/constants';
 import { StatusIndicator } from '../ui/StatusIndicator';
 import { useEvaluation } from '../../context/EvaluationContext';
+import { useAuth } from '../../context/AuthContext';
 
 /**
  * App sidebar with navigation, SSE status, and branding.
@@ -15,6 +18,8 @@ export function Sidebar() {
         navigateTo,
         resetEvaluation,
     } = useEvaluation();
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
     const activeNav = view === 'evaluating' ? 'upload' : view;
 
@@ -57,6 +62,27 @@ export function Sidebar() {
                     >
                         New Evaluation
                     </button>
+                </div>
+            )}
+
+            {user && (
+                <div className="px-3 pb-4 border-t border-surface-border pt-4">
+                    <div className="flex items-center gap-3 px-2">
+                        <div className="w-8 h-8 rounded-lg bg-surface-tertiary flex items-center justify-center text-sm font-medium text-text-primary shrink-0">
+                            {user.username?.[0]?.toUpperCase() ?? '?'}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-text-primary truncate">{user.username}</p>
+                            <p className="text-xs text-text-tertiary truncate">{user.email}</p>
+                        </div>
+                        <button
+                            onClick={async () => { await logout(); navigate('/auth'); }}
+                            className="p-1.5 rounded-lg text-text-tertiary hover:bg-surface-tertiary hover:text-text-primary transition-colors shrink-0"
+                            title="Log out"
+                        >
+                            <LogOut size={16} />
+                        </button>
+                    </div>
                 </div>
             )}
         </aside>

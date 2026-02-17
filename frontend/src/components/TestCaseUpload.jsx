@@ -188,7 +188,7 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
               <button
                 onClick={handleSubmit}
                 disabled={isLoading}
-                className="w-full px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 bg-accent text-accent-foreground text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? 'Starting Evaluation...' : <><Play size={16} className="inline -mt-0.5 mr-2" />Run Evaluation ({strategy})</>}
               </button>

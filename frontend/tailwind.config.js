@@ -44,6 +44,7 @@ export default {
         accent: {
           DEFAULT: '#111827',
           hover: '#1F2937',
+          foreground: '#FFFFFF',
         },
       },
       animation: {

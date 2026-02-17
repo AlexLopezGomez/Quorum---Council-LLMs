@@ -65,6 +65,7 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
 
     const evaluation = new Evaluation({
       jobId,
+      userId: req.user._id,
       status: 'processing',
       testCases,
       results: [],

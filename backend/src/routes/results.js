@@ -27,7 +27,7 @@ router.get('/:jobId', async (req, res) => {
   const { jobId } = req.params;
 
   try {
-    const evaluation = await Evaluation.findOne({ jobId });
+    const evaluation = await Evaluation.findOne({ jobId, userId: req.user._id });
 
     if (!evaluation) {
       return res.status(404).json({

@@ -45,7 +45,7 @@ function WebhookCard({ webhook, onToggle, onDelete, onTest }) {
           onClick={() => onToggle(webhook._id, !webhook.active)}
           className={`relative w-9 h-5 rounded-full transition-colors ${webhook.active ? 'bg-verdict-pass' : 'bg-surface-tertiary'}`}
         >
-          <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${webhook.active ? 'left-4' : 'left-0.5'}`} />
+          <span className={`absolute top-0.5 w-4 h-4 bg-surface rounded-full shadow transition-transform ${webhook.active ? 'left-4' : 'left-0.5'}`} />
         </button>
       </div>
 
@@ -181,7 +181,7 @@ function AddWebhookForm({ onSubmit, onCancel }) {
               <button
                 key={opt.value} type="button" onClick={() => toggleEvent(opt.value)}
                 className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${form.events.includes(opt.value)
-                  ? 'bg-accent text-white border-accent'
+                  ? 'bg-accent text-accent-foreground border-accent'
                   : 'bg-surface text-text-secondary border-surface-border hover:bg-surface-secondary'
                   }`}
               >
@@ -211,7 +211,7 @@ function AddWebhookForm({ onSubmit, onCancel }) {
         <ErrorAlert message={error} />
         <button
           type="submit" disabled={submitting}
-          className="w-full px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50"
+          className="w-full px-4 py-2 bg-accent text-accent-foreground text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50"
         >
           {submitting ? 'Creating...' : 'Create Webhook'}
         </button>
@@ -268,7 +268,7 @@ export function WebhookManager() {
           !showForm && (
             <button
               onClick={() => setShowForm(true)}
-              className="px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-accent text-accent-foreground text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors flex items-center gap-2"
             >
               <Plus size={16} />
               Add Webhook

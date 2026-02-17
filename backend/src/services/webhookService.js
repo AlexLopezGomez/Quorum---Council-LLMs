@@ -92,7 +92,7 @@ async function checkCostSpike(webhook, evaluation) {
   if (!webhook.events.includes('cost_spike') || !evaluation.summary?.totalCost) return false;
 
   const recentEvals = await Evaluation.find(
-    { status: 'complete', _id: { $ne: evaluation._id } },
+    { status: 'complete', _id: { $ne: evaluation._id }, userId: evaluation.userId },
     { 'summary.totalCost': 1 }
   ).sort({ completedAt: -1 }).limit(10).lean();
 
@@ -143,7 +143,7 @@ async function sendWebhook(webhook, payload) {
 }
 
 export async function fireWebhooks(evaluation) {
-  const webhooks = await Webhook.find({ active: true }).lean();
+  const webhooks = await Webhook.find({ active: true, userId: evaluation.userId }).lean();
   if (webhooks.length === 0) return;
 
   for (const webhook of webhooks) {

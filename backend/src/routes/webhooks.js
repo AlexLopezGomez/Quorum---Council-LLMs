@@ -50,7 +50,7 @@ const updateWebhookSchema = z.object({
  */
 router.post('/', createValidationMiddleware(createWebhookSchema), async (req, res) => {
   try {
-    const webhook = new Webhook(req.validatedBody);
+    const webhook = new Webhook({ ...req.validatedBody, userId: req.user._id });
     await webhook.save();
     res.status(201).json(webhook);
   } catch (err) {
@@ -70,7 +70,7 @@ router.post('/', createValidationMiddleware(createWebhookSchema), async (req, re
  */
 router.get('/', async (req, res) => {
   try {
-    const webhooks = await Webhook.find().sort({ createdAt: -1 });
+    const webhooks = await Webhook.find({ userId: req.user._id }).sort({ createdAt: -1 });
     res.json({ webhooks });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch webhooks' });
@@ -101,8 +101,8 @@ router.get('/', async (req, res) => {
  */
 router.patch('/:id', createValidationMiddleware(updateWebhookSchema), async (req, res) => {
   try {
-    const webhook = await Webhook.findByIdAndUpdate(
-      req.params.id,
+    const webhook = await Webhook.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user._id },
       { $set: req.validatedBody },
       { new: true, runValidators: true }
     );
@@ -132,7 +132,7 @@ router.patch('/:id', createValidationMiddleware(updateWebhookSchema), async (req
  */
 router.delete('/:id', async (req, res) => {
   try {
-    const webhook = await Webhook.findByIdAndDelete(req.params.id);
+    const webhook = await Webhook.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
     if (!webhook) return res.status(404).json({ error: 'Webhook not found' });
     res.json({ message: 'Webhook deleted' });
   } catch (err) {
@@ -159,7 +159,7 @@ router.delete('/:id', async (req, res) => {
  */
 router.post('/:id/test', async (req, res) => {
   try {
-    const webhook = await Webhook.findById(req.params.id);
+    const webhook = await Webhook.findOne({ _id: req.params.id, userId: req.user._id });
     if (!webhook) return res.status(404).json({ error: 'Webhook not found' });
 
     const samplePayload = {

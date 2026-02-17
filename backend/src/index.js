@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import mongoose from 'mongoose';
 import evaluateRouter from './routes/evaluate.js';
@@ -9,10 +10,12 @@ import resultsRouter from './routes/results.js';
 import historyRouter from './routes/history.js';
 import webhooksRouter from './routes/webhooks.js';
 import ingestRouter from './routes/ingest.js';
+import authRouter from './routes/auth.js';
 import swaggerUi from 'swagger-ui-express';
 import { sseManager } from './utils/sse.js';
 import { Evaluation } from './models/Evaluation.js';
 import { spec } from './utils/openapi.js';
+import { requireAuth } from './middleware/requireAuth.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -34,15 +37,18 @@ app.use(
 );
 
 app.use(express.json({ limit: '5mb' }));
+app.use(cookieParser());
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(spec, { customSiteTitle: 'RAGScope API' }));
 app.use('/api', limiter);
 
-app.use('/api/evaluate', evaluateRouter);
+app.use('/api/auth', authRouter);
 app.use('/api/stream', streamRouter);
-app.use('/api/results', resultsRouter);
-app.use('/api', historyRouter);
-app.use('/api/webhooks', webhooksRouter);
 app.use('/api/ingest', ingestRouter);
+
+app.use('/api/evaluate', requireAuth, evaluateRouter);
+app.use('/api', requireAuth, historyRouter);
+app.use('/api/webhooks', requireAuth, webhooksRouter);
+app.use('/api/results', requireAuth, resultsRouter);
 
 app.get('/health', (req, res) => {
   res.json({

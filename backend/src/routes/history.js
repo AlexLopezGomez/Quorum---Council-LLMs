@@ -35,7 +35,7 @@ router.get('/history', async (req, res) => {
     const limit = Math.min(parseInt(req.query.limit) || 20, 50);
     const { cursor, strategy, verdict, status } = req.query;
 
-    const filter = {};
+    const filter = { userId: req.user._id };
     if (cursor) {
       filter._id = { $lt: cursor };
     }
@@ -98,7 +98,7 @@ router.get('/history', async (req, res) => {
  */
 router.get('/history/:jobId/cost', async (req, res) => {
   try {
-    const evaluation = await Evaluation.findOne({ jobId: req.params.jobId })
+    const evaluation = await Evaluation.findOne({ jobId: req.params.jobId, userId: req.user._id })
       .select('results summary config')
       .lean();
 
@@ -153,8 +153,8 @@ router.get('/history/:jobId/cost', async (req, res) => {
 router.get('/stats', async (req, res) => {
   try {
     const [totalEvals, recentEvals] = await Promise.all([
-      Evaluation.countDocuments(),
-      Evaluation.find({ status: 'complete' })
+      Evaluation.countDocuments({ userId: req.user._id }),
+      Evaluation.find({ status: 'complete', userId: req.user._id })
         .sort({ _id: -1 })
         .limit(100)
         .select('summary config results')

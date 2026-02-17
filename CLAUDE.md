@@ -2,6 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Core Directive: Enforce .agents Best Practices
+
+For every single task, iteration, architectural decision, or code generation request, you **MUST** adhere to the following workflow:
+
+1. **Consult the Agents:** Before writing any code or proposing a design, you must read and load the context of the `.agents` files installed in this project.
+2. **Strict Compliance:** These `.agents` contain the absolute source of truth for our best practices regarding code quality, design patterns, architecture, and safety. You must strictly enforce these rules in your output.
+3. **No Shortcuts:** Do not default to generic AI coding patterns (like "vibecoding" or monolithic components) if they violate the standards defined in the `.agents`.
+4. **Verification:** In your responses or commit messages, briefly acknowledge which specific pattern or rule from the `.agents` you applied to ensure the solution is scalable and safe.
+
 ## Commands
 
 ```bash

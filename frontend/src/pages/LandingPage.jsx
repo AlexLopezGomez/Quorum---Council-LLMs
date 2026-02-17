@@ -51,7 +51,7 @@ export default function LandingPage() {
                         {isAuthenticated ? (
                             <button
                                 onClick={() => navigate('/app')}
-                                className="px-4 py-2 bg-accent text-accent-foreground text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors"
+                                className="px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors"
                             >
                                 Go to Dashboard
                             </button>
@@ -65,7 +65,7 @@ export default function LandingPage() {
                                 </button>
                                 <button
                                     onClick={() => navigate('/auth')}
-                                    className="px-4 py-2 bg-accent text-accent-foreground text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors"
+                                    className="px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors"
                                 >
                                     Get Started
                                 </button>
@@ -90,7 +90,7 @@ export default function LandingPage() {
                         <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-text-secondary py-1">Pricing</a>
                         <button
                             onClick={() => navigate(isAuthenticated ? '/app' : '/auth')}
-                            className="w-full mt-2 px-4 py-2 bg-accent text-accent-foreground text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors"
+                            className="w-full mt-2 px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors"
                         >
                             {isAuthenticated ? 'Go to Dashboard' : 'Get Started'}
                         </button>
@@ -118,7 +118,7 @@ export default function LandingPage() {
                     <div className="flex items-center justify-center gap-4 mt-8">
                         <button
                             onClick={() => navigate('/auth')}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-accent-foreground text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors"
                         >
                             Get Started Free
                             <ArrowRight size={16} />
@@ -292,7 +292,7 @@ export default function LandingPage() {
                     <p className="text-text-secondary mt-3 text-sm">Create your free account and start running evaluations in under a minute.</p>
                     <button
                         onClick={() => navigate('/auth')}
-                        className="inline-flex items-center gap-2 mt-8 px-8 py-3 bg-accent text-accent-foreground text-sm font-semibold rounded-lg hover:bg-accent-hover transition-colors"
+                        className="inline-flex items-center gap-2 mt-8 px-8 py-3 bg-accent text-white text-sm font-semibold rounded-lg hover:bg-accent-hover transition-colors"
                     >
                         Get Started Free
                         <ArrowRight size={16} />
@@ -423,7 +423,7 @@ function PricingCard({ tier, price, period, description, features, cta, featured
             <button
                 onClick={onCta}
                 className={`w-full py-2.5 text-sm font-medium rounded-lg transition-colors ${featured
-                    ? 'bg-accent text-accent-foreground hover:bg-accent-hover'
+                    ? 'bg-accent text-white hover:bg-accent-hover'
                     : 'bg-surface border border-surface-border text-text-primary hover:bg-surface-secondary'
                     }`}
             >

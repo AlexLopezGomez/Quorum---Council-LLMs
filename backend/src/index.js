@@ -42,7 +42,7 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(spec, { customSiteTitle: '
 app.use('/api', limiter);
 
 app.use('/api/auth', authRouter);
-app.use('/api/stream', streamRouter);
+app.use('/api/stream', requireAuth, streamRouter);
 app.use('/api/ingest', ingestRouter);
 
 app.use('/api/evaluate', requireAuth, evaluateRouter);

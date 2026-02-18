@@ -1,11 +1,11 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { CONTEXT_RELEVANCY_PROMPT, formatPrompt } from '../../utils/prompts.js';
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 
-const MODEL = 'gemini-1.5-flash';
-const INPUT_COST_PER_1K = 0.000075;
-const OUTPUT_COST_PER_1K = 0.0003;
+const MODEL = 'gemini-2.5-flash';
+const INPUT_COST_PER_1K = 0.0001;
+const OUTPUT_COST_PER_1K = 0.0004;
 
 export async function evaluateContextRelevancy(testCase) {
   const startTime = Date.now();
@@ -16,24 +16,18 @@ export async function evaluateContextRelevancy(testCase) {
     retrievalContext: testCase.retrievalContext,
   });
 
-  const model = genAI.getGenerativeModel({
+  const response = await ai.models.generateContent({
     model: MODEL,
-    generationConfig: {
+    contents: prompt,
+    config: {
+      systemInstruction: 'You are an expert RAG evaluator. Always respond with valid JSON only.',
       temperature: 0,
       responseMimeType: 'application/json',
     },
   });
 
-  const result = await model.generateContent([
-    {
-      role: 'user',
-      parts: [{ text: 'You are an expert RAG evaluator. Always respond with valid JSON only.\n\n' + prompt }],
-    },
-  ]);
-
   const latency = Date.now() - startTime;
-  const response = result.response;
-  const content = response.text();
+  const content = response.text;
   const usageMetadata = response.usageMetadata;
 
   const inputTokens = usageMetadata?.promptTokenCount || 0;

@@ -1,0 +1,12 @@
+services:
+  backend:
+    volumes:
+      - ./backend/src:/app/src
+    command: node --watch src/index.js
+    environment:
+      - NODE_ENV=development
+
+  frontend:
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public

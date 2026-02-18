@@ -7,7 +7,7 @@ import { Sidebar } from './components/layout/Sidebar';
 import { TestCaseUpload } from './components/TestCaseUpload';
 import { StreamingEvaluation } from './components/StreamingEvaluation';
 import { EvaluationHistory } from './components/EvaluationHistory';
-import { WebhookManager } from './components/WebhookManager';
+import { WebhookManager } from './components/webhooks/WebhookManager';
 import { EvaluationDetail } from './components/EvaluationDetail';
 import { ErrorAlert } from './components/ui/ErrorAlert';
 

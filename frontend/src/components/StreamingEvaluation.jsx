@@ -3,57 +3,26 @@ import PropTypes from 'prop-types';
 import { TestCaseResult } from './TestCaseResult';
 import { CostBreakdown } from './CostBreakdown';
 import { PageHeader } from './PageHeader';
-import { safeFixed } from '../lib/utils';
+import { SummaryGrid } from './ui/SummaryGrid';
 
-function SummaryCards({ summary }) {
+function StrategyCountCard({ strategyCounts }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Final Score</p>
-        <div className="mt-2">
-          <span className="text-2xl font-semibold text-text-primary">
-            {safeFixed(summary.avgFinalScore)}
-          </span>
-        </div>
-      </div>
-      <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Pass Rate</p>
-        <div className="mt-2">
-          <span className="text-2xl font-semibold text-text-primary">{summary.passRate}%</span>
-        </div>
-      </div>
-      <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Total Cost</p>
-        <div className="mt-2">
-          <span className="text-2xl font-semibold text-text-primary">${safeFixed(summary.totalCost, 4)}</span>
-        </div>
-      </div>
-      <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Strategy</p>
-        <div className="mt-2">
-          {summary.strategyCounts && Object.keys(summary.strategyCounts).length > 0 ? (
-            <div className="flex flex-wrap gap-x-3 gap-y-1">
-              {Object.entries(summary.strategyCounts).map(([s, c]) => (
-                <span key={s} className="text-sm font-medium text-text-primary capitalize">{s}: {c}</span>
-              ))}
-            </div>
-          ) : (
-            <span className="text-2xl font-semibold text-text-primary">-</span>
-          )}
-        </div>
+    <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
+      <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Strategy</p>
+      <div className="mt-2">
+        {strategyCounts && Object.keys(strategyCounts).length > 0 ? (
+          <div className="flex flex-wrap gap-x-3 gap-y-1">
+            {Object.entries(strategyCounts).map(([s, c]) => (
+              <span key={s} className="text-sm font-medium text-text-primary capitalize">{s}: {c}</span>
+            ))}
+          </div>
+        ) : (
+          <span className="text-2xl font-semibold text-text-primary">-</span>
+        )}
       </div>
     </div>
   );
 }
-
-SummaryCards.propTypes = {
-  summary: PropTypes.shape({
-    avgFinalScore: PropTypes.number,
-    passRate: PropTypes.number,
-    totalCost: PropTypes.number,
-    strategyCounts: PropTypes.object,
-  }).isRequired,
-};
 
 function MetricsPanel({ summary }) {
   return (
@@ -197,7 +166,7 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
 
       {summary && (
         <>
-          <SummaryCards summary={summary} />
+          <SummaryGrid summary={summary} extraCard={<StrategyCountCard strategyCounts={summary.strategyCounts} />} />
           <MetricsPanel summary={summary} />
           <CostBreakdown jobId={jobId} summary={summary} />
         </>

@@ -6,6 +6,7 @@ import { safeFixed } from '../lib/utils';
 import { STATUS_BADGE_STYLES } from '../lib/constants';
 import { formatDate } from '../lib/utils';
 import { useApiQuery } from '../hooks/useApiQuery';
+import { sileo } from 'sileo';
 import { PageHeader } from './PageHeader';
 import { SkeletonRow } from './Skeleton';
 import { ErrorAlert } from './ui/ErrorAlert';
@@ -54,7 +55,7 @@ export function EvaluationHistory() {
       const moreData = await getHistory(params);
       setAllEvaluations((prev) => [...prev, ...moreData.evaluations]);
     } catch {
-      // handled by UI
+      sileo.error({ title: 'Failed to load more evaluations' });
     }
   };
 
@@ -119,7 +120,7 @@ export function EvaluationHistory() {
                 <tr
                   key={eval_.jobId}
                   onClick={() => navigate(`/app/history/${eval_.jobId}`)}
-                  className="hover:bg-surface-secondary transition-colors cursor-pointer"
+                  className="cv-auto hover:bg-surface-secondary transition-colors cursor-pointer"
                 >
                   <td className="px-6 py-4 text-sm font-mono text-text-primary">{eval_.jobId}</td>
                   <td className="px-6 py-4"><StatusBadge status={eval_.status} /></td>

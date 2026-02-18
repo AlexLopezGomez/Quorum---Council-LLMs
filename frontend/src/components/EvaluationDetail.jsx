@@ -1,14 +1,13 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getResults } from '../lib/api';
-import { safeFixed } from '../lib/utils';
 import { useApiQuery } from '../hooks/useApiQuery';
 import { PageHeader } from './PageHeader';
 import { TestCaseResult } from './TestCaseResult';
 import { CostBreakdown } from './CostBreakdown';
 import { ErrorAlert } from './ui/ErrorAlert';
+import { SummaryGrid } from './ui/SummaryGrid';
 import { SkeletonCard } from './Skeleton';
-import PropTypes from 'prop-types';
 
 function toTestCaseState(result) {
   const judges = {};
@@ -33,53 +32,27 @@ function toTestCaseState(result) {
   };
 }
 
-function SummaryGrid({ summary, testCaseCount }) {
+function TestCaseCountCard({ count }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Final Score</p>
-        <div className="mt-2">
-          <span className="text-2xl font-semibold text-text-primary">{safeFixed(summary?.avgFinalScore)}</span>
-        </div>
-      </div>
-      <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Pass Rate</p>
-        <div className="mt-2">
-          <span className="text-2xl font-semibold text-text-primary">
-            {summary?.passRate !== undefined ? `${summary.passRate}%` : '-'}
-          </span>
-        </div>
-      </div>
-      <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Total Cost</p>
-        <div className="mt-2">
-          <span className="text-2xl font-semibold text-text-primary">${safeFixed(summary?.totalCost, 4)}</span>
-        </div>
-      </div>
-      <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Test Cases</p>
-        <div className="mt-2">
-          <span className="text-2xl font-semibold text-text-primary">{testCaseCount ?? '-'}</span>
-        </div>
+    <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
+      <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Test Cases</p>
+      <div className="mt-2">
+        <span className="text-2xl font-semibold text-text-primary">{count ?? '-'}</span>
       </div>
     </div>
   );
 }
-
-SummaryGrid.propTypes = {
-  summary: PropTypes.object,
-  testCaseCount: PropTypes.number,
-};
 
 export function EvaluationDetail() {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { data, loading, error } = useApiQuery(
+  const fetchFn = useCallback(
     (signal) => getResults(jobId, signal),
     [jobId],
   );
+  const { data, loading, error } = useApiQuery(fetchFn, [jobId]);
 
   const backAction = (
     <button
@@ -152,7 +125,7 @@ export function EvaluationDetail() {
         action={navAction}
       />
 
-      <SummaryGrid summary={summary} testCaseCount={total} />
+      <SummaryGrid summary={summary} extraCard={<TestCaseCountCard count={total} />} />
 
       {testCaseState && (
         <TestCaseResult

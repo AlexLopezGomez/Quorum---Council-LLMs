@@ -7,3 +7,10 @@
     @apply antialiased;
   }
 }
+
+@layer utilities {
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 48px;
+  }
+}

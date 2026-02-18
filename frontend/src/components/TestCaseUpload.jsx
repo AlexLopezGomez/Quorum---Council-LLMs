@@ -175,7 +175,7 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
                   </thead>
                   <tbody className="divide-y divide-surface-border">
                     {testCases.map((tc, i) => (
-                      <tr key={i} className="hover:bg-surface-secondary transition-colors">
+                      <tr key={`${tc.input.slice(0, 30)}-${i}`} className="hover:bg-surface-secondary transition-colors">
                         <td className="px-6 py-4 text-sm text-text-tertiary">{i + 1}</td>
                         <td className="px-6 py-4 text-sm text-text-primary max-w-xs truncate">{tc.input}</td>
                         <td className="px-6 py-4 text-sm text-text-secondary max-w-xs truncate">{tc.actualOutput}</td>

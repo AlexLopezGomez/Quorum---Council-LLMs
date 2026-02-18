@@ -2,9 +2,9 @@ import { LayoutDashboard, History, Bell, Brain, Sparkles, Gem } from 'lucide-rea
 
 // ─── Navigation ──────────────────────────────────────────────
 export const NAV_ITEMS = [
-    { key: 'upload', label: 'Evaluate', icon: LayoutDashboard },
-    { key: 'history', label: 'History', icon: History },
-    { key: 'webhooks', label: 'Webhooks', icon: Bell },
+    { key: 'upload',   label: 'Evaluate', icon: LayoutDashboard, path: '/app' },
+    { key: 'history',  label: 'History',  icon: History,         path: '/app/history' },
+    { key: 'webhooks', label: 'Webhooks', icon: Bell,            path: '/app/webhooks' },
 ];
 
 // ─── Evaluation Strategies ───────────────────────────────────

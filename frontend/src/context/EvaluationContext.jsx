@@ -4,7 +4,6 @@ import { useSSE } from '../hooks/useSSE';
 
 // ─── State shape ─────────────────────────────────────────────
 const initialState = {
-    view: 'upload',        // 'upload' | 'evaluating' | 'history' | 'webhooks'
     testCases: [],
     jobId: null,
     isLoading: false,
@@ -24,12 +23,9 @@ function evaluationReducer(state, action) {
                 jobId: action.payload.jobId,
                 testCases: action.payload.testCases,
                 currentTestCase: 0,
-                view: 'evaluating',
             };
         case 'EVALUATION_ERROR':
             return { ...state, isLoading: false, error: action.payload };
-        case 'SET_VIEW':
-            return { ...state, view: action.payload };
         case 'SET_TEST_CASE':
             return { ...state, currentTestCase: action.payload };
         case 'RESET':
@@ -61,6 +57,7 @@ export function EvaluationProvider({ children }) {
                 type: 'EVALUATION_SUCCESS',
                 payload: { jobId: response.jobId, testCases: cases },
             });
+            return response.jobId;
         } catch (err) {
             dispatch({ type: 'EVALUATION_ERROR', payload: err.message });
         }
@@ -70,16 +67,6 @@ export function EvaluationProvider({ children }) {
         resetSSE();
         dispatch({ type: 'RESET' });
     }, [resetSSE]);
-
-    const navigateTo = useCallback(
-        (key) => {
-            if (key === 'upload') {
-                resetEvaluation();
-            }
-            dispatch({ type: 'SET_VIEW', payload: key });
-        },
-        [resetEvaluation],
-    );
 
     const setCurrentTestCase = useCallback((index) => {
         dispatch({ type: 'SET_TEST_CASE', payload: index });
@@ -94,7 +81,6 @@ export function EvaluationProvider({ children }) {
         // Actions
         submitEvaluation,
         resetEvaluation,
-        navigateTo,
         setCurrentTestCase,
     };
 

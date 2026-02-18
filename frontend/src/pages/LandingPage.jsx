@@ -28,7 +28,7 @@ export default function LandingPage() {
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 10);
-        window.addEventListener('scroll', onScroll);
+        window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
@@ -301,54 +301,65 @@ export default function LandingPage() {
             </section>
 
             {/* ─── Footer ─────────────────────────────────────────── */}
-            <footer className="landing-footer">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="footer-grid">
-                        <div>
-                            <span className="text-lg font-semibold text-text-primary">RAGScope</span>
-                            <p className="text-sm text-text-secondary mt-3 leading-relaxed max-w-xs">
-                                The intelligent RAG evaluation platform powered by a council of AI judges and adaptive cost routing.
-                            </p>
-                        </div>
-
-                        <div className="footer-section">
-                            <h4>Product</h4>
-                            <a href="#features">Features</a>
-                            <a href="#pricing">Pricing</a>
-                            <a href="#how-it-works">How it works</a>
-                            <a href="/auth">Get started</a>
-                        </div>
-
-                        <div className="footer-section">
-                            <h4>Resources</h4>
-                            <a href="#">Documentation</a>
-                            <a href="#">API Reference</a>
-                            <a href="#">SDK</a>
-                            <a href="#">Changelog</a>
-                        </div>
-
-                        <div className="footer-section">
-                            <h4>Company</h4>
-                            <a href="#">About</a>
-                            <a href="#">Blog</a>
-                            <a href="#">Careers</a>
-                            <a href="#">Contact</a>
-                        </div>
-                    </div>
-
-                    <div className="footer-bottom">
-                        <span>&copy; 2026 RAGScope. All rights reserved.</span>
-                        <div className="flex items-center gap-6">
-                            <a href="#" className="text-text-tertiary hover:text-text-secondary transition-colors text-sm">Privacy</a>
-                            <a href="#" className="text-text-tertiary hover:text-text-secondary transition-colors text-sm">Terms</a>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <LandingFooter />
         </div>
     );
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   Footer
+   ═══════════════════════════════════════════════════════════════ */
+
+const FOOTER_LINK_CLASS = 'text-text-tertiary hover:text-text-secondary transition-colors cursor-pointer text-sm';
+
+function LandingFooter() {
+    return (
+        <footer className="landing-footer">
+            <div className="max-w-6xl mx-auto px-6">
+                <div className="footer-grid">
+                    <div>
+                        <span className="text-lg font-semibold text-text-primary">RAGScope</span>
+                        <p className="text-sm text-text-secondary mt-3 leading-relaxed max-w-xs">
+                            The intelligent RAG evaluation platform powered by a council of AI judges and adaptive cost routing.
+                        </p>
+                    </div>
+
+                    <div className="footer-section">
+                        <h4>Product</h4>
+                        <a href="#features">Features</a>
+                        <a href="#pricing">Pricing</a>
+                        <a href="#how-it-works">How it works</a>
+                        <a href="/auth">Get started</a>
+                    </div>
+
+                    <div className="footer-section">
+                        <h4>Resources</h4>
+                        <span className={FOOTER_LINK_CLASS}>Documentation</span>
+                        <span className={FOOTER_LINK_CLASS}>API Reference</span>
+                        <span className={FOOTER_LINK_CLASS}>SDK</span>
+                        <span className={FOOTER_LINK_CLASS}>Changelog</span>
+                    </div>
+
+                    <div className="footer-section">
+                        <h4>Company</h4>
+                        <span className={FOOTER_LINK_CLASS}>About</span>
+                        <span className={FOOTER_LINK_CLASS}>Blog</span>
+                        <span className={FOOTER_LINK_CLASS}>Careers</span>
+                        <span className={FOOTER_LINK_CLASS}>Contact</span>
+                    </div>
+                </div>
+
+                <div className="footer-bottom">
+                    <span>&copy; 2026 RAGScope. All rights reserved.</span>
+                    <div className="flex items-center gap-6">
+                        <span className={FOOTER_LINK_CLASS}>Privacy</span>
+                        <span className={FOOTER_LINK_CLASS}>Terms</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    );
+}
 
 /* ═══════════════════════════════════════════════════════════════
    Sub-components (co-located for simplicity)
@@ -412,8 +423,8 @@ function PricingCard({ tier, price, period, description, features, cta, featured
             <p className="text-sm text-text-secondary mb-6">{description}</p>
 
             <ul className="pricing-feature-list mb-8 flex-1">
-                {features.map((f, i) => (
-                    <li key={i}>
+                {features.map((f) => (
+                    <li key={f}>
                         <CheckCircle2 className="check" size={16} />
                         {f}
                     </li>
@@ -443,8 +454,8 @@ function DashboardMockup() {
                 { label: 'Avg. Score', value: '0.84', change: '+1.1%' },
                 { label: 'Total Cost', value: '$2.34', change: '-12%' },
                 { label: 'Pass Rate', value: '93%', change: '+2.4%' },
-            ].map((stat, i) => (
-                <div key={i} className="bg-surface rounded-lg border border-surface-border p-4">
+            ].map((stat) => (
+                <div key={stat.label} className="bg-surface rounded-lg border border-surface-border p-4">
                     <p className="text-[10px] text-text-tertiary font-medium uppercase tracking-wide">{stat.label}</p>
                     <div className="flex items-baseline gap-1.5 mt-1.5">
                         <span className="text-lg font-semibold text-text-primary">{stat.value}</span>
@@ -459,8 +470,8 @@ function DashboardMockup() {
                     { judge: 'OpenAI', model: 'gpt-4o-mini', score: '0.87', color: '#10A37F', width: '87%' },
                     { judge: 'Anthropic', model: 'claude-3-haiku', score: '0.91', color: '#D97706', width: '91%' },
                     { judge: 'Gemini', model: 'gemini-1.5-flash', score: '0.79', color: '#4285F4', width: '79%' },
-                ].map((j, i) => (
-                    <div key={i} className="bg-surface rounded-lg border border-surface-border overflow-hidden">
+                ].map((j) => (
+                    <div key={j.judge} className="bg-surface rounded-lg border border-surface-border overflow-hidden">
                         <div className="h-0.5" style={{ background: j.color }} />
                         <div className="p-3">
                             <div className="flex items-center gap-1.5 mb-2">

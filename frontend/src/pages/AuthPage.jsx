@@ -68,11 +68,10 @@ export default function AuthPage() {
           <button
             key={t.key}
             onClick={() => switchTab(t.key)}
-            className={`flex-1 pb-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
-              tab === t.key
+            className={`flex-1 pb-3 text-sm font-medium transition-colors border-b-2 -mb-px ${tab === t.key
                 ? 'border-accent text-text-primary'
                 : 'border-transparent text-text-tertiary hover:text-text-secondary'
-            }`}
+              }`}
           >
             {t.label}
           </button>

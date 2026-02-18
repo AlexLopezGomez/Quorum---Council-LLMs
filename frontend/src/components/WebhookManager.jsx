@@ -151,31 +151,34 @@ function AddWebhookForm({ onSubmit, onCancel }) {
       </div>
       <form onSubmit={handleSubmit} className="p-6 space-y-4">
         <div>
-          <label className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-1">Name</label>
+          <label htmlFor="wh-name" className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-1">Name</label>
           <input
+            id="wh-name"
             value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
             placeholder="e.g. Slack Alerts"
             className="w-full px-3 py-2 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-1">URL</label>
+          <label htmlFor="wh-url" className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-1">URL</label>
           <input
+            id="wh-url"
             value={form.url} onChange={e => setForm(f => ({ ...f, url: e.target.value }))}
             placeholder="https://hooks.slack.com/services/..."
             className="w-full px-3 py-2 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-1">Secret (optional)</label>
+          <label htmlFor="wh-secret" className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-1">Secret (optional)</label>
           <input
+            id="wh-secret"
             value={form.secret} onChange={e => setForm(f => ({ ...f, secret: e.target.value }))}
             placeholder="HMAC signing secret"
             className="w-full px-3 py-2 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">Events</label>
+          <p className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">Events</p>
           <div className="flex flex-wrap gap-2">
             {WEBHOOK_EVENT_OPTIONS.map(opt => (
               <button
@@ -192,16 +195,18 @@ function AddWebhookForm({ onSubmit, onCancel }) {
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-1">Score Threshold</label>
+            <label htmlFor="wh-score-threshold" className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-1">Score Threshold</label>
             <input
+              id="wh-score-threshold"
               type="number" step="0.1" min="0" max="1"
               value={form.scoreThreshold} onChange={e => setForm(f => ({ ...f, scoreThreshold: e.target.value }))}
               className="w-full px-3 py-2 text-sm bg-surface border border-surface-border rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-1">Cost Spike Multiplier</label>
+            <label htmlFor="wh-cost-multiplier" className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-1">Cost Spike Multiplier</label>
             <input
+              id="wh-cost-multiplier"
               type="number" step="0.5" min="1"
               value={form.costSpikeMultiplier} onChange={e => setForm(f => ({ ...f, costSpikeMultiplier: e.target.value }))}
               className="w-full px-3 py-2 text-sm bg-surface border border-surface-border rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"

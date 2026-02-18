@@ -134,10 +134,11 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
 
           {/* Strategy selector */}
           <div>
-            <label className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">
+            <label htmlFor="strategy-select" className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">
               Evaluation Strategy
             </label>
             <select
+              id="strategy-select"
               value={strategy}
               onChange={(e) => setStrategy(e.target.value)}
               className="w-full px-3 py-2 text-sm bg-surface border border-surface-border rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"

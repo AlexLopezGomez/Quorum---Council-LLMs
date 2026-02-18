@@ -169,7 +169,7 @@ export function EvaluationHistory() {
         <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden">
           <table className="w-full">
             <tbody>
-              {[...Array(5)].map((_, i) => <SkeletonRow key={i} />)}
+              {[...Array(5)].map((_, i) => <SkeletonRow key={`skeleton-${i}`} />)}
             </tbody>
           </table>
         </div>

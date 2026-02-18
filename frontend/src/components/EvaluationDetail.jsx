@@ -95,7 +95,7 @@ export function EvaluationDetail() {
       <div className="space-y-6">
         <PageHeader title="Evaluation Detail" subtitle="Loading…" action={backAction} />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => <SkeletonCard key={i} />)}
+          {[...Array(4)].map((_, i) => <SkeletonCard key={`skeleton-${i}`} />)}
         </div>
       </div>
     );

@@ -88,8 +88,8 @@ export function AggregatorCard({ status, result, error }) {
               <div>
                 <h4 className="text-xs font-medium text-text-secondary uppercase tracking-wide mb-1">Disagreements</h4>
                 <ul className="list-disc list-inside text-sm text-text-secondary space-y-0.5">
-                  {result.disagreements.map((d, i) => (
-                    <li key={i}>{d}</li>
+                  {result.disagreements.map((d) => (
+                    <li key={d}>{d}</li>
                   ))}
                 </ul>
               </div>

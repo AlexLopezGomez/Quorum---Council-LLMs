@@ -23,12 +23,12 @@ export function Sidebar() {
     return (
         <aside className="fixed left-0 top-0 h-screen w-60 bg-surface-secondary border-r border-surface-border flex flex-col z-10">
             <div className="px-5 py-5">
-                <span
-                    className="text-lg font-semibold text-text-primary cursor-pointer"
+                <button
+                    className="text-lg font-semibold text-text-primary cursor-pointer bg-transparent border-none p-0"
                     onClick={() => { resetEvaluation(); navigate('/app'); }}
                 >
                     RAGScope
-                </span>
+                </button>
             </div>
 
             <nav className="flex-1 px-3 space-y-1">
@@ -40,8 +40,8 @@ export function Sidebar() {
                             navigate(item.path);
                         }}
                         className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${isActive(item)
-                                ? 'bg-surface-tertiary text-text-primary font-medium'
-                                : 'text-text-secondary hover:bg-surface-tertiary hover:text-text-primary'
+                            ? 'bg-surface-tertiary text-text-primary font-medium'
+                            : 'text-text-secondary hover:bg-surface-tertiary hover:text-text-primary'
                             }`}
                     >
                         <item.icon size={18} />

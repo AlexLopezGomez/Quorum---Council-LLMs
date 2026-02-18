@@ -65,9 +65,6 @@ export async function getCostBreakdown(jobId, signal) {
   return fetchJson(`${API_BASE}/history/${jobId}/cost`, {}, signal);
 }
 
-export async function getStats(signal) {
-  return fetchJson(`${API_BASE}/stats`, {}, signal);
-}
 
 // ─── Webhooks ────────────────────────────────────────────────
 

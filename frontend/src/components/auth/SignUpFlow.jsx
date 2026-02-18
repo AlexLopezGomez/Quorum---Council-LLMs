@@ -51,7 +51,7 @@ export default function SignUpFlow({ onUsernameChange }) {
     if (step === 1) {
       navigate('/');
     } else {
-      setStep(step - 1);
+      setStep((prev) => prev - 1);
     }
   }
 
@@ -60,7 +60,7 @@ export default function SignUpFlow({ onUsernameChange }) {
     if (!canProceed) return;
 
     if (step < 3) {
-      setStep(step + 1);
+      setStep((prev) => prev + 1);
     } else {
       await register(formData.email, formData.username, formData.password);
     }
@@ -81,7 +81,6 @@ export default function SignUpFlow({ onUsernameChange }) {
             onChange={(e) => updateField('email', e.target.value)}
             className="w-full px-4 py-3 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
             placeholder="you@example.com"
-            autoFocus
           />
         )}
 
@@ -94,7 +93,6 @@ export default function SignUpFlow({ onUsernameChange }) {
             onChange={(e) => updateField('username', e.target.value)}
             className="w-full px-4 py-3 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
             placeholder="john_doe"
-            autoFocus
           />
         )}
 
@@ -105,7 +103,6 @@ export default function SignUpFlow({ onUsernameChange }) {
             onChange={(e) => updateField('password', e.target.value)}
             className="w-full px-4 py-3 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
             placeholder="Min. 8 characters"
-            autoFocus
           />
         )}
 

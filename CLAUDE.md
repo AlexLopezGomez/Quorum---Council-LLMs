@@ -1,20 +1,21 @@
-Got it. Keeping `CLAUDE.md` clean and delegating the specific instructions to a separate file is definitely the cleaner approach.
-
-Here is your updated `CLAUDE.md` with the reference added at the bottom:
-
-```markdown
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Core Directive: Enforce .agents Best Practices
+## Available MCP Servers
 
-For every single task, iteration, architectural decision, or code generation request, you **MUST** adhere to the following workflow:
+The following MCP servers are available and **MUST** be used when relevant:
 
-1. **Consult the Agents:** Before writing any code or proposing a design, you must read and load the context of the `.agents` files installed in this project.
-2. **Strict Compliance:** These `.agents` contain the absolute source of truth for our best practices regarding code quality, design patterns, architecture, and safety. You must strictly enforce these rules in your output.
-3. **No Shortcuts:** Do not default to generic AI coding patterns (like "vibecoding" or monolithic components) if they violate the standards defined in the `.agents`.
-4. **Verification:** In your responses or commit messages, briefly acknowledge which specific pattern or rule from the `.agents` you applied to ensure the solution is scalable and safe.
+- **context7** — Retrieves up-to-date library documentation and code examples. Use it before writing code that depends on any external library to get the latest API surface.
+- **playwright** — Browser automation and end-to-end testing. Use it for any UI testing, scraping, or browser interaction tasks.
+
+## Pre-Coding Checklist (MANDATORY)
+
+Before planning or writing a single line of code, you **MUST** complete all of the following steps in order:
+
+1. **Load Skills:** Read all skill files under `.claude/skills/` and apply their guidelines. These define the non-negotiable standards for code quality, scalability, readability, cleanliness, and security in this project.
+2. **Consult the Agents:** Read and load the context of the `.agents` files installed in this project.
+3. **Query context7:** For any external library involved in the task, call the `context7` MCP to retrieve current documentation before writing implementation code.
 
 ## Commands
 

@@ -77,6 +77,7 @@ router.post('/', createValidationMiddleware(ingestRequestSchema), async (req, re
 
     const evaluation = new Evaluation({
       jobId,
+      userId: req.user._id,
       status: 'processing',
       testCases,
       results: [],

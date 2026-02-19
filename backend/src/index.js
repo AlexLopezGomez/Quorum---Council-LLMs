@@ -43,10 +43,10 @@ app.use('/api', limiter);
 
 app.use('/api/auth', authRouter);
 app.use('/api/stream', requireAuth, streamRouter);
-app.use('/api/ingest', ingestRouter);
+app.use('/api/ingest', requireAuth, ingestRouter);
 
 app.use('/api/evaluate', requireAuth, evaluateRouter);
-app.use('/api', requireAuth, historyRouter);
+app.use('/api/history', requireAuth, historyRouter);
 app.use('/api/webhooks', requireAuth, webhooksRouter);
 app.use('/api/results', requireAuth, resultsRouter);
 

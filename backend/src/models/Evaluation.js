@@ -2,10 +2,12 @@ import mongoose from 'mongoose';
 
 const testCaseSchema = new mongoose.Schema(
   {
+    id: { type: String },
     input: { type: String, required: true },
     actualOutput: { type: String, required: true },
     expectedOutput: { type: String },
     retrievalContext: [{ type: String }],
+    metadata: { type: mongoose.Schema.Types.Mixed },
   },
   { _id: false }
 );

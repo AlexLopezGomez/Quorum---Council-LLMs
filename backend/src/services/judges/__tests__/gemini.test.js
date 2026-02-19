@@ -2,10 +2,10 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 const mockGenerateContent = vi.hoisted(() => vi.fn());
 
-vi.mock('@google/generative-ai', () => ({
-  GoogleGenerativeAI: class {
-    getGenerativeModel() {
-      return { generateContent: mockGenerateContent };
+vi.mock('@google/genai', () => ({
+  GoogleGenAI: class {
+    constructor() {
+      this.models = { generateContent: mockGenerateContent };
     }
   },
 }));
@@ -19,7 +19,7 @@ const baseTestCase = {
 };
 
 function makeResponse(text, usageMetadata = { promptTokenCount: 100, candidatesTokenCount: 50 }) {
-  return { response: { text: () => text, usageMetadata } };
+  return { text, usageMetadata };
 }
 
 describe('evaluateContextRelevancy', () => {
@@ -82,7 +82,8 @@ describe('evaluateContextRelevancy', () => {
   it('defaults tokens and cost to 0 when usageMetadata is undefined', async () => {
     const payload = { score: 0.5, reason: 'Partial', details: {} };
     mockGenerateContent.mockResolvedValueOnce({
-      response: { text: () => JSON.stringify(payload), usageMetadata: undefined },
+      text: JSON.stringify(payload),
+      usageMetadata: undefined,
     });
 
     const result = await evaluateContextRelevancy(baseTestCase);
@@ -149,7 +150,9 @@ describe('evaluateContextRelevancy', () => {
     await evaluateContextRelevancy(baseTestCase);
 
     const calledWith = mockGenerateContent.mock.calls[0][0];
-    expect(typeof calledWith).toBe('string');
-    expect(calledWith).toContain('What is RAG?');
+    expect(calledWith).toMatchObject({
+      model: 'gemini-2.5-flash',
+    });
+    expect(calledWith.contents).toContain('What is RAG?');
   });
 });

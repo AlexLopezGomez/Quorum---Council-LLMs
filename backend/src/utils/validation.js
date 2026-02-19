@@ -7,6 +7,7 @@ const MAX_OUTPUT_LENGTH = 5000;
 const MAX_CONTEXT_LENGTH = 10000;
 
 export const testCaseSchema = z.object({
+  id: z.string().max(100).optional(),
   input: z
     .string()
     .min(1, 'Input is required')
@@ -25,6 +26,7 @@ export const testCaseSchema = z.object({
     )
     .min(1, 'At least one retrieval context passage is required')
     .max(MAX_CONTEXT_PASSAGES, `At most ${MAX_CONTEXT_PASSAGES} context passages allowed`),
+  metadata: z.record(z.unknown()).optional(),
 });
 
 export const evaluateRequestSchema = z.object({

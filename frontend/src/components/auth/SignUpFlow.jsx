@@ -13,7 +13,7 @@ const STEPS = [
   },
   {
     heading: 'Choose a username',
-    subheading: 'This will be your public @username on RAGScope.',
+    subheading: 'This will be your public @username on Quorum.',
     field: 'username',
   },
   {

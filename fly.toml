@@ -1,4 +1,4 @@
-app = "ragscope"
+app = "quorum"
 primary_region = "iad"
 
 [build]

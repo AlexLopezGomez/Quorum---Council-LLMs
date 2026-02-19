@@ -1,4 +1,4 @@
-# RAGScope Design System — Claude Code Reference
+# Quorum Design System — Claude Code Reference
 
 ## Design Philosophy
 
@@ -93,7 +93,7 @@ colors: {
   
   {/* Logo area */}
   <div className="px-5 py-5">
-    <span className="text-lg font-semibold text-text-primary">RAGScope</span>
+    <span className="text-lg font-semibold text-text-primary">Quorum</span>
   </div>
 
   {/* Main nav */}
@@ -464,7 +464,7 @@ Use Lucide React (already lightweight, consistent stroke style):
 npm install lucide-react
 ```
 
-Common icons for RAGScope:
+Common icons for Quorum:
 - Navigation: `LayoutDashboard`, `History`, `BarChart3`, `Settings`
 - Actions: `Play`, `Upload`, `Download`, `Filter`, `ChevronDown`
 - Status: `CheckCircle2`, `AlertTriangle`, `XCircle`, `Clock`, `Loader2`

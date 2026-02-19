@@ -1,11 +1,11 @@
 import express from 'express';
 import { readFileSync } from 'fs';
-import { RAGScope } from '@ragscope/sdk';
+import { Quorum } from '@quorum/sdk';
 
 const kb = JSON.parse(readFileSync(new URL('./knowledge-base.json', import.meta.url), 'utf-8'));
 
-const ragscope = new RAGScope({
-  endpoint: process.env.RAGSCOPE_URL || 'http://localhost:3000',
+const quorum = new Quorum({
+  endpoint: process.env.QUORUM_URL || 'http://localhost:3000',
   defaultStrategy: 'auto',
   batchSize: 50,
   flushInterval: 2000,
@@ -77,7 +77,7 @@ app.post('/chat', (req, res) => {
   const context = retrieve(query);
   const answer = generate(query, context);
 
-  ragscope.capture({
+  quorum.capture({
     input: query,
     actualOutput: answer,
     expectedOutput,
@@ -93,4 +93,4 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Demo chatbot running on port ${PORT}`));
 
-process.on('SIGINT', async () => { await ragscope.close(); process.exit(0); });
+process.on('SIGINT', async () => { await quorum.close(); process.exit(0); });

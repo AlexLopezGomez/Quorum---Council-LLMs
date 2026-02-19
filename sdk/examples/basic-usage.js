@@ -1,14 +1,14 @@
-import { RAGScope } from '@ragscope/sdk';
+import { Quorum } from '@quorum/sdk';
 
-const ragscope = new RAGScope({
+const quorum = new Quorum({
   endpoint: 'http://localhost:3000',
   defaultStrategy: 'auto',
 });
 
-ragscope.capture({
+quorum.capture({
   input: 'What is the capital of France?',
   actualOutput: 'The capital of France is Paris.',
   retrievalContext: ['Paris is the capital and largest city of France.'],
 });
 
-await ragscope.close();
+await quorum.close();

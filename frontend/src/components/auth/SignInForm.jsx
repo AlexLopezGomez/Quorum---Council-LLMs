@@ -32,7 +32,7 @@ export default function SignInForm() {
   return (
     <>
       <h1 className="text-2xl font-semibold text-text-primary mb-2">Welcome back</h1>
-      <p className="text-sm text-text-secondary mb-7">Sign in to your RAGScope account.</p>
+      <p className="text-sm text-text-secondary mb-7">Sign in to your Quorum account.</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input

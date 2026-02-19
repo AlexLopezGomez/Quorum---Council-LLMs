@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SCENARIO=${1:-"scenarios/silent-failures.json"}
 
-echo "=== RAGScope Demo ==="
+echo "=== Quorum Demo ==="
 echo ""
 
 # Start chatbot in background
@@ -31,4 +31,4 @@ node run-scenario.js "$SCENARIO"
 
 echo ""
 echo "=== Demo Complete ==="
-echo "Open http://localhost:5173 to see results in the RAGScope dashboard."
+echo "Open http://localhost:5173 to see results in the Quorum dashboard."

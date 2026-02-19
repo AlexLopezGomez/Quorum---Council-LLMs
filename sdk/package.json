@@ -1,7 +1,7 @@
 {
-  "name": "@ragscope/sdk",
+  "name": "@quorum/sdk",
   "version": "1.0.0",
-  "description": "Lightweight SDK for capturing RAG interactions and sending them to RAGScope for evaluation",
+  "description": "Lightweight SDK for capturing interactions and sending them to Quorum for evaluation",
   "type": "module",
   "main": "src/index.js",
   "exports": {

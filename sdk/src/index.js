@@ -1,3 +1,3 @@
-export { RAGScope } from './collector.js';
+export { Quorum } from './collector.js';
 export { Transport } from './transport.js';
 export { createCorrelationId } from './observability.js';

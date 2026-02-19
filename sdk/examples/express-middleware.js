@@ -1,6 +1,6 @@
-import { RAGScope } from '@ragscope/sdk';
+import { Quorum } from '@quorum/sdk';
 
-const ragscope = new RAGScope({
+const quorum = new Quorum({
   endpoint: 'http://localhost:3000',
   batchSize: 20,
   flushInterval: 10000,
@@ -10,12 +10,12 @@ const ragscope = new RAGScope({
  * Express middleware that wraps res.json() to capture RAG interactions.
  * Attach req.ragContext before calling res.json() with the response.
  */
-export function ragScopeMiddleware(req, res, next) {
+export function quorumMiddleware(req, res, next) {
   const originalJson = res.json.bind(res);
 
   res.json = (body) => {
     if (req.ragContext) {
-      ragscope.capture({
+      quorum.capture({
         input: req.ragContext.input || req.body?.query || '',
         actualOutput: typeof body === 'string' ? body : JSON.stringify(body.answer || body),
         retrievalContext: req.ragContext.retrievalContext || [],
@@ -30,7 +30,7 @@ export function ragScopeMiddleware(req, res, next) {
 }
 
 // Usage:
-// app.use(ragScopeMiddleware);
+// app.use(quorumMiddleware);
 // app.post('/chat', (req, res) => {
 //   const context = retrieve(req.body.query);
 //   const answer = generate(req.body.query, context);

@@ -16,7 +16,7 @@ import { useAuth } from '../context/AuthContext';
 import './LandingPage.css';
 
 /* ═══════════════════════════════════════════════════════════════
-   RAGScope — B2B SaaS Landing Page
+   Quorum — B2B SaaS Landing Page
    Design: DESIGN_SYSTEM.md palette (light) + dark auth section
    ═══════════════════════════════════════════════════════════════ */
 
@@ -38,7 +38,7 @@ export default function LandingPage() {
             {/* ─── Navigation ─────────────────────────────────────── */}
             <nav className={`landing-nav ${scrolled ? 'scrolled' : ''}`}>
                 <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <span className="text-lg font-semibold text-text-primary tracking-tight">RAGScope</span>
+                    <span className="text-lg font-semibold text-text-primary tracking-tight">Quorum</span>
 
                     {/* Desktop nav */}
                     <div className="hidden md:flex items-center gap-8">
@@ -112,7 +112,7 @@ export default function LandingPage() {
                     </h1>
 
                     <p className="text-lg text-text-secondary mt-5 max-w-2xl mx-auto leading-relaxed">
-                        RAGScope orchestrates multiple AI judges to score faithfulness, groundedness, and relevance — then adaptively routes each test case to minimize cost without sacrificing accuracy.
+                        Quorum orchestrates multiple AI judges to score faithfulness, groundedness, and relevance — then adaptively routes each test case to minimize cost without sacrificing accuracy.
                     </p>
 
                     <div className="flex items-center justify-center gap-4 mt-8">
@@ -137,7 +137,7 @@ export default function LandingPage() {
                             <div className="dot red" />
                             <div className="dot yellow" />
                             <div className="dot green" />
-                            <span className="ml-4 text-xs text-text-tertiary">RAGScope — Evaluation Dashboard</span>
+                            <span className="ml-4 text-xs text-text-tertiary">Quorum — Evaluation Dashboard</span>
                         </div>
                         <div className="dashboard-preview-content">
                             <DashboardMockup />
@@ -318,7 +318,7 @@ function LandingFooter() {
             <div className="max-w-6xl mx-auto px-6">
                 <div className="footer-grid">
                     <div>
-                        <span className="text-lg font-semibold text-text-primary">RAGScope</span>
+                        <span className="text-lg font-semibold text-text-primary">Quorum</span>
                         <p className="text-sm text-text-secondary mt-3 leading-relaxed max-w-xs">
                             The intelligent RAG evaluation platform powered by a council of AI judges and adaptive cost routing.
                         </p>
@@ -350,7 +350,7 @@ function LandingFooter() {
                 </div>
 
                 <div className="footer-bottom">
-                    <span>&copy; 2026 RAGScope. All rights reserved.</span>
+                    <span>&copy; 2026 Quorum. All rights reserved.</span>
                     <div className="flex items-center gap-6">
                         <span className={FOOTER_LINK_CLASS}>Privacy</span>
                         <span className={FOOTER_LINK_CLASS}>Terms</span>

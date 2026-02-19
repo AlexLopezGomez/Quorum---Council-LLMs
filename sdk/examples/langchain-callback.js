@@ -1,6 +1,6 @@
-import { RAGScope } from '@ragscope/sdk';
+import { Quorum } from '@quorum/sdk';
 
-const ragscope = new RAGScope({
+const quorum = new Quorum({
   endpoint: 'http://localhost:3000',
   defaultStrategy: 'auto',
 });
@@ -9,17 +9,17 @@ const ragscope = new RAGScope({
  * Example LangChain callback handler that captures RAG chain outputs.
  * Extend BaseCallbackHandler from @langchain/core/callbacks/base.
  *
- * class RagScopeCallbackHandler extends BaseCallbackHandler {
- *   name = 'ragscope';
+ * class QuorumCallbackHandler extends BaseCallbackHandler {
+ *   name = 'quorum';
  *
- *   constructor(ragscope) {
+ *   constructor(quorum) {
  *     super();
- *     this.ragscope = ragscope;
+ *     this.quorum = quorum;
  *   }
  *
  *   async handleChainEnd(output, runId, parentRunId, tags) {
  *     if (output?.answer && output?.sourceDocuments) {
- *       this.ragscope.capture({
+ *       this.quorum.capture({
  *         input: output.query || '',
  *         actualOutput: output.answer,
  *         retrievalContext: output.sourceDocuments.map(d => d.pageContent),
@@ -31,8 +31,8 @@ const ragscope = new RAGScope({
  *
  * // Usage with a RetrievalQA chain:
  * const chain = RetrievalQAChain.fromLLM(model, retriever, {
- *   callbacks: [new RagScopeCallbackHandler(ragscope)],
+ *   callbacks: [new QuorumCallbackHandler(quorum)],
  * });
  */
 
-export { ragscope };
+export { quorum };

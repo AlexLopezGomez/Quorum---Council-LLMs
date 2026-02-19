@@ -34,7 +34,7 @@ export default function ProfilePreview({ username }) {
       </div>
 
       <p className="absolute bottom-6 left-0 right-0 text-center text-xs text-text-tertiary leading-relaxed px-8">
-        Your @username is how people will find and tag you on RAGScope.<br />
+        Your @username is how people will find and tag you on Quorum.<br />
         Make it short, memorable, and true to your brand.
       </p>
     </div>

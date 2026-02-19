@@ -243,7 +243,7 @@ router.post('/:id/test', async (req, res) => {
     const headers = { 'Content-Type': 'application/json' };
     if (webhook.secret) {
       const crypto = await import('crypto');
-      headers['X-RagScope-Signature'] = crypto.createHmac('sha256', webhook.secret)
+      headers['X-Quorum-Signature'] = crypto.createHmac('sha256', webhook.secret)
         .update(JSON.stringify(samplePayload)).digest('hex');
     }
 

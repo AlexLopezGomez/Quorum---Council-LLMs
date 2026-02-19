@@ -27,7 +27,7 @@ export function Sidebar() {
                     className="text-lg font-semibold text-text-primary cursor-pointer bg-transparent border-none p-0"
                     onClick={() => { resetEvaluation(); navigate('/app'); }}
                 >
-                    RAGScope
+                    Quorum
                 </button>
             </div>
 

@@ -22,7 +22,7 @@ import { logger } from './utils/logger.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ragscope';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/quorum';
 sseManager.setLogger(logger);
 
 const limiter = rateLimit({
@@ -43,7 +43,7 @@ app.use(
 app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
 app.use(requestContext);
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(spec, { customSiteTitle: 'RAGScope API' }));
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(spec, { customSiteTitle: 'Quorum API' }));
 app.use('/api', limiter);
 
 app.use((req, res, next) => {

@@ -40,7 +40,7 @@ export class Transport {
         }
         if (this._onError) this._onError(err);
         else {
-          console.warn(`[@ragscope/sdk] Failed to send captures: ${err.message}`);
+          console.warn(`[@quorum/sdk] Failed to send captures: ${err.message}`);
           console.warn(
             JSON.stringify({
               level: 'warn',

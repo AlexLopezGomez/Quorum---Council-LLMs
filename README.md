@@ -1,14 +1,14 @@
-# RAGScope
+# Quorum
 
 **Catch silent RAG failures before your users do.**
 
-RAGScope is an evaluation platform that uses a Council-of-LLMs to evaluate RAG system outputs across multiple quality dimensions — faithfulness, groundedness, and context relevancy — with an adaptive orchestration layer that routes each test case to the optimal evaluation strategy based on risk scoring.
+Quorum is an evaluation platform that uses a Council-of-LLMs to evaluate RAG system outputs across multiple quality dimensions — faithfulness, groundedness, and context relevancy — with an adaptive orchestration layer that routes each test case to the optimal evaluation strategy based on risk scoring.
 
 ## Why This Exists
 
 RAG systems fail silently. The retriever fetches the wrong documents, the generator hallucinates confident answers, stale data gets served as truth — and nothing breaks. No error, no alert, just a user getting bad information.
 
-RAGScope catches these failures by:
+Quorum catches these failures by:
 
 - **Multi-perspective evaluation** — 3 judges from different LLM providers, each checking a different quality dimension
 - **Adaptive cost control** — Not every query needs $0.003 of evaluation. Simple factoid queries get a single judge, complex medical/legal queries get the full council
@@ -32,8 +32,8 @@ RAGScope catches these failures by:
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/your-org/ragscope.git
-cd ragscope
+git clone https://github.com/your-org/quorum.git
+cd quorum
 cd backend && cp .env.example .env  # Add your API keys
 npm install && cd ../frontend && npm install && cd ..
 
@@ -96,19 +96,19 @@ cd sdk && npm link  # or use file dependency
 ```
 
 ```js
-import { RAGScope } from '@ragscope/sdk';
+import { Quorum } from '@quorum/sdk';
 
-const ragscope = new RAGScope({ endpoint: 'http://localhost:3000' });
+const quorum = new Quorum({ endpoint: 'http://localhost:3000' });
 
 // After each RAG interaction
-ragscope.capture({
+quorum.capture({
   input: 'What is the capital of France?',
   actualOutput: 'The capital of France is Paris.',
   retrievalContext: ['Paris is the capital and largest city of France.'],
 });
 
 // On shutdown
-await ragscope.close();
+await quorum.close();
 ```
 
 The SDK batches captures and sends them to `/api/ingest`. Zero dependencies, non-blocking, with exponential backoff retry.
@@ -157,7 +157,7 @@ Interactive docs at **http://localhost:3000/api/docs** (Swagger UI).
 | `OPENAI_API_KEY` | OpenAI API key | Required |
 | `ANTHROPIC_API_KEY` | Anthropic API key | Required |
 | `GOOGLE_API_KEY` | Google AI API key | Required |
-| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/ragscope` |
+| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/quorum` |
 | `PORT` | Backend port | `3000` |
 | `FRONTEND_URL` | Frontend URL for CORS | `http://localhost:5173` |
 | `ADAPTIVE_MODE` | Enable adaptive routing | `true` |

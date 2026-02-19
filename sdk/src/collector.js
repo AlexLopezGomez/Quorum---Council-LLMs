@@ -1,12 +1,12 @@
 import { Transport } from './transport.js';
 import { createCorrelationId } from './observability.js';
 
-export class RAGScope {
+export class Quorum {
   /**
    * @param {import('./types.js').SDKConfig} config
    */
   constructor(config) {
-    if (!config?.endpoint) throw new Error('RAGScope: endpoint is required');
+    if (!config?.endpoint) throw new Error('Quorum: endpoint is required');
 
     this._transport = new Transport(config.endpoint, config.apiKey, config.onError);
     this._strategy = config.defaultStrategy || 'auto';

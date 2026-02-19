@@ -8,7 +8,7 @@ dev:
 
 up:
 	docker-compose up --build -d
-	@echo "RAGScope running at http://localhost:8080"
+	@echo "Quorum running at http://localhost:8080"
 
 down:
 	docker-compose --profile demo down

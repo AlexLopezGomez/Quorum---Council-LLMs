@@ -1,7 +1,7 @@
 {
-  "name": "ragscope-backend",
+  "name": "quorum-backend",
   "version": "1.0.0",
-  "description": "RAG evaluation dashboard backend with Council-of-LLMs architecture",
+  "description": "AI evaluation platform backend with Council-of-LLMs architecture",
   "main": "src/index.js",
   "type": "module",
   "scripts": {

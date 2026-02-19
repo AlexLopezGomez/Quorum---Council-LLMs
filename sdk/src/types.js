@@ -1,6 +1,6 @@
 /**
  * @typedef {Object} SDKConfig
- * @property {string} endpoint - RAGScope backend URL (e.g., 'http://localhost:3000')
+ * @property {string} endpoint - Quorum backend URL (e.g., 'http://localhost:3000')
  * @property {string} [apiKey] - Optional API key for authentication
  * @property {'auto'|'single'|'hybrid'|'council'} [defaultStrategy='auto'] - Default evaluation strategy
  * @property {number} [batchSize=10] - Flush when buffer reaches this size
@@ -27,4 +27,4 @@
  * @property {string} streamUrl - SSE stream URL for real-time results
  */
 
-export {};
+export { };

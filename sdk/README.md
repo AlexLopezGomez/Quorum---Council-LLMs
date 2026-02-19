@@ -1,21 +1,21 @@
-# @ragscope/sdk
+# @quorum/sdk
 
-Lightweight, zero-dependency SDK for capturing RAG interactions and sending them to [RAGScope](https://github.com/your-org/ragscope) for evaluation.
+Lightweight, zero-dependency SDK for capturing RAG interactions and sending them to [Quorum](https://github.com/your-org/quorum) for evaluation.
 
 ## Quick Start
 
 ```js
-import { RAGScope } from '@ragscope/sdk';
+import { Quorum } from '@quorum/sdk';
 
-const ragscope = new RAGScope({ endpoint: 'http://localhost:3000' });
+const quorum = new Quorum({ endpoint: 'http://localhost:3000' });
 
-ragscope.capture({
+quorum.capture({
   input: 'What is the capital of France?',
   actualOutput: 'The capital of France is Paris.',
   retrievalContext: ['Paris is the capital and largest city of France.'],
 });
 
-await ragscope.close();
+await quorum.close();
 ```
 
 ## Integration Patterns
@@ -27,21 +27,21 @@ Call `capture()` after each RAG interaction. Non-blocking — won't slow your ap
 ### 2. Express Middleware
 
 ```js
-import { ragScopeMiddleware } from './middleware.js';
-app.use(ragScopeMiddleware);
+import { quorumMiddleware } from './middleware.js';
+app.use(quorumMiddleware);
 ```
 
 Wraps `res.json()` to automatically capture responses when `req.ragContext` is set.
 
 ### 3. LangChain Callback
 
-Extend `BaseCallbackHandler` and call `ragscope.capture()` in `handleChainEnd`.
+Extend `BaseCallbackHandler` and call `quorum.capture()` in `handleChainEnd`.
 
 ## Configuration
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `endpoint` | `string` | **required** | RAGScope backend URL |
+| `endpoint` | `string` | **required** | Quorum backend URL |
 | `apiKey` | `string` | — | Optional API key |
 | `defaultStrategy` | `string` | `'auto'` | `auto` \| `single` \| `hybrid` \| `council` |
 | `batchSize` | `number` | `10` | Flush when buffer reaches this size |
@@ -52,7 +52,7 @@ Extend `BaseCallbackHandler` and call `ragscope.capture()` in `handleChainEnd`.
 ## Data Flow
 
 ```
-Your App → capture() → Buffer → flush() → POST /api/ingest → RAGScope Backend
+Your App → capture() → Buffer → flush() → POST /api/ingest → Quorum Backend
                                    ↑                              ↓
                          batchSize or interval           Evaluation Pipeline
                                                               ↓
@@ -61,7 +61,7 @@ Your App → capture() → Buffer → flush() → POST /api/ingest → RAGScope 
 
 ## API
 
-### `new RAGScope(config)`
+### `new Quorum(config)`
 
 Creates a new SDK instance.
 

@@ -42,7 +42,7 @@ for (let i = 0; i < scenarios.length; i++) {
   }
 }
 
-console.log('All scenarios sent. SDK will auto-flush captures to RAGScope.');
-console.log('Check the RAGScope dashboard for evaluation results.');
+console.log('All scenarios sent. SDK will auto-flush captures to Quorum.');
+console.log('Check the Quorum dashboard for evaluation results.');
 
 await new Promise(r => setTimeout(r, 3000));

@@ -21,7 +21,7 @@ function formatSlackPayload(evaluation) {
     blocks: [
       {
         type: 'header',
-        text: { type: 'plain_text', text: `RAGScope Evaluation Alert`, emoji: true },
+        text: { type: 'plain_text', text: `Quorum Evaluation Alert`, emoji: true },
       },
       {
         type: 'section',
@@ -109,7 +109,7 @@ async function sendWebhook(webhook, payload) {
 
   const headers = { 'Content-Type': 'application/json' };
   if (webhook.secret) {
-    headers['X-RagScope-Signature'] = signPayload(payload, webhook.secret);
+    headers['X-Quorum-Signature'] = signPayload(payload, webhook.secret);
   }
 
   const controller = new AbortController();
@@ -192,6 +192,6 @@ export async function fireWebhooks(evaluation) {
         matchedEvents,
       },
     });
-    sendWebhook(webhook, payload).catch(() => {});
+    sendWebhook(webhook, payload).catch(() => { });
   }
 }

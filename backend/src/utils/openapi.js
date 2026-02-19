@@ -4,9 +4,9 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'RAGScope API',
+      title: 'Quorum API',
       version: '1.0.0',
-      description: 'RAG evaluation platform with Council-of-LLMs architecture and adaptive orchestration.',
+      description: 'AI evaluation platform with Council-of-LLMs architecture and adaptive orchestration.',
     },
     servers: [
       { url: 'http://localhost:3000', description: 'Local development' },

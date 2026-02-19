@@ -6,7 +6,7 @@ export default function AuthLayout({ children, rightPanel }) {
       <div className="w-full max-w-[960px]">
         <div className="text-center mb-8">
           <Link to="/" className="text-lg font-semibold text-text-primary tracking-tight">
-            RAGScope
+            Quorum
           </Link>
         </div>
 

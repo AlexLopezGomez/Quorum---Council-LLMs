@@ -96,6 +96,10 @@ const evaluationSchema = new mongoose.Schema(
       unique: true,
       index: true,
     },
+    name: {
+      type: String,
+      default: '',
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

@@ -60,11 +60,12 @@ const router = Router();
  */
 router.post('/', validateEvaluateRequest, async (req, res) => {
   try {
-    const { testCases, options } = req.validatedBody;
+    const { testCases, options, name } = req.validatedBody;
     const jobId = nanoid(12);
 
     const evaluation = new Evaluation({
       jobId,
+      name: name || '',
       userId: req.user._id,
       status: 'processing',
       testCases,

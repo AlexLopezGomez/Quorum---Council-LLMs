@@ -32,6 +32,7 @@ export const evaluateRequestSchema = z.object({
     .array(testCaseSchema)
     .min(1, 'At least one test case is required')
     .max(MAX_TEST_CASES, `At most ${MAX_TEST_CASES} test cases allowed in demo mode`),
+  name: z.string().max(100).optional().default(''),
   options: z.object({
     strategy: z.enum(['auto', 'single', 'hybrid', 'council']).default('auto'),
     riskOverride: z.number().min(0).max(1).optional(),

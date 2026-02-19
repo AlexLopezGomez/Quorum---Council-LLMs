@@ -29,12 +29,13 @@ async function fetchJson(url, options = {}, signal) {
 // ─── Evaluation ──────────────────────────────────────────────
 
 export async function startEvaluation(testCases, options = {}, signal) {
+  const { name, ...evalOptions } = options;
   return fetchJson(
     `${API_BASE}/evaluate`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ testCases, options }),
+      body: JSON.stringify({ testCases, name: name || '', options: evalOptions }),
     },
     signal,
   );
@@ -57,12 +58,21 @@ export async function getHistory(params = {}, signal) {
   if (params.strategy) searchParams.set('strategy', params.strategy);
   if (params.verdict) searchParams.set('verdict', params.verdict);
   if (params.status) searchParams.set('status', params.status);
+  if (params.search) searchParams.set('search', params.search);
 
   return fetchJson(`${API_BASE}/history?${searchParams}`, {}, signal);
 }
 
 export async function getCostBreakdown(jobId, signal) {
   return fetchJson(`${API_BASE}/history/${jobId}/cost`, {}, signal);
+}
+
+export async function updateEvaluationName(jobId, name) {
+  return fetchJson(`${API_BASE}/history/${jobId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  });
 }
 
 

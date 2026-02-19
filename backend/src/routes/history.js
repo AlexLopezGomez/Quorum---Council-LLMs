@@ -30,10 +30,10 @@ const router = Router();
  *       200:
  *         description: Paginated evaluation list
  */
-router.get('/history', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit) || 20, 50);
-    const { cursor, strategy, verdict, status } = req.query;
+    const { cursor, strategy, verdict, status, search } = req.query;
 
     const filter = { userId: req.user._id };
     if (cursor) {
@@ -48,11 +48,14 @@ router.get('/history', async (req, res) => {
     if (verdict) {
       filter['results.aggregator.verdict'] = verdict;
     }
+    if (search) {
+      filter.name = { $regex: search.trim(), $options: 'i' };
+    }
 
     const evaluations = await Evaluation.find(filter)
       .sort({ _id: -1 })
       .limit(limit + 1)
-      .select('jobId status testCases summary config createdAt completedAt')
+      .select('jobId userId name status testCases summary config createdAt completedAt')
       .lean();
 
     const hasMore = evaluations.length > limit;
@@ -63,6 +66,8 @@ router.get('/history', async (req, res) => {
       evaluations: results.map(e => ({
         id: e._id,
         jobId: e.jobId,
+        userId: e.userId,
+        name: e.name || '',
         status: e.status,
         testCaseCount: e.testCases?.length || 0,
         summary: e.summary,
@@ -75,6 +80,33 @@ router.get('/history', async (req, res) => {
   } catch (error) {
     console.error('Failed to fetch history:', error);
     res.status(500).json({ error: 'Failed to fetch evaluation history' });
+  }
+});
+
+router.patch('/:jobId', async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (typeof name !== 'string') {
+      return res.status(400).json({ error: 'name must be a string' });
+    }
+
+    const evaluation = await Evaluation.findOne({ jobId: req.params.jobId }).select('jobId userId name');
+
+    if (!evaluation) {
+      return res.status(404).json({ error: 'Evaluation not found' });
+    }
+
+    if (evaluation.userId?.toString() !== req.user._id?.toString()) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    evaluation.name = name.trim().slice(0, 100);
+    await evaluation.save();
+
+    res.json({ jobId: evaluation.jobId, name: evaluation.name });
+  } catch (error) {
+    console.error('Failed to update evaluation name:', error);
+    res.status(500).json({ error: 'Failed to update evaluation name' });
   }
 });
 
@@ -96,7 +128,7 @@ router.get('/history', async (req, res) => {
  *       404:
  *         description: Evaluation not found
  */
-router.get('/history/:jobId/cost', async (req, res) => {
+router.get('/:jobId/cost', async (req, res) => {
   try {
     const evaluation = await Evaluation.findOne({ jobId: req.params.jobId, userId: req.user._id })
       .select('results summary config')

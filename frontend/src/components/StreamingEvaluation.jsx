@@ -1,9 +1,24 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import { sileo } from 'sileo';
 import { TestCaseResult } from './TestCaseResult';
 import { CostBreakdown } from './CostBreakdown';
 import { PageHeader } from './PageHeader';
 import { SummaryGrid } from './ui/SummaryGrid';
+import { safeFixed } from '../lib/utils';
+
+const TICKER_JUDGE_COLORS = {
+  openai:    'bg-openai-light text-openai',
+  anthropic: 'bg-anthropic-light text-anthropic',
+  gemini:    'bg-gemini-light text-gemini',
+};
+
+function getTickerColor(evt) {
+  if (evt.data?.judge && TICKER_JUDGE_COLORS[evt.data.judge]) {
+    return TICKER_JUDGE_COLORS[evt.data.judge];
+  }
+  return 'bg-surface-tertiary text-text-secondary';
+}
 
 function StrategyCountCard({ strategyCounts }) {
   return (
@@ -23,6 +38,10 @@ function StrategyCountCard({ strategyCounts }) {
     </div>
   );
 }
+
+StrategyCountCard.propTypes = {
+  strategyCounts: PropTypes.object,
+};
 
 function MetricsPanel({ summary }) {
   return (
@@ -68,12 +87,40 @@ MetricsPanel.propTypes = {
 };
 
 export function StreamingEvaluation({ events, testCases, currentTestCase, onNavigate, jobId }) {
+  const [tickerItems, setTickerItems] = useState([]);
+  const toastFiredRef = useRef(null);
+
+  // Live event ticker: accumulate last 3 events
+  useEffect(() => {
+    if (events.length === 0) return;
+    const last = events[events.length - 1];
+    setTickerItems(prev => [...prev.slice(-2), { ...last, _tickerId: `${events.length}-${Date.now()}` }]);
+  }, [events.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sileo completion toasts
+  useEffect(() => {
+    const completeEvent = events.find(e => e.type === 'evaluation_complete');
+    const errorEvent = events.find(e => e.type === 'evaluation_error');
+
+    if (completeEvent && toastFiredRef.current !== 'complete') {
+      toastFiredRef.current = 'complete';
+      const passRate = completeEvent.data?.summary?.passRate;
+      sileo.success({
+        title: 'Evaluation complete',
+        description: passRate !== undefined ? `${passRate}% pass rate` : undefined,
+      });
+    } else if (errorEvent && toastFiredRef.current !== 'error') {
+      toastFiredRef.current = 'error';
+      sileo.error({ title: 'Evaluation failed' });
+    }
+  }, [events]);
+
   const testCaseState = useMemo(() => {
     const state = {
       judges: {
-        openai: { status: 'idle', result: null, error: null },
+        openai:    { status: 'idle', result: null, error: null },
         anthropic: { status: 'idle', result: null, error: null },
-        gemini: { status: 'idle', result: null, error: null },
+        gemini:    { status: 'idle', result: null, error: null },
       },
       aggregator: { status: 'idle', result: null, error: null },
       strategy: null,
@@ -131,6 +178,13 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
     return completeEvent?.data?.summary || null;
   }, [events]);
 
+  const completedCases = useMemo(
+    () => events.filter(e => e.type === 'test_case_complete').length,
+    [events]
+  );
+
+  const total = testCases.length;
+  const progressPct = total > 0 ? (completedCases / total) * 100 : 0;
   const currentCase = testCases[currentTestCase];
 
   return (
@@ -158,6 +212,34 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
         }
       />
 
+      {/* Progress bar */}
+      <div className="h-0.5 bg-surface-tertiary rounded-full overflow-hidden -mt-4">
+        <div
+          className="h-full bg-accent transition-all duration-500 ease-out"
+          style={{ width: `${progressPct}%` }}
+        />
+      </div>
+
+      {/* Live event ticker */}
+      {tickerItems.length > 0 && (
+        <div className="flex items-center gap-2 flex-wrap">
+          {tickerItems.map((evt) => (
+            <span
+              key={evt._tickerId}
+              className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium ${getTickerColor(evt)}`}
+              style={{ animation: 'fadeOut 0.5s 3s forwards' }}
+            >
+              {evt.type}
+              {evt.timestamp && (
+                <span className="opacity-60">
+                  {new Date(evt.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </span>
+              )}
+            </span>
+          ))}
+        </div>
+      )}
+
       <TestCaseResult
         testCaseState={testCaseState}
         testCase={currentCase}
@@ -165,11 +247,11 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
       />
 
       {summary && (
-        <>
+        <div className="animate-slideInUp space-y-4">
           <SummaryGrid summary={summary} extraCard={<StrategyCountCard strategyCounts={summary.strategyCounts} />} />
           <MetricsPanel summary={summary} />
           <CostBreakdown jobId={jobId} summary={summary} />
-        </>
+        </div>
       )}
     </div>
   );

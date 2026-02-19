@@ -38,13 +38,14 @@ export function TestCaseResult({ testCaseState, testCase, testCaseIndex }) {
       )}
 
       <div className={`grid gap-4 ${judgesToRender.length === 3 ? 'md:grid-cols-3' : judgesToRender.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-1 max-w-md'}`}>
-        {judgesToRender.map((judge) => (
+        {judgesToRender.map((judge, i) => (
           <JudgeCard
             key={judge}
             judge={judge}
             status={testCaseState.judges[judge]?.status || 'idle'}
             result={testCaseState.judges[judge]?.result || null}
             error={testCaseState.judges[judge]?.error || null}
+            staggerIndex={i}
           />
         ))}
       </div>

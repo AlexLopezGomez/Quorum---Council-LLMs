@@ -8,9 +8,32 @@
   }
 }
 
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; }
+}
+
 @layer utilities {
   .cv-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 48px;
   }
+
+  .animate-fadeInUp  { animation: fadeInUp  0.3s ease-out both; }
+  .animate-scaleIn   { animation: scaleIn   0.25s ease-out both; }
+  .animate-slideInUp { animation: slideInUp 0.4s ease-out both; }
 }

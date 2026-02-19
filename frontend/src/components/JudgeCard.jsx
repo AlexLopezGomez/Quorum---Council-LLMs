@@ -3,19 +3,36 @@ import { JUDGE_CONFIG } from '../lib/constants';
 import { safeFixed } from '../lib/utils';
 import { ScoreBar } from './ui/ScoreBar';
 
-export function JudgeCard({ judge, status, result, error }) {
+const PULSE_BORDER = {
+  openai: 'border-openai',
+  anthropic: 'border-anthropic',
+  gemini: 'border-gemini',
+};
+
+export function JudgeCard({ judge, status, result, error, staggerIndex = 0 }) {
   const config = JUDGE_CONFIG[judge];
   if (!config) return null;
 
   return (
-    <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden">
+    <div
+      className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden animate-fadeInUp"
+      style={{ animationDelay: `${staggerIndex * 80}ms` }}
+    >
       <div className={`h-0.5 ${config.colorBar}`} />
 
       <div className="p-5">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <config.icon size={16} className={config.pillText} />
+            {/* Icon with pulse ring when loading */}
+            <div className="relative flex items-center justify-center w-5 h-5">
+              {status === 'loading' && (
+                <span
+                  className={`absolute inset-0 rounded-full border-2 ${PULSE_BORDER[judge] || 'border-accent'} animate-ping opacity-60`}
+                />
+              )}
+              <config.icon size={16} className={config.pillText} />
+            </div>
             <span className="text-sm font-semibold text-text-primary">{config.name}</span>
             <span className="text-xs text-text-secondary">{result?.model || config.model}</span>
           </div>
@@ -24,9 +41,9 @@ export function JudgeCard({ judge, status, result, error }) {
           </span>
         </div>
 
-        {/* Score */}
+        {/* Score with scale-in on complete */}
         {status === 'complete' && result?.score !== undefined && (
-          <>
+          <div key={status} className="animate-scaleIn">
             <div className="flex items-baseline gap-1 mb-3">
               <span className="text-3xl font-semibold text-text-primary">
                 {safeFixed(result.score)}
@@ -36,7 +53,7 @@ export function JudgeCard({ judge, status, result, error }) {
             <div className="mb-4">
               <ScoreBar score={result.score} />
             </div>
-          </>
+          </div>
         )}
 
         {/* States */}
@@ -82,4 +99,5 @@ JudgeCard.propTypes = {
     tokens: PropTypes.shape({ total: PropTypes.number }),
   }),
   error: PropTypes.string,
+  staggerIndex: PropTypes.number,
 };

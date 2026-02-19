@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { Upload, Play } from 'lucide-react';
+import { Upload, Play, ChevronDown, Zap, Users, GitMerge, Cpu } from 'lucide-react';
 import { STRATEGIES, STRATEGY_DESCRIPTIONS } from '../lib/constants';
 import { PageHeader } from './PageHeader';
 import { ErrorAlert } from './ui/ErrorAlert';
@@ -36,10 +36,13 @@ const SAMPLE_DATA = [
   },
 ];
 
-/**
- * Validates that an array of test cases has the required fields.
- * Throws an error with a descriptive message if validation fails.
- */
+const STRATEGY_CARD_CONFIG = {
+  auto:    { icon: Zap,      colorClass: 'text-blue-500',   activeDot: 'bg-blue-500',   description: 'Adaptive routing based on risk' },
+  council: { icon: Users,    colorClass: 'text-purple-600', activeDot: 'bg-purple-500', description: 'Full 3-judge + aggregator' },
+  hybrid:  { icon: GitMerge, colorClass: 'text-amber-600',  activeDot: 'bg-amber-500',  description: 'Deterministic + single judge' },
+  single:  { icon: Cpu,      colorClass: 'text-gray-500',   activeDot: 'bg-gray-400',   description: 'Cheapest judge only' },
+};
+
 function validateTestCases(data) {
   const cases = Array.isArray(data) ? data : data.testCases;
 
@@ -60,12 +63,13 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
   const [testCases, setTestCases] = useState([]);
   const [error, setError] = useState(null);
   const [strategy, setStrategy] = useState('auto');
+  const [name, setName] = useState('');
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [showFormat, setShowFormat] = useState(false);
   const fileInputRef = useRef(null);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const processFile = (file) => {
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
@@ -81,6 +85,14 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
     reader.readAsText(file);
   };
 
+  const handleFileChange = (e) => processFile(e.target.files[0]);
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    processFile(e.dataTransfer.files[0]);
+  };
+
   const loadSampleData = () => {
     setTestCases(SAMPLE_DATA);
     setError(null);
@@ -91,24 +103,38 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
       setError('Please upload test cases or load sample data first');
       return;
     }
-    onSubmit(testCases, { strategy });
+    onSubmit(testCases, { strategy, name: name.trim() });
   };
 
   return (
     <div>
       <PageHeader title="Evaluate" subtitle="Run evaluation on your RAG system outputs" />
 
-      {/* Upload card */}
-      <div className="bg-surface rounded-xl border border-surface-border shadow-sm">
-        <div className="px-6 py-4 border-b border-surface-border">
-          <h3 className="text-sm font-semibold text-text-primary">Upload Test Cases</h3>
-          <p className="text-xs text-text-secondary mt-0.5">Upload a JSON file or use sample data to get started</p>
-        </div>
+      <div className="grid grid-cols-3 gap-6">
+        {/* Left 2/3: upload + preview */}
+        <div className="col-span-2 space-y-4">
+          <div className="bg-surface rounded-xl border border-surface-border shadow-sm">
+            <div className="px-6 py-4 border-b border-surface-border">
+              <h3 className="text-sm font-semibold text-text-primary">Upload Test Cases</h3>
+              <p className="text-xs text-text-secondary mt-0.5">Upload a JSON file or use sample data to get started</p>
+            </div>
 
-        <div className="p-6 space-y-6">
-          {/* File upload + sample */}
-          <div className="flex gap-4">
-            <div className="flex-1">
+            <div className="p-6 space-y-4">
+              {/* Evaluation name */}
+              <div>
+                <label className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-1.5">
+                  Evaluation Name <span className="normal-case text-text-tertiary font-normal">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. RAG v2 baseline, Sprint 14 test…"
+                  maxLength={100}
+                  className="w-full px-3 py-2 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
+                />
+              </div>
+
               <input
                 type="file"
                 ref={fileInputRef}
@@ -116,91 +142,126 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
                 onChange={handleFileChange}
                 className="hidden"
               />
-              <button
+              {/* Drag-and-drop zone */}
+              <div
+                onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                onDragLeave={() => setIsDragOver(false)}
+                onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full px-4 py-3 border-2 border-dashed border-surface-border-strong rounded-xl hover:border-accent hover:bg-surface-secondary transition-colors text-sm text-text-secondary"
+                className={`w-full py-10 border-2 border-dashed rounded-xl cursor-pointer transition-colors flex flex-col items-center gap-3 ${
+                  isDragOver
+                    ? 'border-accent bg-surface-secondary'
+                    : 'border-surface-border-strong hover:border-accent hover:bg-surface-secondary'
+                }`}
               >
-                <Upload size={16} className="inline -mt-0.5 mr-2" />
-                Upload JSON File
-              </button>
+                <Upload
+                  size={24}
+                  className={`text-text-tertiary transition-transform duration-200 ${isDragOver ? 'scale-110' : ''}`}
+                />
+                <div className="text-center">
+                  <p className="text-sm text-text-secondary">
+                    Drop JSON file here, or <span className="text-accent font-medium">browse</span>
+                  </p>
+                  <p className="text-xs text-text-tertiary mt-0.5">.json files only</p>
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  onClick={loadSampleData}
+                  className="px-4 py-2 bg-surface text-text-primary text-sm font-medium rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors"
+                >
+                  Load Sample Data
+                </button>
+              </div>
             </div>
-            <button
-              onClick={loadSampleData}
-              className="px-4 py-2 bg-surface text-text-primary text-sm font-medium rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors"
-            >
-              Load Sample Data
-            </button>
           </div>
 
-          {/* Strategy selector */}
-          <div>
-            <label htmlFor="strategy-select" className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-2">
-              Evaluation Strategy
-            </label>
-            <select
-              id="strategy-select"
-              value={strategy}
-              onChange={(e) => setStrategy(e.target.value)}
-              className="w-full px-3 py-2 text-sm bg-surface border border-surface-border rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
-            >
-              {STRATEGIES.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
-              ))}
-            </select>
-            <p className="mt-1.5 text-xs text-text-tertiary">
-              {STRATEGY_DESCRIPTIONS[strategy]}
-            </p>
-          </div>
-
-          {/* Error */}
           <ErrorAlert message={error} />
 
           {/* Preview table */}
-          {testCases.length > 0 && (
-            <>
-              <div className="bg-surface rounded-xl border border-surface-border overflow-hidden">
-                <div className="px-6 py-3 border-b border-surface-border">
+          {testCases.length > 0 && (() => {
+            const hasExpected = testCases.some(tc => tc.expectedOutput);
+            return (
+              <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden">
+                <div className="px-6 py-3 border-b border-surface-border flex items-center justify-between">
                   <h4 className="text-sm font-semibold text-text-primary">
                     Preview ({testCases.length} test case{testCases.length > 1 ? 's' : ''})
                   </h4>
+                  <span className="text-xs text-text-tertiary">Scroll to see all rows and fields</span>
                 </div>
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-surface-border">
-                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">#</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Input</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Output</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Context</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-surface-border">
-                    {testCases.map((tc, i) => (
-                      <tr key={`${tc.input.slice(0, 30)}-${i}`} className="hover:bg-surface-secondary transition-colors">
-                        <td className="px-6 py-4 text-sm text-text-tertiary">{i + 1}</td>
-                        <td className="px-6 py-4 text-sm text-text-primary max-w-xs truncate">{tc.input}</td>
-                        <td className="px-6 py-4 text-sm text-text-secondary max-w-xs truncate">{tc.actualOutput}</td>
-                        <td className="px-6 py-4 text-sm text-text-secondary">{tc.retrievalContext.length} passages</td>
+                <div className="overflow-auto max-h-80">
+                  <table className="w-full min-w-[700px]">
+                    <thead className="sticky top-0 bg-surface z-10 border-b border-surface-border">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-8">#</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-52">Input</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-52">Actual Output</th>
+                        {hasExpected && (
+                          <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider w-44">Expected Output</th>
+                        )}
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Context Passages</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-surface-border">
+                      {testCases.map((tc, i) => (
+                        <tr
+                          key={`${tc.input.slice(0, 30)}-${i}`}
+                          className="hover:bg-surface-secondary transition-colors animate-fadeInUp align-top"
+                          style={{ animationDelay: `${i * 40}ms` }}
+                        >
+                          <td className="px-4 py-3 text-sm text-text-tertiary">{i + 1}</td>
+                          <td className="px-4 py-3 text-sm text-text-primary break-words">{tc.input}</td>
+                          <td className="px-4 py-3 text-sm text-text-secondary break-words">{tc.actualOutput}</td>
+                          {hasExpected && (
+                            <td className="px-4 py-3 text-sm text-text-secondary break-words">{tc.expectedOutput || '—'}</td>
+                          )}
+                          <td className="px-4 py-3">
+                            <ol className="space-y-1 list-decimal list-inside">
+                              {tc.retrievalContext.map((p, j) => (
+                                <li key={j} className="text-xs text-text-secondary break-words leading-relaxed">{p}</li>
+                              ))}
+                            </ol>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
+            );
+          })()}
 
-              <button
-                onClick={handleSubmit}
-                disabled={isLoading}
-                className="w-full px-4 py-2 bg-accent text-accent-foreground text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? 'Starting Evaluation...' : <><Play size={16} className="inline -mt-0.5 mr-2" />Run Evaluation ({strategy})</>}
-              </button>
-            </>
+          {/* Run button */}
+          {testCases.length > 0 && (
+            <button
+              onClick={handleSubmit}
+              disabled={isLoading}
+              className="w-full px-4 py-3 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
+            >
+              {isLoading ? (
+                'Starting Evaluation...'
+              ) : (
+                <>
+                  Run Evaluation
+                  <Play size={16} className="transition-transform group-hover:translate-x-1" />
+                </>
+              )}
+            </button>
           )}
 
-          {/* Format hint */}
+          {/* Collapsible format hint */}
           <div>
-            <p className="text-xs text-text-tertiary mb-2">Expected JSON format:</p>
-            <pre className="bg-surface-secondary p-3 rounded-lg overflow-x-auto text-xs text-text-secondary">
-              {`[
+            <button
+              onClick={() => setShowFormat(!showFormat)}
+              className="flex items-center gap-1.5 text-xs text-text-secondary hover:text-text-primary transition-colors"
+            >
+              View expected JSON format
+              <ChevronDown size={12} className={`transition-transform duration-200 ${showFormat ? 'rotate-180' : ''}`} />
+            </button>
+            {showFormat && (
+              <pre className="bg-surface-secondary p-3 rounded-lg overflow-x-auto text-xs text-text-secondary mt-2">
+{`[
   {
     "input": "User query",
     "actualOutput": "RAG system response",
@@ -208,7 +269,50 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
     "retrievalContext": ["Context passage 1", "Context passage 2"]
   }
 ]`}
-            </pre>
+              </pre>
+            )}
+          </div>
+        </div>
+
+        {/* Right 1/3: strategy selector */}
+        <div>
+          <div className="bg-surface rounded-xl border border-surface-border shadow-sm">
+            <div className="px-6 py-4 border-b border-surface-border">
+              <h3 className="text-sm font-semibold text-text-primary">Evaluation Strategy</h3>
+              <p className="text-xs text-text-secondary mt-0.5">Select how judges are assigned</p>
+            </div>
+            <div className="p-4 space-y-3">
+              <div className="grid grid-cols-2 gap-2">
+                {STRATEGIES.map((s) => {
+                  const cfg = STRATEGY_CARD_CONFIG[s.value];
+                  const StratIcon = cfg.icon;
+                  const isActive = strategy === s.value;
+                  return (
+                    <button
+                      key={s.value}
+                      onClick={() => setStrategy(s.value)}
+                      className={`flex flex-col items-start gap-2 p-3 rounded-xl border text-left transition-colors ${
+                        isActive
+                          ? 'border-accent bg-surface-tertiary'
+                          : 'border-surface-border hover:bg-surface-secondary'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span className={`w-1.5 h-1.5 rounded-full ${cfg.activeDot}`} />
+                        <StratIcon size={13} className={cfg.colorClass} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-text-primary capitalize">{s.value}</p>
+                        <p className="text-xs text-text-tertiary leading-snug mt-0.5">{cfg.description}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-text-tertiary pt-2 border-t border-surface-border">
+                {STRATEGY_DESCRIPTIONS[strategy]}
+              </p>
+            </div>
           </div>
         </div>
       </div>

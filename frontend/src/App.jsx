@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
-import { Toaster } from 'sileo';
+import { Toaster, sileo } from 'sileo';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { EvaluationProvider, useEvaluation } from './context/EvaluationContext';
 import { Sidebar } from './components/layout/Sidebar';
@@ -14,10 +14,24 @@ import { ErrorAlert } from './components/ui/ErrorAlert';
 function UploadRoute() {
   const { submitEvaluation, isLoading } = useEvaluation();
   const navigate = useNavigate();
-  const handleSubmit = async (cases, options) => {
-    const jobId = await submitEvaluation(cases, options);
-    if (jobId) navigate(`/app/evaluate/${jobId}`);
+
+  const handleSubmit = (cases, options) => {
+    const evalPromise = new Promise((resolve, reject) => {
+      submitEvaluation(cases, options).then((jobId) => {
+        if (jobId) resolve(jobId);
+        else reject(new Error('Failed to start evaluation'));
+      });
+    });
+
+    sileo.promise(evalPromise, {
+      loading: { title: 'Starting evaluation…' },
+      success: { title: 'Evaluation started!' },
+      error: (err) => ({ title: 'Failed to start', description: err?.message }),
+    });
+
+    evalPromise.then((jobId) => navigate(`/app/evaluate/${jobId}`)).catch(() => {});
   };
+
   return <TestCaseUpload onSubmit={handleSubmit} isLoading={isLoading} />;
 }
 

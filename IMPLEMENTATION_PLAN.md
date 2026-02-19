@@ -999,25 +999,25 @@ node cli/bin/quorum.js test \
   --update-baseline
 # -> "Baseline saved to tests/baselines/..."
 
-node cli/bin/ragscope.js test \
-  --config tests/golden/.ragscope.yml \
+node cli/bin/quorum.js test \
+  --config tests/golden/.quorum.yml \
   --endpoint http://localhost:3000 \
-  --email test@ragscope.dev \
+  --email test@quorum.dev \
   --password testpass123
 # -> "Compared against baseline: X regressions detected"
 
 # 11. Run meta-evaluation
 node tests/meta-eval/runMetaEval.js \
   --endpoint http://localhost:3000 \
-  --email test@ragscope.dev \
+  --email test@quorum.dev \
   --password testpass123 \
   --strategy council
 # -> Agreement report + baseline saved
 
 # 12. Test SDK PII sanitization
 node -e "
-  import { RAGScope } from './sdk/src/index.js';
-  const rs = new RAGScope({ endpoint: 'http://localhost:3000' });
+  import { Quorum } from './sdk/src/index.js';
+  const rs = new Quorum({ endpoint: 'http://localhost:3000' });
   rs.capture({ input: 'email: user@test.com', actualOutput: 'Call (555) 123-4567', retrievalContext: ['SSN: 123-45-6789'] });
   console.log(rs._buffer[0].input);  // Should show [EMAIL]
   console.log(rs._buffer[0].actualOutput);  // Should show [PHONE]
@@ -1034,9 +1034,9 @@ node -e "
 
 | # | Criterion | Verified By |
 |---|-----------|-------------|
-| 1 | `ragscope init` creates working config + example dataset | E2E step 6 |
-| 2 | `ragscope test` evaluates and outputs colored verdicts | E2E step 8 |
-| 3 | `ragscope test --ci` outputs JSON with exit code 0/1 | E2E step 9 |
+| 1 | `quorum init` creates working config + example dataset | E2E step 6 |
+| 2 | `quorum test` evaluates and outputs colored verdicts | E2E step 8 |
+| 3 | `quorum test --ci` outputs JSON with exit code 0/1 | E2E step 9 |
 | 4 | GitHub Action posts markdown comment on PR | Checkpoint 5 |
 | 5 | Meta-eval validates judges catch hallucinations (>80% agreement) | E2E step 11 |
 | 6 | SDK sanitizes PII before sending | E2E step 12 |

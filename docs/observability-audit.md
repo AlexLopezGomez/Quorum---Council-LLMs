@@ -1,10 +1,10 @@
 # Observability And Audit Runbook
 
-This document defines how to trace requests, inspect failures, and audit key actions in RAGScope.
+This document defines how to trace requests, inspect failures, and audit key actions in Quorum.
 
 ## What Is Collected
 
-RAGScope stores two observability streams in MongoDB:
+Quorum stores two observability streams in MongoDB:
 
 - `app_logs`: operational logs (`info`, `warn`, `error`)
 - `audit_events`: security and business-critical events (`audit`)

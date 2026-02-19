@@ -47,6 +47,7 @@ Extend `BaseCallbackHandler` and call `ragscope.capture()` in `handleChainEnd`.
 | `batchSize` | `number` | `10` | Flush when buffer reaches this size |
 | `flushInterval` | `number` | `5000` | Auto-flush interval in ms |
 | `onError` | `function` | `console.warn` | Error callback (SDK never throws) |
+| `correlationId` | `string` | auto-generated | Correlation ID propagated as `X-Correlation-ID` |
 
 ## Data Flow
 
@@ -67,6 +68,8 @@ Creates a new SDK instance.
 ### `.capture(payload)`
 
 Buffers a RAG interaction. Non-blocking, returns `void`.
+
+`payload.metadata.correlationId` can override the SDK-level correlation ID per capture.
 
 ### `.flush()`
 

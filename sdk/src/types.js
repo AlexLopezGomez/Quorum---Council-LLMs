@@ -6,6 +6,7 @@
  * @property {number} [batchSize=10] - Flush when buffer reaches this size
  * @property {number} [flushInterval=5000] - Auto-flush interval in ms
  * @property {function(Error): void} [onError] - Error callback (never throws)
+ * @property {string} [correlationId] - Optional fixed correlation ID propagated to backend
  */
 
 /**
@@ -15,6 +16,7 @@
  * @property {string} [expectedOutput] - Optional expected response
  * @property {string[]} retrievalContext - Retrieved context passages
  * @property {Object} [metadata] - Arbitrary metadata (sessionId, userId, etc.)
+ * @property {string} [metadata.correlationId] - Correlation ID for distributed tracing
  * @property {string} [capturedAt] - ISO timestamp of when the interaction happened
  */
 

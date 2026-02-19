@@ -3,6 +3,7 @@ import { runDeterministicChecks } from '../evaluators/deterministicChecks.js';
 import { evaluateFaithfulness } from '../services/judges/openai.js';
 import { evaluateContextRelevancy } from '../services/judges/gemini.js';
 import { evaluateTestCase } from '../services/orchestrator.js';
+import { logger } from '../utils/logger.js';
 
 const EVALUATION_TIMEOUT = parseInt(process.env.EVALUATION_TIMEOUT) || 30000;
 const HIGH_THRESHOLD = parseFloat(process.env.RISK_HIGH_THRESHOLD) || 0.8;
@@ -181,6 +182,13 @@ export async function routeTestCase(testCase, testCaseIndex, emitEvent, saveEven
       selectedStrategy: strategy,
       timestamp: new Date().toISOString(),
     });
+    logger.info('evaluation.risk.scored', {
+      metadata: {
+        testCaseIndex,
+        riskScore,
+        selectedStrategy: strategy,
+      },
+    });
   }
 
   const activeJudges = getActiveJudges(strategy);
@@ -192,6 +200,14 @@ export async function routeTestCase(testCase, testCaseIndex, emitEvent, saveEven
     estimatedCost: estimateCost(strategy),
     activeJudges,
     timestamp: new Date().toISOString(),
+  });
+  logger.info('evaluation.strategy.selected', {
+    metadata: {
+      testCaseIndex,
+      strategy,
+      activeJudges,
+      riskScore,
+    },
   });
 
   let result;
@@ -237,6 +253,14 @@ export async function routeTestCase(testCase, testCaseIndex, emitEvent, saveEven
   const judgeCosts = Object.values(result.judges).filter(j => j?.cost).reduce((sum, j) => sum + j.cost, 0);
   const aggregatorCost = result.aggregator?.cost || 0;
   result.strategyCost = Math.round((judgeCosts + aggregatorCost) * 1000000) / 1000000;
+  logger.info('evaluation.strategy.completed', {
+    metadata: {
+      testCaseIndex,
+      strategy,
+      strategyCost: result.strategyCost,
+      verdict: result.aggregator?.verdict || 'ERROR',
+    },
+  });
 
   return result;
 }

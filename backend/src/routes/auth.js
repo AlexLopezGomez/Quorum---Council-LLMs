@@ -4,6 +4,7 @@ import { User } from '../models/User.js';
 import { signToken, setTokenCookie, clearTokenCookie } from '../utils/auth.js';
 import { createValidationMiddleware } from '../utils/validation.js';
 import { requireAuth } from '../middleware/requireAuth.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 
@@ -28,14 +29,31 @@ const loginSchema = z.object({
 router.post('/register', createValidationMiddleware(registerSchema), async (req, res) => {
   try {
     const { email, username, password } = req.validatedBody;
+    logger.info('auth.register.attempt', logger.withReq(req, { metadata: { email, username } }));
 
     const existingEmail = await User.findOne({ email });
     if (existingEmail) {
+      logger.audit(
+        'auth.register.failed',
+        logger.withReq(req, {
+          actor: 'unknown',
+          statusCode: 409,
+          metadata: { reason: 'email_in_use', email },
+        })
+      );
       return res.status(409).json({ error: 'Email already in use' });
     }
 
     const existingUsername = await User.findOne({ username });
     if (existingUsername) {
+      logger.audit(
+        'auth.register.failed',
+        logger.withReq(req, {
+          actor: 'unknown',
+          statusCode: 409,
+          metadata: { reason: 'username_taken', username },
+        })
+      );
       return res.status(409).json({ error: 'Username already taken' });
     }
 
@@ -45,9 +63,24 @@ router.post('/register', createValidationMiddleware(registerSchema), async (req,
     const token = signToken(user._id);
     setTokenCookie(res, token);
 
+    logger.audit(
+      'auth.register.success',
+      logger.withReq(req, {
+        actor: 'user',
+        userId: user._id,
+        statusCode: 201,
+        metadata: { username },
+      })
+    );
     res.status(201).json({ user: user.toPublicJSON() });
   } catch (err) {
-    console.error('Registration error:', err);
+    logger.error(
+      'auth.register.error',
+      logger.withReq(req, {
+        statusCode: 500,
+        metadata: { message: err.message },
+      })
+    );
     res.status(500).json({ error: 'Registration failed' });
   }
 });
@@ -55,28 +88,61 @@ router.post('/register', createValidationMiddleware(registerSchema), async (req,
 router.post('/login', createValidationMiddleware(loginSchema), async (req, res) => {
   try {
     const { email, password } = req.validatedBody;
+    logger.info('auth.login.attempt', logger.withReq(req, { metadata: { email } }));
 
     const user = await User.findOne({ email });
     if (!user || !(await user.comparePassword(password))) {
+      logger.audit(
+        'auth.login.failed',
+        logger.withReq(req, {
+          actor: 'unknown',
+          statusCode: 401,
+          metadata: { reason: 'invalid_credentials', email },
+        })
+      );
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
     const token = signToken(user._id);
     setTokenCookie(res, token);
 
+    logger.audit(
+      'auth.login.success',
+      logger.withReq(req, {
+        actor: 'user',
+        userId: user._id,
+        statusCode: 200,
+        metadata: { username: user.username },
+      })
+    );
     res.json({ user: user.toPublicJSON() });
   } catch (err) {
-    console.error('Login error:', err);
+    logger.error(
+      'auth.login.error',
+      logger.withReq(req, {
+        statusCode: 500,
+        metadata: { message: err.message },
+      })
+    );
     res.status(500).json({ error: 'Login failed' });
   }
 });
 
 router.post('/logout', (req, res) => {
   clearTokenCookie(res);
+  logger.audit(
+    'auth.logout.success',
+    logger.withReq(req, {
+      actor: req.user?._id ? 'user' : 'unknown',
+      userId: req.user?._id,
+      statusCode: 200,
+    })
+  );
   res.json({ message: 'Logged out' });
 });
 
 router.get('/me', requireAuth, (req, res) => {
+  logger.info('auth.me.fetched', logger.withReq(req, { userId: req.user._id, statusCode: 200 }));
   res.json({ user: req.user.toPublicJSON() });
 });
 

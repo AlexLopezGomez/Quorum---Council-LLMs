@@ -5,6 +5,7 @@ import { createValidationMiddleware } from '../utils/validation.js';
 import { Evaluation } from '../models/Evaluation.js';
 import { runEvaluation } from '../services/orchestrator.js';
 import { sseManager } from '../utils/sse.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 
@@ -67,6 +68,18 @@ router.post('/', createValidationMiddleware(ingestRequestSchema), async (req, re
   try {
     const { captures, options } = req.validatedBody;
     const jobId = nanoid(12);
+    logger.audit(
+      'sdk.ingest.requested',
+      logger.withReq(req, {
+        actor: 'sdk',
+        userId: req.user._id,
+        jobId,
+        metadata: {
+          strategy: options?.strategy || 'auto',
+          captureCount: captures.length,
+        },
+      })
+    );
 
     const testCases = captures.map(({ input, actualOutput, expectedOutput, retrievalContext }) => ({
       input,
@@ -90,6 +103,15 @@ router.post('/', createValidationMiddleware(ingestRequestSchema), async (req, re
     });
 
     await evaluation.save();
+    logger.audit(
+      'sdk.ingest.accepted',
+      logger.withReq(req, {
+        actor: 'sdk',
+        userId: req.user._id,
+        statusCode: 202,
+        jobId,
+      })
+    );
 
     const emitEvent = (event, data) => {
       sseManager.emit(jobId, event, data);
@@ -102,7 +124,13 @@ router.post('/', createValidationMiddleware(ingestRequestSchema), async (req, re
           { $push: { events: { type, data, timestamp: new Date() } } }
         );
       } catch (err) {
-        console.error('Failed to save event:', err);
+        logger.error(
+          'sdk.ingest.event_save_failed',
+          logger.withReq(req, {
+            jobId,
+            metadata: { eventType: type, message: err.message },
+          })
+        );
       }
     };
 
@@ -110,12 +138,24 @@ router.post('/', createValidationMiddleware(ingestRequestSchema), async (req, re
       try {
         await Evaluation.updateOne({ jobId }, { $set: updates });
       } catch (err) {
-        console.error('Failed to update evaluation:', err);
+        logger.error(
+          'sdk.ingest.update_failed',
+          logger.withReq(req, {
+            jobId,
+            metadata: { message: err.message },
+          })
+        );
       }
     };
 
     runEvaluation(testCases, jobId, emitEvent, saveEvent, updateDocument, options || {}).catch(async (error) => {
-      console.error('Evaluation failed:', error);
+      logger.error(
+        'sdk.ingest.evaluation_failed',
+        logger.withReq(req, {
+          jobId,
+          metadata: { message: error.message },
+        })
+      );
       await Evaluation.updateOne(
         { jobId },
         { $set: { status: 'failed', completedAt: new Date() } }
@@ -133,7 +173,13 @@ router.post('/', createValidationMiddleware(ingestRequestSchema), async (req, re
       streamUrl: `/api/stream/${jobId}`,
     });
   } catch (error) {
-    console.error('Failed to ingest captures:', error);
+    logger.error(
+      'sdk.ingest.failed',
+      logger.withReq(req, {
+        statusCode: 500,
+        metadata: { message: error.message },
+      })
+    );
     res.status(500).json({ error: 'Failed to ingest captures', message: error.message });
   }
 });

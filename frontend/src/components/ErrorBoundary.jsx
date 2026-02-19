@@ -1,4 +1,5 @@
 import React from 'react';
+import { clientLog, getCorrelationId } from '../lib/observability';
 
 export class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -11,7 +12,13 @@ export class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    clientLog('error', 'frontend.error_boundary.caught', {
+      correlationId: getCorrelationId(),
+      metadata: {
+        message: error?.message,
+        componentStack: errorInfo?.componentStack,
+      },
+    });
   }
 
   render() {

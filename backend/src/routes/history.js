@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { Evaluation } from '../models/Evaluation.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 
@@ -77,8 +78,23 @@ router.get('/', async (req, res) => {
       })),
       nextCursor,
     });
+    logger.info(
+      'history.fetched',
+      logger.withReq(req, {
+        userId: req.user._id,
+        statusCode: 200,
+        metadata: { limit, count: results.length, hasMore },
+      })
+    );
   } catch (error) {
-    console.error('Failed to fetch history:', error);
+    logger.error(
+      'history.fetch_failed',
+      logger.withReq(req, {
+        userId: req.user?._id,
+        statusCode: 500,
+        metadata: { message: error.message },
+      })
+    );
     res.status(500).json({ error: 'Failed to fetch evaluation history' });
   }
 });
@@ -87,25 +103,45 @@ router.patch('/:jobId', async (req, res) => {
   try {
     const { name } = req.body;
     if (typeof name !== 'string') {
+      logger.warn('history.update_name.invalid_payload', logger.withReq(req, { statusCode: 400, userId: req.user._id }));
       return res.status(400).json({ error: 'name must be a string' });
     }
 
     const evaluation = await Evaluation.findOne({ jobId: req.params.jobId }).select('jobId userId name');
 
     if (!evaluation) {
+      logger.warn('history.update_name.not_found', logger.withReq(req, { statusCode: 404, userId: req.user._id }));
       return res.status(404).json({ error: 'Evaluation not found' });
     }
 
     if (evaluation.userId?.toString() !== req.user._id?.toString()) {
+      logger.audit('history.update_name.forbidden', logger.withReq(req, { actor: 'user', statusCode: 403, userId: req.user._id }));
       return res.status(403).json({ error: 'Forbidden' });
     }
 
     evaluation.name = name.trim().slice(0, 100);
     await evaluation.save();
+    logger.audit(
+      'history.updated',
+      logger.withReq(req, {
+        actor: 'user',
+        userId: req.user._id,
+        statusCode: 200,
+        jobId: evaluation.jobId,
+        metadata: { name: evaluation.name },
+      })
+    );
 
     res.json({ jobId: evaluation.jobId, name: evaluation.name });
   } catch (error) {
-    console.error('Failed to update evaluation name:', error);
+    logger.error(
+      'history.update_name.failed',
+      logger.withReq(req, {
+        userId: req.user?._id,
+        statusCode: 500,
+        metadata: { message: error.message },
+      })
+    );
     res.status(500).json({ error: 'Failed to update evaluation name' });
   }
 });
@@ -135,6 +171,10 @@ router.get('/:jobId/cost', async (req, res) => {
       .lean();
 
     if (!evaluation) {
+      logger.warn(
+        'history.cost.not_found',
+        logger.withReq(req, { statusCode: 404, userId: req.user._id, jobId: req.params.jobId })
+      );
       return res.status(404).json({ error: 'Evaluation not found' });
     }
 
@@ -165,8 +205,24 @@ router.get('/:jobId/cost', async (req, res) => {
       savings: Math.max(0, savings),
       breakdown: costBreakdown,
     });
+    logger.info(
+      'history.cost.fetched',
+      logger.withReq(req, {
+        statusCode: 200,
+        userId: req.user._id,
+        jobId: req.params.jobId,
+      })
+    );
   } catch (error) {
-    console.error('Failed to fetch cost breakdown:', error);
+    logger.error(
+      'history.cost.fetch_failed',
+      logger.withReq(req, {
+        statusCode: 500,
+        userId: req.user?._id,
+        jobId: req.params.jobId,
+        metadata: { message: error.message },
+      })
+    );
     res.status(500).json({ error: 'Failed to fetch cost breakdown' });
   }
 });
@@ -227,8 +283,23 @@ router.get('/stats', async (req, res) => {
       strategyCounts,
       costByStrategy,
     });
+    logger.info(
+      'history.stats.fetched',
+      logger.withReq(req, {
+        statusCode: 200,
+        userId: req.user._id,
+        metadata: { totalEvaluations: totalEvals, recentCount: recentEvals.length },
+      })
+    );
   } catch (error) {
-    console.error('Failed to fetch stats:', error);
+    logger.error(
+      'history.stats.fetch_failed',
+      logger.withReq(req, {
+        statusCode: 500,
+        userId: req.user?._id,
+        metadata: { message: error.message },
+      })
+    );
     res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });

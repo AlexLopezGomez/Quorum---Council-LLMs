@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { Evaluation } from '../models/Evaluation.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 
@@ -30,6 +31,10 @@ router.get('/:jobId', async (req, res) => {
     const evaluation = await Evaluation.findOne({ jobId, userId: req.user._id });
 
     if (!evaluation) {
+      logger.warn(
+        'results.not_found',
+        logger.withReq(req, { jobId, statusCode: 404, userId: req.user._id })
+      );
       return res.status(404).json({
         error: 'Evaluation not found',
         jobId,
@@ -37,6 +42,10 @@ router.get('/:jobId', async (req, res) => {
     }
 
     if (evaluation.status === 'processing') {
+      logger.info(
+        'results.processing',
+        logger.withReq(req, { jobId, statusCode: 202, userId: req.user._id })
+      );
       return res.status(202).json({
         jobId,
         status: 'processing',
@@ -59,8 +68,17 @@ router.get('/:jobId', async (req, res) => {
       createdAt: evaluation.createdAt,
       completedAt: evaluation.completedAt,
     });
+    logger.info('results.fetched', logger.withReq(req, { jobId, statusCode: 200, userId: req.user._id }));
   } catch (error) {
-    console.error('Results fetch error:', error);
+    logger.error(
+      'results.fetch_failed',
+      logger.withReq(req, {
+        jobId,
+        userId: req.user?._id,
+        statusCode: 500,
+        metadata: { message: error.message },
+      })
+    );
     res.status(500).json({
       error: 'Failed to fetch results',
       message: error.message,

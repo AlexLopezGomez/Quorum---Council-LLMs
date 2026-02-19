@@ -11,6 +11,7 @@ export class Transport {
   async send(captures, strategy) {
     const url = `${this._endpoint}/api/ingest`;
     const body = JSON.stringify({ captures, options: { strategy } });
+    const correlationId = captures?.[0]?.metadata?.correlationId || null;
 
     for (let attempt = 0; attempt <= RETRY_DELAYS.length; attempt++) {
       try {
@@ -19,6 +20,7 @@ export class Transport {
 
         const headers = { 'Content-Type': 'application/json' };
         if (this._apiKey) headers['Authorization'] = `Bearer ${this._apiKey}`;
+        if (correlationId) headers['X-Correlation-ID'] = correlationId;
 
         const response = await fetch(url, {
           method: 'POST',
@@ -37,7 +39,18 @@ export class Transport {
           continue;
         }
         if (this._onError) this._onError(err);
-        else console.warn(`[@ragscope/sdk] Failed to send captures: ${err.message}`);
+        else {
+          console.warn(`[@ragscope/sdk] Failed to send captures: ${err.message}`);
+          console.warn(
+            JSON.stringify({
+              level: 'warn',
+              event: 'sdk.transport.send_failed',
+              correlationId,
+              strategy,
+              timestamp: new Date().toISOString(),
+            })
+          );
+        }
         return null;
       }
     }

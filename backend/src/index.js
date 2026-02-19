@@ -11,15 +11,19 @@ import historyRouter from './routes/history.js';
 import webhooksRouter from './routes/webhooks.js';
 import ingestRouter from './routes/ingest.js';
 import authRouter from './routes/auth.js';
+import observabilityRouter from './routes/observability.js';
 import swaggerUi from 'swagger-ui-express';
 import { sseManager } from './utils/sse.js';
 import { Evaluation } from './models/Evaluation.js';
 import { spec } from './utils/openapi.js';
 import { requireAuth } from './middleware/requireAuth.js';
+import { requestContext } from './middleware/requestContext.js';
+import { logger } from './utils/logger.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ragscope';
+sseManager.setLogger(logger);
 
 const limiter = rateLimit({
   windowMs: 60 * 1000,
@@ -38,8 +42,24 @@ app.use(
 
 app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
+app.use(requestContext);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(spec, { customSiteTitle: 'RAGScope API' }));
 app.use('/api', limiter);
+
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    logger.info(
+      'http.request.complete',
+      logger.withReq(req, {
+        statusCode: res.statusCode,
+        metadata: {
+          contentLength: res.getHeader('content-length') || null,
+        },
+      })
+    );
+  });
+  next();
+});
 
 app.use('/api/auth', authRouter);
 app.use('/api/stream', requireAuth, streamRouter);
@@ -49,8 +69,10 @@ app.use('/api/evaluate', requireAuth, evaluateRouter);
 app.use('/api/history', requireAuth, historyRouter);
 app.use('/api/webhooks', requireAuth, webhooksRouter);
 app.use('/api/results', requireAuth, resultsRouter);
+app.use('/api/observability', requireAuth, observabilityRouter);
 
 app.get('/health', (req, res) => {
+  logger.info('system.health.check', logger.withReq(req, { statusCode: 200 }));
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -59,7 +81,16 @@ app.get('/health', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err);
+  logger.error(
+    'system.error.unhandled',
+    logger.withReq(req, {
+      statusCode: 500,
+      metadata: {
+        message: err?.message,
+        stack: process.env.NODE_ENV === 'development' ? err?.stack : undefined,
+      },
+    })
+  );
   res.status(500).json({
     error: 'Internal server error',
     message: process.env.NODE_ENV === 'development' ? err.message : undefined,
@@ -70,12 +101,20 @@ async function connectWithRetry(retries = 5, delay = 5000) {
   for (let i = 0; i < retries; i++) {
     try {
       await mongoose.connect(MONGODB_URI);
-      console.log('Connected to MongoDB');
+      logger.info('system.mongodb.connected', {
+        metadata: { uri: MONGODB_URI.replace(/\/\/.*@/, '//[REDACTED]@') },
+      });
       return;
     } catch (err) {
-      console.error(`MongoDB connection attempt ${i + 1} failed:`, err.message);
+      logger.error('system.mongodb.connect_failed', {
+        metadata: {
+          attempt: i + 1,
+          retries,
+          message: err.message,
+        },
+      });
       if (i < retries - 1) {
-        console.log(`Retrying in ${delay / 1000}s...`);
+        logger.warn('system.mongodb.retry', { metadata: { retryInSeconds: delay / 1000 } });
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
@@ -93,10 +132,17 @@ async function cleanupStaleJobs() {
       }
     );
     if (result.modifiedCount > 0) {
-      console.log(`Cleaned up ${result.modifiedCount} stale processing jobs`);
+      logger.audit('system.jobs.cleaned', {
+        actor: 'system',
+        metadata: {
+          staleJobs: result.modifiedCount,
+        },
+      });
     }
   } catch (err) {
-    console.error('Failed to cleanup stale jobs:', err);
+    logger.error('system.jobs.cleanup_failed', {
+      metadata: { message: err.message },
+    });
   }
 }
 
@@ -106,26 +152,26 @@ async function start() {
     await cleanupStaleJobs();
 
     const server = app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      logger.info('system.startup', { metadata: { port: PORT } });
     });
 
     const shutdown = async (signal) => {
-      console.log(`\n${signal} received. Starting graceful shutdown...`);
+      logger.warn('system.shutdown.started', { metadata: { signal } });
 
       sseManager.closeAll();
-      console.log('SSE connections closed');
+      logger.info('system.sse.closed');
 
       server.close(async () => {
-        console.log('HTTP server closed');
+        logger.info('system.http.closed');
 
         await mongoose.connection.close();
-        console.log('MongoDB connection closed');
+        logger.info('system.mongodb.disconnected');
 
         process.exit(0);
       });
 
       setTimeout(() => {
-        console.error('Forced shutdown after timeout');
+        logger.error('system.shutdown.timeout');
         process.exit(1);
       }, 10000);
     };
@@ -133,7 +179,7 @@ async function start() {
     process.on('SIGTERM', () => shutdown('SIGTERM'));
     process.on('SIGINT', () => shutdown('SIGINT'));
   } catch (err) {
-    console.error('Failed to start server:', err);
+    logger.error('system.startup.failed', { metadata: { message: err.message } });
     process.exit(1);
   }
 }

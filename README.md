@@ -148,6 +148,7 @@ Interactive docs at **http://localhost:3000/api/docs** (Swagger UI).
 | PATCH | `/api/webhooks/:id` | Update webhook |
 | DELETE | `/api/webhooks/:id` | Delete webhook |
 | POST | `/api/webhooks/:id/test` | Test webhook delivery |
+| GET | `/api/observability/search` | Search logs/audit by `requestId` or `jobId` |
 
 ## Configuration
 
@@ -163,6 +164,9 @@ Interactive docs at **http://localhost:3000/api/docs** (Swagger UI).
 | `RISK_HIGH_THRESHOLD` | Council threshold | `0.8` |
 | `RISK_LOW_THRESHOLD` | Single threshold | `0.4` |
 | `EVALUATION_TIMEOUT` | Judge timeout (ms) | `30000` |
+| `LOG_PERSIST` | Persist structured logs/audits in Mongo | `false` |
+| `APP_LOG_TTL_DAYS` | Retention for app logs | `30` |
+| `AUDIT_TTL_DAYS` | Retention for audit events | `180` |
 
 ## Evaluation Strategies
 
@@ -186,6 +190,7 @@ Interactive docs at **http://localhost:3000/api/docs** (Swagger UI).
 - [DECISIONS.md](./DECISIONS.md) — 10 architectural decision records
 - [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) — Frontend component patterns and styling guide
 - [sdk/README.md](./sdk/README.md) — SDK quickstart and integration patterns
+- [docs/observability-audit.md](./docs/observability-audit.md) — Correlation IDs, audit events, retention, and incident runbook
 
 ## License
 

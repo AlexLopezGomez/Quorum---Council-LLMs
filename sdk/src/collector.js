@@ -1,4 +1,5 @@
 import { Transport } from './transport.js';
+import { createCorrelationId } from './observability.js';
 
 export class RAGScope {
   /**
@@ -14,6 +15,7 @@ export class RAGScope {
     this._buffer = [];
     this._flushing = false;
     this._timer = null;
+    this._correlationId = config.correlationId || createCorrelationId();
 
     if (this._flushInterval > 0) {
       this._timer = setInterval(() => this.flush(), this._flushInterval);
@@ -25,8 +27,13 @@ export class RAGScope {
    * @param {import('./types.js').CapturePayload} payload
    */
   capture(payload) {
+    const metadata = payload.metadata || {};
     this._buffer.push({
       ...payload,
+      metadata: {
+        ...metadata,
+        correlationId: metadata.correlationId || this._correlationId,
+      },
       capturedAt: payload.capturedAt || new Date().toISOString(),
     });
 

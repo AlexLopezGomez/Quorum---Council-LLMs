@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { Webhook } from '../models/Webhook.js';
 import { createValidationMiddleware } from '../utils/validation.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 
@@ -52,8 +53,25 @@ router.post('/', createValidationMiddleware(createWebhookSchema), async (req, re
   try {
     const webhook = new Webhook({ ...req.validatedBody, userId: req.user._id });
     await webhook.save();
+    logger.audit(
+      'webhook.created',
+      logger.withReq(req, {
+        actor: 'user',
+        userId: req.user._id,
+        statusCode: 201,
+        metadata: { webhookId: webhook._id, name: webhook.name, events: webhook.events },
+      })
+    );
     res.status(201).json(webhook);
   } catch (err) {
+    logger.error(
+      'webhook.create_failed',
+      logger.withReq(req, {
+        userId: req.user?._id,
+        statusCode: 500,
+        metadata: { message: err.message },
+      })
+    );
     res.status(500).json({ error: 'Failed to create webhook', message: err.message });
   }
 });
@@ -71,8 +89,24 @@ router.post('/', createValidationMiddleware(createWebhookSchema), async (req, re
 router.get('/', async (req, res) => {
   try {
     const webhooks = await Webhook.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    logger.info(
+      'webhook.listed',
+      logger.withReq(req, {
+        userId: req.user._id,
+        statusCode: 200,
+        metadata: { count: webhooks.length },
+      })
+    );
     res.json({ webhooks });
   } catch (err) {
+    logger.error(
+      'webhook.list_failed',
+      logger.withReq(req, {
+        userId: req.user?._id,
+        statusCode: 500,
+        metadata: { message: err.message },
+      })
+    );
     res.status(500).json({ error: 'Failed to fetch webhooks' });
   }
 });
@@ -107,8 +141,25 @@ router.patch('/:id', createValidationMiddleware(updateWebhookSchema), async (req
       { new: true, runValidators: true }
     );
     if (!webhook) return res.status(404).json({ error: 'Webhook not found' });
+    logger.audit(
+      'webhook.updated',
+      logger.withReq(req, {
+        actor: 'user',
+        userId: req.user._id,
+        statusCode: 200,
+        metadata: { webhookId: webhook._id },
+      })
+    );
     res.json(webhook);
   } catch (err) {
+    logger.error(
+      'webhook.update_failed',
+      logger.withReq(req, {
+        userId: req.user?._id,
+        statusCode: 500,
+        metadata: { message: err.message },
+      })
+    );
     res.status(500).json({ error: 'Failed to update webhook', message: err.message });
   }
 });
@@ -134,8 +185,25 @@ router.delete('/:id', async (req, res) => {
   try {
     const webhook = await Webhook.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
     if (!webhook) return res.status(404).json({ error: 'Webhook not found' });
+    logger.audit(
+      'webhook.deleted',
+      logger.withReq(req, {
+        actor: 'user',
+        userId: req.user._id,
+        statusCode: 200,
+        metadata: { webhookId: webhook._id, name: webhook.name },
+      })
+    );
     res.json({ message: 'Webhook deleted' });
   } catch (err) {
+    logger.error(
+      'webhook.delete_failed',
+      logger.withReq(req, {
+        userId: req.user?._id,
+        statusCode: 500,
+        metadata: { message: err.message },
+      })
+    );
     res.status(500).json({ error: 'Failed to delete webhook' });
   }
 });
@@ -190,12 +258,37 @@ router.post('/:id/test', async (req, res) => {
         signal: controller.signal,
       });
       clearTimeout(timeout);
+      logger.audit(
+        'webhook.test.sent',
+        logger.withReq(req, {
+          actor: 'user',
+          userId: req.user._id,
+          statusCode: 200,
+          metadata: { webhookId: webhook._id, responseStatus: response.status, success: response.ok },
+        })
+      );
       res.json({ success: response.ok, status: response.status });
     } catch (fetchErr) {
       clearTimeout(timeout);
+      logger.warn(
+        'webhook.test.failed',
+        logger.withReq(req, {
+          userId: req.user._id,
+          statusCode: 200,
+          metadata: { webhookId: webhook._id, message: fetchErr.message },
+        })
+      );
       res.json({ success: false, error: fetchErr.message });
     }
   } catch (err) {
+    logger.error(
+      'webhook.test.error',
+      logger.withReq(req, {
+        userId: req.user?._id,
+        statusCode: 500,
+        metadata: { message: err.message },
+      })
+    );
     res.status(500).json({ error: 'Failed to test webhook' });
   }
 });

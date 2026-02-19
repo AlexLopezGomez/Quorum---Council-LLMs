@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { SSE_EVENT_TYPES, SSE_TERMINAL_EVENTS } from '../lib/constants';
 import { safeJsonParse } from '../lib/utils';
+import { clientLog, getCorrelationId } from '../lib/observability';
 
 /**
  * Hook for consuming Server-Sent Events from an evaluation stream.
@@ -28,7 +29,11 @@ export function useSSE(url) {
     };
 
     eventSource.onerror = (err) => {
-      console.error('SSE error:', err);
+      clientLog('error', 'frontend.sse.error', {
+        status: 'error',
+        correlationId: getCorrelationId(),
+        metadata: { url, message: err?.message || 'Connection lost' },
+      });
       setStatus('error');
       setError('Connection lost');
       eventSource.close();
@@ -40,6 +45,10 @@ export function useSSE(url) {
         if (!data) return; // skip malformed events
 
         setEvents((prev) => [...prev, { type, data, timestamp: Date.now() }]);
+        clientLog('info', 'frontend.sse.event', {
+          correlationId: getCorrelationId(),
+          metadata: { eventType: type },
+        });
 
         if (SSE_TERMINAL_EVENTS.has(type)) {
           setStatus('complete');

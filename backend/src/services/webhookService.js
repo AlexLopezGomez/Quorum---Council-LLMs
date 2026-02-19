@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { Webhook } from '../models/Webhook.js';
 import { Evaluation } from '../models/Evaluation.js';
+import { logger } from '../utils/logger.js';
 
 const WEBHOOK_TIMEOUT = 3000;
 const MAX_FAILURES = 5;
@@ -123,18 +124,46 @@ async function sendWebhook(webhook, payload) {
     });
 
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    logger.audit('webhook.triggered', {
+      actor: 'webhook',
+      userId: webhook.userId,
+      jobId: payload.jobId,
+      metadata: {
+        webhookId: webhook._id,
+        webhookName: webhook.name,
+        status: response.status,
+        matchedEvents: payload.matchedEvents,
+      },
+    });
 
     await Webhook.updateOne(
       { _id: webhook._id },
       { $set: { lastTriggered: new Date(), failureCount: 0 } }
     );
   } catch (err) {
-    console.warn(`Webhook ${webhook.name} failed: ${err.message}`);
+    logger.warn('webhook.failed', {
+      userId: webhook.userId,
+      jobId: payload.jobId,
+      metadata: {
+        webhookId: webhook._id,
+        webhookName: webhook.name,
+        message: err.message,
+      },
+    });
     const newCount = webhook.failureCount + 1;
     const update = { $inc: { failureCount: 1 } };
     if (newCount >= MAX_FAILURES) {
       update.$set = { active: false };
-      console.warn(`Webhook ${webhook.name} disabled after ${MAX_FAILURES} consecutive failures`);
+      logger.audit('webhook.disabled', {
+        actor: 'webhook',
+        userId: webhook.userId,
+        jobId: payload.jobId,
+        metadata: {
+          webhookId: webhook._id,
+          webhookName: webhook.name,
+          failureCount: newCount,
+        },
+      });
     }
     await Webhook.updateOne({ _id: webhook._id }, update);
   } finally {
@@ -155,6 +184,14 @@ export async function fireWebhooks(evaluation) {
     if (matchedEvents.length === 0) continue;
 
     const payload = buildPayload(evaluation, matchedEvents);
+    logger.info('webhook.match.found', {
+      userId: evaluation.userId,
+      jobId: evaluation.jobId,
+      metadata: {
+        webhookId: webhook._id,
+        matchedEvents,
+      },
+    });
     sendWebhook(webhook, payload).catch(() => {});
   }
 }

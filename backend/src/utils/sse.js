@@ -2,6 +2,16 @@ class SSEManager {
   constructor() {
     this.connections = new Map();
     this.heartbeatInterval = 15000;
+    this.logger = null;
+  }
+
+  setLogger(logger) {
+    this.logger = logger;
+  }
+
+  log(event, context = {}) {
+    if (!this.logger) return;
+    this.logger.info(event, context);
   }
 
   addConnection(jobId, res) {
@@ -9,10 +19,15 @@ class SSEManager {
       this.connections.set(jobId, new Set());
     }
     this.connections.get(jobId).add(res);
+    this.log('sse.connection.added', {
+      jobId,
+      metadata: { connectionCount: this.getConnectionCount(jobId) },
+    });
 
     const heartbeat = setInterval(() => {
       if (!res.writableEnded) {
         res.write(': heartbeat\n\n');
+        this.log('sse.heartbeat.sent', { jobId });
       } else {
         clearInterval(heartbeat);
       }
@@ -31,6 +46,10 @@ class SSEManager {
       if (jobConnections.size === 0) {
         this.connections.delete(jobId);
       }
+      this.log('sse.connection.closed', {
+        jobId,
+        metadata: { connectionCount: this.getConnectionCount(jobId) },
+      });
     }
   }
 
@@ -45,6 +64,13 @@ class SSEManager {
         res.write(message);
       }
     }
+    this.log('sse.event.broadcast', {
+      jobId,
+      metadata: {
+        event,
+        listeners: jobConnections.size,
+      },
+    });
   }
 
   broadcast(event, data) {
@@ -57,6 +83,7 @@ class SSEManager {
         }
       }
     }
+    this.log('sse.event.broadcast_all', { metadata: { event } });
   }
 
   closeAll() {
@@ -69,6 +96,7 @@ class SSEManager {
       jobConnections.clear();
     }
     this.connections.clear();
+    this.log('sse.connections.closed_all');
   }
 
   getConnectionCount(jobId) {

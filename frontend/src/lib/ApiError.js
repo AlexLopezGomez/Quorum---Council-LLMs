@@ -3,10 +3,11 @@
  * Carries HTTP status and any server-side error data.
  */
 export class ApiError extends Error {
-    constructor(message, status = 0, data = null) {
+    constructor(message, status = 0, data = null, correlationId = null) {
         super(message);
         this.name = 'ApiError';
         this.status = status;
         this.data = data;
+        this.correlationId = correlationId;
     }
 }

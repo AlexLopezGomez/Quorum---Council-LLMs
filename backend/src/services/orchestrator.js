@@ -5,6 +5,7 @@ import { aggregateResults } from './aggregator.js';
 import { routeTestCase } from '../orchestrator/adaptiveRouter.js';
 import { CostTracker } from './costTracker.js';
 import { fireWebhooks } from './webhookService.js';
+import { logger } from '../utils/logger.js';
 
 const EVALUATION_TIMEOUT = parseInt(process.env.EVALUATION_TIMEOUT) || 30000;
 const ADAPTIVE_MODE = process.env.ADAPTIVE_MODE !== 'false';
@@ -34,6 +35,12 @@ export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveE
     emitEvent(event, data);
     saveEvent(event, data);
   };
+  logger.info('orchestrator.testcase.start', {
+    metadata: {
+      testCaseIndex,
+      strategy: 'council',
+    },
+  });
 
   const judgePromises = judges.map(async ({ name, fn, metric }) => {
     emitAndSave('judge_start', {
@@ -124,6 +131,13 @@ export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveE
     });
   }
 
+  logger.info('orchestrator.testcase.complete', {
+    metadata: {
+      testCaseIndex,
+      verdict: results.aggregator?.verdict || 'ERROR',
+    },
+  });
+
   return results;
 }
 
@@ -133,6 +147,15 @@ export async function runEvaluation(testCases, jobId, emitEvent, saveEvent, upda
   const costTracker = new CostTracker();
 
   const useAdaptive = ADAPTIVE_MODE && options.strategy !== 'council';
+  logger.audit('evaluation.started', {
+    actor: 'system',
+    jobId,
+    metadata: {
+      strategy: options.strategy || 'auto',
+      useAdaptive,
+      totalTestCases: testCases.length,
+    },
+  });
 
   emitEvent('evaluation_start', {
     jobId,
@@ -199,6 +222,15 @@ export async function runEvaluation(testCases, jobId, emitEvent, saveEvent, upda
   });
 
   fireWebhooks({ jobId, testCases, results: allResults, summary, config: options }).catch(() => {});
+  logger.audit('evaluation.completed', {
+    actor: 'system',
+    jobId,
+    metadata: {
+      status: 'complete',
+      totalCost: summary.totalCost,
+      passRate: summary.passRate,
+    },
+  });
 
   emitEvent('evaluation_complete', {
     jobId,

@@ -1,4 +1,10 @@
 import { ApiError } from './ApiError';
+import {
+  captureCorrelationFromResponse,
+  clientLog,
+  correlationHeaders,
+  getCorrelationId,
+} from './observability';
 
 const API_BASE = '/api';
 
@@ -7,7 +13,13 @@ const API_BASE = '/api';
  * and throws a structured ApiError on non-2xx responses.
  */
 async function fetchJson(url, options = {}, signal) {
-  const response = await fetch(url, { ...options, signal, credentials: 'include' });
+  const response = await fetch(url, {
+    ...options,
+    headers: correlationHeaders(options.headers || {}),
+    signal,
+    credentials: 'include',
+  });
+  const correlationId = captureCorrelationFromResponse(response);
 
   if (!response.ok) {
     let data = null;
@@ -20,9 +32,15 @@ async function fetchJson(url, options = {}, signal) {
       data?.error || `Request failed (${response.status})`,
       response.status,
       data,
+      correlationId,
     );
   }
 
+  clientLog('info', 'frontend.api.request.success', {
+    path: url,
+    statusCode: response.status,
+    correlationId,
+  });
   return response.json();
 }
 
@@ -46,7 +64,9 @@ export async function getResults(jobId, signal) {
 }
 
 export function getStreamUrl(jobId) {
-  return `${API_BASE}/stream/${jobId}`;
+  const correlationId = getCorrelationId();
+  if (!correlationId) return `${API_BASE}/stream/${jobId}`;
+  return `${API_BASE}/stream/${jobId}?correlationId=${encodeURIComponent(correlationId)}`;
 }
 
 // ─── History ─────────────────────────────────────────────────

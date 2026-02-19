@@ -4,6 +4,7 @@ import { validateEvaluateRequest } from '../utils/validation.js';
 import { Evaluation } from '../models/Evaluation.js';
 import { runEvaluation } from '../services/orchestrator.js';
 import { sseManager } from '../utils/sse.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 
@@ -62,6 +63,18 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
   try {
     const { testCases, options, name } = req.validatedBody;
     const jobId = nanoid(12);
+    logger.audit(
+      'evaluation.create.requested',
+      logger.withReq(req, {
+        actor: 'user',
+        userId: req.user._id,
+        metadata: {
+          jobId,
+          strategy: options?.strategy || 'auto',
+          testCaseCount: testCases.length,
+        },
+      })
+    );
 
     const evaluation = new Evaluation({
       jobId,
@@ -75,9 +88,26 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
     });
 
     await evaluation.save();
+    logger.audit(
+      'evaluation.created',
+      logger.withReq(req, {
+        actor: 'user',
+        userId: req.user._id,
+        statusCode: 202,
+        jobId,
+        metadata: { strategy: options?.strategy || 'auto' },
+      })
+    );
 
     const emitEvent = (event, data) => {
       sseManager.emit(jobId, event, data);
+      logger.info(
+        'sse.event.emitted',
+        logger.withReq(req, {
+          jobId,
+          metadata: { event, type: 'live_emit' },
+        })
+      );
     };
 
     const saveEvent = async (type, data) => {
@@ -95,7 +125,16 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
           }
         );
       } catch (err) {
-        console.error('Failed to save event:', err);
+        logger.error(
+          'evaluation.event.save_failed',
+          logger.withReq(req, {
+            jobId,
+            metadata: {
+              eventType: type,
+              message: err.message,
+            },
+          })
+        );
       }
     };
 
@@ -103,12 +142,34 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
       try {
         await Evaluation.updateOne({ jobId }, { $set: updates });
       } catch (err) {
-        console.error('Failed to update evaluation:', err);
+        logger.error(
+          'evaluation.update_failed',
+          logger.withReq(req, {
+            jobId,
+            metadata: { message: err.message },
+          })
+        );
       }
     };
 
     runEvaluation(testCases, jobId, emitEvent, saveEvent, updateDocument, options || {}).catch(async (error) => {
-      console.error('Evaluation failed:', error);
+      logger.error(
+        'evaluation.failed',
+        logger.withReq(req, {
+          jobId,
+          statusCode: 500,
+          metadata: { message: error.message },
+        })
+      );
+      logger.audit(
+        'evaluation.completed',
+        logger.withReq(req, {
+          actor: 'system',
+          userId: req.user._id,
+          jobId,
+          metadata: { status: 'failed', reason: error.message },
+        })
+      );
       await Evaluation.updateOne(
         { jobId },
         {
@@ -133,7 +194,13 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
       resultsUrl: `/api/results/${jobId}`,
     });
   } catch (error) {
-    console.error('Failed to start evaluation:', error);
+    logger.error(
+      'evaluation.create_failed',
+      logger.withReq(req, {
+        statusCode: 500,
+        metadata: { message: error.message },
+      })
+    );
     res.status(500).json({
       error: 'Failed to start evaluation',
       message: error.message,

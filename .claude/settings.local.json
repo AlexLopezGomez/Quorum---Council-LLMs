@@ -9,5 +9,9 @@
       "Bash(node -e \"import\\(''@google/genai''\\).then\\(m => console.log\\(''OK:'', Object.keys\\(m\\)\\)\\)\")",
       "Bash(node -e:*)"
     ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
   }
 }

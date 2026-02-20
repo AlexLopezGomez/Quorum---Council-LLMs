@@ -1,4 +1,8 @@
 {
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
       "Bash(npm install:*)",
@@ -7,11 +11,8 @@
       "mcp__context7__query-docs",
       "Bash(npm uninstall:*)",
       "Bash(node -e \"import\\(''@google/genai''\\).then\\(m => console.log\\(''OK:'', Object.keys\\(m\\)\\)\\)\")",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Bash(test:*)"
     ]
-  },
-  "attribution": {
-    "commit": "",
-    "pr": ""
   }
 }

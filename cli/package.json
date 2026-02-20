@@ -1,0 +1,19 @@
+{
+  "name": "@quorum/cli",
+  "version": "0.1.0",
+  "description": "Quorum CLI - adaptive AI evaluation for CI/CD",
+  "type": "module",
+  "bin": { "quorum": "./bin/quorum.js" },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "chalk": "^5.3.0",
+    "ora": "^8.0.0",
+    "js-yaml": "^4.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "vitest": "^4.0.18"
+  },
+  "engines": { "node": ">=20.0.0" },
+  "scripts": { "test": "vitest run" }
+}

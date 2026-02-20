@@ -1,0 +1,3 @@
+{"id":"example-1","input":"What is the cancellation policy?","actualOutput":"You can cancel with 30 days written notice.","retrievalContext":["Our cancellation policy requires 30 days written notice before vacating."],"metadata":{"domain":"example"}}
+{"id":"example-2","input":"Is parking included?","actualOutput":"Yes, one parking spot is included with each room.","retrievalContext":["Each room comes with one dedicated parking spot at no extra cost."],"metadata":{"domain":"example"}}
+{"id":"example-3","input":"What is the monthly rate?","actualOutput":"The monthly rate starts at $800 including all utilities.","retrievalContext":["Monthly rates start at $800 per month, including all utilities and internet."],"metadata":{"domain":"example"}}

@@ -16,18 +16,41 @@ const THRESHOLDS = {
 };
 const COST_PER_DATASET = 0.035;
 
+function isBraceBalanced(str) {
+  let depth = 0, inString = false, escape = false;
+  for (const ch of str) {
+    if (escape) { escape = false; continue; }
+    if (ch === '\\' && inString) { escape = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === '{' || ch === '[') depth++;
+    else if (ch === '}' || ch === ']') depth--;
+  }
+  return depth === 0;
+}
+
 export function parseJsonlContent(content) {
-  return content
-    .replace(/^\uFEFF/, '')
-    .split('\n')
-    .filter((line) => line.trim())
-    .map((line, i) => {
-      try {
-        return JSON.parse(line);
-      } catch {
-        throw new Error(`Invalid JSON on line ${i + 1}: ${line.slice(0, 80)}`);
-      }
-    });
+  const lines = content.replace(/^\uFEFF/, '').split('\n');
+  const results = [];
+  let buffer = '', bufferStartLine = 0;
+  const tryFlush = () => {
+    if (!buffer.trim()) return;
+    try { results.push(JSON.parse(buffer)); buffer = ''; } catch { /* still accumulating */ }
+  };
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trimEnd();
+    if (!line) { tryFlush(); continue; }
+    if (!buffer) bufferStartLine = i + 1;
+    buffer = buffer ? `${buffer}\n${line}` : line;
+    if (!isBraceBalanced(buffer)) continue;
+    try { results.push(JSON.parse(buffer)); buffer = ''; }
+    catch { throw new Error(`Invalid JSON on line ${bufferStartLine}: ${buffer.slice(0, 80)}`); }
+  }
+  if (buffer.trim()) {
+    try { results.push(JSON.parse(buffer)); }
+    catch { throw new Error(`Invalid JSON on line ${bufferStartLine}: ${buffer.slice(0, 80)}`); }
+  }
+  return results;
 }
 
 export function loadJsonl(filePath) {

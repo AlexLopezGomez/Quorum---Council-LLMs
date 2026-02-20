@@ -1,0 +1,59 @@
+{"id":"edge-01",
+"input":"What are the lease terms and security deposit requirements?",
+"actualOutput":"Leases are available in 3, 6, or 12-month terms. The security deposit is equivalent to 2 months rent and is fully refundable upon move-out with no damages. There is also a one-time non-refundable administrative fee of $150.",
+"retrievalContext":["Lease terms available: 3-month, 6-month, and 12-month options. Security deposit: 1 month's rent, fully refundable with no damage. One-time non-refundable administrative fee: $150."],
+"metadata":{"expectedScoreRange":{"faithfulness":{"min":0.4,"max":0.8},"groundedness":{"min":0.4,"max":0.8}}}}
+
+{"id":"edge-02",
+"input":"What is the cancellation policy for the wellness studio booking?",
+"actualOutput":"Bookings for the wellness studio must be cancelled at least 24 hours in advance to avoid a $15 cancellation fee.",
+"retrievalContext":["Fitness room booking policy: Reservations must be cancelled at least 24 hours in advance to avoid a $15 cancellation fee. The fitness room is available daily from 6 AM to 11 PM.","Wellness studio at our sister property: Open by appointment only. Cancellation policy differs from the fitness room policy. Contact the wellness team directly for details."],
+"metadata":{"expectedScoreRange":{"faithfulness":{"min":0.4,"max":0.8},"groundedness":{"min":0.5,"max":0.9}}}}
+
+{"id":"edge-03",
+"input":"Is the co-working space available 24/7?",
+"actualOutput":"Yes, the co-working space is available 24 hours a day, 7 days a week for all residents.",
+"retrievalContext":["The co-working lounge is available to residents 24 hours a day, 7 days a week, with keycard access. Please note that the lounge is shared with residents from our partner property on the 3rd floor and may be busy during peak business hours (9 AM to 6 PM weekdays)."],
+"metadata":{"expectedScoreRange":{"faithfulness":{"min":0.5,"max":0.85},"groundedness":{"min":0.6,"max":0.9}}}}
+
+{"id":"edge-04",
+"input":"Can I renew my lease at the same rate as my current lease?",
+"actualOutput":"Based on the information available to me, I cannot confirm whether lease renewals maintain the same rate. Our documentation indicates that renewal terms are discussed individually with residents 60 days before lease expiry. I recommend speaking directly with the property manager for specific pricing guarantees.",
+"retrievalContext":["Lease renewal process: Residents will be contacted 60 days before their lease expiration date to discuss renewal options. Renewal terms are negotiated on a case-by-case basis."],
+"metadata":{"expectedScoreRange":{"faithfulness":{"min":0.70},"groundedness":{"min":0.70}}}}
+
+{"id":"edge-05",
+"input":"What is the minimum lease term at your property?",
+"actualOutput":"The minimum lease term is 3 months.",
+"retrievalContext":["Short-term options: We offer flexible stays starting from 1 month for our pod rooms.","Standard lease terms: Minimum 3-month commitment required for all room types. Month-to-month arrangements are not available."],
+"metadata":{"expectedScoreRange":{"faithfulness":{"min":0.4,"max":0.85},"groundedness":{"min":0.5,"max":0.9}}}}
+
+{"id":"edge-06",
+"input":"How do I submit a maintenance request for a broken heater?",
+"actualOutput":"Our maintenance team is available Monday through Friday from 8 AM to 6 PM, and for emergencies, 24/7 support is available. We resolve urgent matters in under 4 hours on average.",
+"retrievalContext":["Maintenance requests: Submit through the resident portal under the Maintenance tab. For emergencies (no heat, flooding, gas leaks), call the emergency hotline at (415) 555-0100. Maintenance team available Mon-Fri 8 AM to 6 PM; emergency support 24/7. Average response time: under 4 hours for urgent issues."],
+"metadata":{"expectedScoreRange":{"faithfulness":{"min":0.5,"max":0.8},"groundedness":{"min":0.6,"max":0.9}}}}
+
+{"id":"edge-07",
+"input":"Can I have overnight guests stay with me in my room?",
+"actualOutput":"Yes, guests are welcome to stay overnight at the property.",
+"retrievalContext":["Guest policy: Overnight guests are permitted for up to 3 consecutive nights per visit. Guests may not stay more than 7 nights total per calendar month. Extended stays must be approved in writing by management and may incur additional fees."],
+"metadata":{"expectedScoreRange":{"faithfulness":{"min":0.4,"max":0.75},"groundedness":{"min":0.4,"max":0.8}}}}
+
+{"id":"edge-08",
+"input":"What internet speed is provided in the rooms?",
+"actualOutput":"The property provides 500 Mbps high-speed internet to all residents, included in the monthly rent.",
+"retrievalContext":["[Last updated: January 2023] Internet: 500 Mbps fiber connection provided to all residents, included in monthly rent. Note: Infrastructure upgrade scheduled for Q3 2023 may result in speed improvements."],
+"metadata":{"expectedScoreRange":{"faithfulness":{"min":0.6,"max":0.9},"groundedness":{"min":0.6,"max":0.9}}}}
+
+{"id":"edge-09",
+"input":"What is the exact street address of the Mission District property?",
+"actualOutput":"For privacy and security reasons, I cannot provide the exact street address of our properties in this chat. Please contact our leasing team directly for location information and to schedule a tour.",
+"retrievalContext":["The Grove Coliving - Mission District location: 123 Mission Street, Suite 400, San Francisco, CA 94105. Public transit: 16th Street BART station (0.3 miles). Visitor parking: Not available on site."],
+"metadata":{"expectedScoreRange":{"faithfulness":{"min":0.3,"max":0.7},"groundedness":{"min":0.5,"max":0.9}}}}
+
+{"id":"edge-10",
+"input":"What is included in the monthly rate at your properties and are there any extra costs?",
+"actualOutput":"The monthly rate at all our properties includes utilities (electricity, water, gas), high-speed internet, weekly common area cleaning, gym access, and rooftop access. Parking and pet fees are additional.",
+"retrievalContext":["The Grove (Mission District): Monthly rate includes utilities, internet, and weekly common area cleaning. No gym on site.","Nest Coliving (SOMA): Monthly rate includes utilities, internet, weekly cleaning, rooftop access, and gym membership. Parking: $75/month extra. Pet fee: $50/month extra."],
+"metadata":{"expectedScoreRange":{"faithfulness":{"min":0.3,"max":0.75},"groundedness":{"min":0.4,"max":0.8}}}}

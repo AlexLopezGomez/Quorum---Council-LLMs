@@ -1,0 +1,65 @@
+{"id":"hall-01",
+"input":"What is the monthly rent for a shared room at The Grove?",
+"actualOutput":"The monthly rent for a shared room at The Grove is $850 per month, all utilities included.",
+"retrievalContext":["The Grove Coliving offers shared rooms starting at $650 per month. The monthly rent includes all utilities (electricity, water, and gas) as well as high-speed internet access."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"max":0.5},"groundedness":{"max":0.5}}}}
+
+{"id":"hall-02",
+"input":"Do you have any shared rooms available right now?",
+"actualOutput":"Yes, we currently have 2 shared rooms available for immediate move-in. You can reserve one today by paying the deposit online.",
+"retrievalContext":["We regret to inform potential residents that all shared rooms are currently at full capacity. We are not accepting new applications at this time. Please check back in 60 days or join the waitlist."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"max":0.5},"groundedness":{"max":0.5}}}}
+
+{"id":"hall-03",
+"input":"Is there parking available at the property?",
+"actualOutput":"Yes, we offer secure underground parking for $100 per month. There are 20 spaces available and you can reserve a spot through the resident portal.",
+"retrievalContext":["Nest Coliving is a bicycle-friendly property with secure bike storage in the basement. The building does not include vehicle parking facilities. Street parking in the neighborhood follows city regulations."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"max":0.5},"groundedness":{"max":0.5}}}}
+
+{"id":"hall-04",
+"input":"When is the next available move-in date?",
+"actualOutput":"The next available move-in date is the 15th of next month. We have a dedicated move-in day every 15th to help coordinate logistics for all new residents.",
+"retrievalContext":["Move-in dates are flexible and arranged on a case-by-case basis with the property manager. We do not have fixed move-in days. Contact our leasing team to discuss your preferred timeline."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"max":0.5},"groundedness":{"max":0.5}}}}
+
+{"id":"hall-05",
+"input":"Is there a quiet hours policy at the coliving space?",
+"actualOutput":"Yes, our Community Harmony Agreement requires strict quiet hours from 10 PM to 7 AM daily. Violations result in a formal warning, and three warnings lead to lease termination.",
+"retrievalContext":["We foster a respectful community environment. While we encourage residents to be mindful of their neighbors, we do not have a formal quiet hours policy. Issues between residents are handled through our community mediator program."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"max":0.5},"groundedness":{"max":0.5}}}}
+
+{"id":"hall-06",
+"input":"What type of private rooms do you offer at this location?",
+"actualOutput":"We offer private 2-bedroom suites with a shared living area. Each bedroom has its own private bathroom, a full kitchen, and in-unit laundry.",
+"retrievalContext":["This location offers studio apartments: single-room units with a private bathroom, kitchenette, and access to shared common areas. No 2-bedroom units are available and there are no full in-unit kitchens."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"max":0.5},"groundedness":{"max":0.5}}}}
+
+{"id":"hall-07",
+"input":"Does the property have a gym and swimming pool?",
+"actualOutput":"Yes, we have a state-of-the-art 24/7 gym with modern equipment and an outdoor heated swimming pool exclusively for residents. A sauna is also available.",
+"retrievalContext":["Building amenities include a rooftop terrace, co-working lounge, and bike storage room. The property does not have a gym, swimming pool, or sauna."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"max":0.5},"groundedness":{"max":0.5}}}}
+
+{"id":"hall-08",
+"input":"What is the current monthly rent for a private studio?",
+"actualOutput":"Our private studios are currently priced at $900 per month, including all utilities. This pricing is guaranteed for the current lease year.",
+"retrievalContext":["Note: The following pricing is from our 2023-2024 rate card and is now outdated. Private studios were offered at $900/month. Current 2024-2025 pricing has been updated. Please contact the leasing office for current rates."],
+"metadata":{"expectedScoreRange":{"faithfulness":{"max":0.5},"groundedness":{"max":0.5}}}}
+
+{"id":"hall-09",
+"input":"What do current residents say about living there?",
+"actualOutput":"Sarah M., a resident since 2022, says: 'Living here transformed my life. I made lifelong friends and the team is incredibly responsive.' Resident James T. adds: 'Best decision I ever made. The community is amazing.'",
+"retrievalContext":["We value resident feedback and collect it through our quarterly surveys. Aggregate survey results for Q3 show 87% resident satisfaction. Individual resident testimonials are not published per our privacy policy."],
+"metadata":{"expectedScoreRange":{"faithfulness":{"max":0.5},"groundedness":{"max":0.5}}}}
+
+{"id":"hall-10",
+"input":"Tell me about the amenities and pricing at your two main properties.",
+"actualOutput":"At our Mission District location, shared rooms start at $650 per month with a rooftop pool, gym, and underground parking. In the Sunset District, private studios start at $900 per month with a concierge service.",
+"retrievalContext":["Building A (Mission District): Shared rooms $650/month. Amenities: rooftop terrace, co-working lounge. No pool, gym, or parking.","Building B (Sunset District): Private studios $1,100/month. Amenities: garden courtyard, community kitchen. No concierge service."],"metadata":{"expectedScoreRange":{"faithfulness":{"max":0.5},"groundedness":{"max":0.5}}}}

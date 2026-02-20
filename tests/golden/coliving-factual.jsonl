@@ -1,0 +1,63 @@
+{"id":"factual-01",
+"input":"What is the monthly rent for a shared room at The Grove Coliving?",
+"actualOutput":"The monthly rent for a shared room at The Grove Coliving is $650 per month. This rate includes all utilities (electricity, water, and gas) as well as high-speed internet access.",
+"retrievalContext":["The Grove Coliving offers shared rooms starting at $650 per month. The monthly rent includes all utilities (electricity, water, and gas) as well as high-speed internet access."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"min":0.85},"groundedness":{"min":0.80},"contextRelevancy":{"min":0.80}}}}
+
+{"id":"factual-02",
+"input":"How much advance notice do I need to give before moving out of my room?",
+"actualOutput":"You need to provide 30 days written notice before moving out. The notice must be submitted through the resident portal or delivered in writing to the property manager.",
+"retrievalContext":["Residents must provide 30 days written notice before vacating their room. Notice must be submitted via the resident portal or in writing to the property manager."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"min":0.85},"groundedness":{"min":0.80},"contextRelevancy":{"min":0.80}}}}
+
+{"id":"factual-03",
+"input":"What amenities are included with my room at Nest Coliving?",
+"actualOutput":"At Nest Coliving, your room includes access to a fully equipped shared kitchen, high-speed Wi-Fi, weekly housekeeping for common areas, a rooftop terrace, a fitness room, and on-site laundry facilities.",
+"retrievalContext":["Nest Coliving amenities include: fully equipped shared kitchen, high-speed Wi-Fi (500 Mbps), weekly housekeeping for common areas, rooftop terrace, fitness room, and on-site laundry facilities."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"min":0.85},"groundedness":{"min":0.80},"contextRelevancy":{"min":0.80}}}}
+
+{"id":"factual-04",
+"input":"What is the neighborhood like around the coliving space?",
+"actualOutput":"The coliving space is located in the Mission District, a vibrant neighborhood known for its murals, diverse restaurants, and easy access to public transit. Residents are within walking distance of Dolores Park and several grocery stores.",
+"retrievalContext":["Our coliving space is situated in the Mission District, a vibrant neighborhood celebrated for its colorful murals, diverse restaurants, and excellent public transit connections. Residents are within walking distance of Dolores Park, multiple grocery stores, and a variety of cafes."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"min":0.85},"groundedness":{"min":0.80},"contextRelevancy":{"min":0.80}}}}
+
+{"id":"factual-05",
+"input":"How do I book a room and what is the move-in process?",
+"actualOutput":"To book a room, complete an online application on our website. After approval, you will sign a digital lease agreement, pay the security deposit online, and receive your access codes and key card via email 24 hours before your move-in date.",
+"retrievalContext":["Booking process: 1) Complete online application at our website. 2) Receive approval within 48 hours. 3) Sign digital lease agreement. 4) Pay security deposit online. 5) Receive access codes and key card via email 24 hours before your move-in date."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"min":0.85},"groundedness":{"min":0.80},"contextRelevancy":{"min":0.80}}}}
+
+{"id":"factual-06",
+"input":"What is the difference between a studio pod and a shared room at your property?",
+"actualOutput":"A studio pod is a private self-contained unit with an en-suite bathroom priced at $1,200 per month. A shared room accommodates two residents with access to shared bathrooms, priced at $650 per person per month. Both options include utilities and internet.",
+"retrievalContext":["Studio pods: Private self-contained units with en-suite bathrooms. Price: $1,200/month. Shared rooms: Accommodate two residents with access to shared bathrooms. Price: $650 per person per month. Both options include utilities and internet."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"min":0.85},"groundedness":{"min":0.80},"contextRelevancy":{"min":0.80}}}}
+
+{"id":"factual-07",
+"input":"Do you have any rooms available near Stanford University?",
+"actualOutput":"Based on the information I have, our properties are located within San Francisco city limits. I do not have any information about coliving options near Stanford University. I recommend contacting our team directly for location-specific availability.",
+"retrievalContext":["The Grove Coliving is located at 123 Mission Street, San Francisco, CA. Nest Coliving is located at 456 Valencia Street, San Francisco, CA. All current properties are within San Francisco city limits."],
+"metadata":
+{"expectedScoreRange":{"faithfulness":{"min":0.85},"groundedness":{"min":0.80},"contextRelevancy":{"min":0.80}}}}
+
+{"id":"factual-08",
+"input":"What community events are scheduled for this month?",
+"actualOutput":"This month we have a welcome dinner for new residents on the 5th, rooftop yoga sessions every Saturday morning at 8 AM, a movie night on the 15th, and a skills-sharing workshop on the 22nd.",
+"retrievalContext":["Monthly community events schedule: Welcome dinner for new residents (5th of each month, 7 PM), Rooftop yoga sessions (every Saturday, 8 AM), Movie night (15th of each month, 8 PM), Skills-sharing workshop (22nd of each month, 6 PM)."],"metadata":{"expectedScoreRange":{"faithfulness":{"min":0.85},"groundedness":{"min":0.80},"contextRelevancy":{"min":0.80}}}}
+
+{"id":"factual-09",
+"input":"What utilities are included in the rent and are there any additional optional costs?",
+"actualOutput":"The rent includes electricity, water, gas, and 500 Mbps high-speed internet. There are no additional utility costs. Optional add-ons are available: parking at $75 per month and storage units at $30 per month.",
+"retrievalContext":["Included in rent: Electricity, water, gas, and 500 Mbps high-speed internet. No additional utility costs. Optional add-ons available: Parking ($75/month), storage unit ($30/month)."],"metadata":{"expectedScoreRange":{"faithfulness":{"min":0.85},"groundedness":{"min":0.80},"contextRelevancy":{"min":0.80}}}}
+
+{"id":"factual-10",
+"input":"What is the pet policy at your coliving space?",
+"actualOutput":"Cats and small dogs under 25 pounds are welcome. There is a one-time pet deposit of $300 and a monthly pet fee of $50. All pets must be up to date on vaccinations and registered with property management. Exotic animals, large dogs over 25 lbs, and reptiles are not permitted.",
+"retrievalContext":["Pet Policy: Cats and small dogs (under 25 lbs) are welcome. One-time pet deposit: $300. Monthly pet fee: $50. All pets must be current on vaccinations and registered with property management. Prohibited: Exotic animals, large dogs (over 25 lbs), and all reptiles."],"metadata":{"expectedScoreRange":{"faithfulness":{"min":0.85},"groundedness":{"min":0.80},"contextRelevancy":{"min":0.80}}}}

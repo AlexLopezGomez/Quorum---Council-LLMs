@@ -1,0 +1,25 @@
+version: 1
+datasets:
+  - coliving-factual.jsonl
+  - coliving-hallucinations.jsonl
+  - coliving-edge.jsonl
+metrics:
+  faithfulness:
+    pass: 0.7
+    warn: 0.4
+  groundedness:
+    pass: 0.7
+    warn: 0.4
+  contextRelevancy:
+    pass: 0.6
+    warn: 0.3
+  finalScore:
+    pass: 0.65
+    warn: 0.4
+strategy: auto
+ci:
+  failOnWarn: false
+  failOnError: true
+  failOnRegression: true
+  regressionThreshold: 0.05
+  baselinePath: ../baselines/

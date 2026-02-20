@@ -86,7 +86,7 @@ export async function runTest(options) {
 
   const reporter = options.reporter || (ci ? 'json' : 'terminal');
 
-  if (reporter === 'json' || ci) {
+  if (reporter === 'json') {
     process.stdout.write(JSON.stringify({ overallVerdict, summary, results: evaluated, regressions }, null, 2) + '\n');
   } else if (reporter === 'markdown') {
     console.log(generateMarkdown({ overallVerdict, summary, results: evaluated, regressions }));

@@ -8,6 +8,7 @@ The following MCP servers are available and **MUST** be used when relevant:
 
 - **context7** — Retrieves up-to-date library documentation and code examples. Use it before writing code that depends on any external library to get the latest API surface.
 - **playwright** — Browser automation and end-to-end testing. Use it for any UI testing, scraping, or browser interaction tasks.
+- **exa** — The Web Search MCP. Use it for web search, code search, and researching topics with real-time web access.
 
 ## Pre-Coding Checklist (MANDATORY)
 

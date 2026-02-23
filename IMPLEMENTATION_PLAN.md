@@ -1,6 +1,6 @@
 # Quorum Main Implementation Guide
 
-Last updated: 2026-02-23
+Last updated: 2026-02-23 (CI incident update)
 Owner: Product + Engineering
 Scope: This is the main build-and-ship guide for upcoming sessions and days.
 
@@ -41,6 +41,13 @@ This guide is the source of truth for:
 - Ingestion path drops important metadata (`metadata`, `capturedAt`) before evaluation
 - Insecure JWT secret fallback for production path
 - Plan/docs drift and broken docs links
+
+### 2.4 Active reliability incident (new)
+
+- GitHub Action config-path issue is resolved (`tests/golden/.quorum.yml` is now used).
+- Current blocker is runtime rate limiting during evaluation (`HTTP 429`), not workflow wiring.
+- Latest PR run produced `Overall: ERROR` with 25 errored cases, primarily due to `Evaluate request failed (429)` and `Polling failed (429)`.
+- Immediate priority is to harden runtime resilience (concurrency control + retry/backoff + visibility), not to rework the CI workflow.
 
 ## 3. Product strategy for next sessions
 
@@ -277,6 +284,12 @@ Acceptance:
 - Report is posted/updated (not spammed).
 - Failed evaluation blocks merge.
 
+Status note (2026-02-23):
+
+- Workflow/action pathing is fixed and validated in PR runs.
+- Gate behavior is correct: non-zero CLI exit produces blocked merge with report comment.
+- Remaining failures are evaluation runtime `429` incidents and are tracked in Phase 1 (WP1.1/WP1.2).
+
 ---
 
 ### WP0.2 - Commit 6: SDK PII sanitizer
@@ -398,6 +411,7 @@ Product effect:
 Acceptance:
 
 - Load tests show lower 429 rate at same workload profile.
+- PR-level Quorum gate run completes without widespread `429`-driven `ERROR` outcomes under normal CI load.
 
 ---
 
@@ -416,6 +430,7 @@ Product effect:
 Acceptance:
 
 - Integration tests validate 429 + retry flows.
+- CI run telemetry/report clearly distinguishes retried throttling from terminal errors.
 
 ---
 
@@ -761,8 +776,8 @@ Rollback plan:
 
 ### Phase 1
 
-- [ ] WP1.1 Provider concurrency control
-- [ ] WP1.2 Retry-after + throttling events
+- [ ] WP1.1 Provider concurrency control (**urgent due to active 429 CI failures**)
+- [ ] WP1.2 Retry-after + throttling events (**urgent due to active 429 CI failures**)
 - [ ] WP1.3 Reliability telemetry and alerts
 
 ### Phase 2

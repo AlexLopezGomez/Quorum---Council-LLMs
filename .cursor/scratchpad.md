@@ -54,6 +54,8 @@ User requested implementation of the approved **Plan De Auditoria Y Logging End-
 - [x] Instrument critical backend flows
 - [x] Propagate correlation to frontend + SDK
 - [x] Add tests and documentation for observability
+- [x] WP1.1 Provider concurrency control
+- [x] WP1.2 Retry/backoff + throttling visibility events
 
 # Current Status / Progress Tracking
 
@@ -75,6 +77,10 @@ Observability implementation completed:
 - Added tests for redaction and request context middleware; backend suite passes (`73/73`).
 - Added runbook docs in `docs/observability-audit.md` and updated `README.md` + `backend/.env.example`.
 
+Cursor memory alignment update completed:
+- Confirmed MCP availability list includes `exa`, `context7`, and `playwright`.
+- Persisted this reminder in Lessons for future sessions.
+
 Documentation support update completed:
 - Added concise project comprehension guide for current scope in `docs/project-understanding-brief.md`.
 - Guide defines minimum required understanding (critical flows/contracts/observability) vs non-critical deep details.
@@ -86,6 +92,35 @@ CI workflow fix completed for Quorum quality gate:
 - Hardened `.github/actions/quorum-test/action.yml` with config-file preflight:
   - Fallback from missing `.quorum.yml` to `tests/golden/.quorum.yml`.
   - Explicit actionable error when provided config path does not exist.
+
+Planning documentation update completed:
+- Updated `IMPLEMENTATION_PLAN.md` to reflect latest CI reality:
+  - Config/pathing issue is resolved.
+  - Active blocker is runtime `429` throttling during evaluation/polling.
+  - Marked WP1.1/WP1.2 as urgent and tightened acceptance criteria around reducing `429`-driven `ERROR` outcomes in CI.
+
+WP1.1 + WP1.2 implementation completed:
+- Added shared provider resilience layer in `backend/src/services/providerResilience.js`:
+  - Shared per-provider concurrency limiter (`openai`, `anthropic`, `gemini`) with env-configurable caps.
+  - Retry/backoff with jitter and `Retry-After` support.
+  - Explicit throttling annotations for exhausted retries.
+- Wired resilience execution into:
+  - `backend/src/services/orchestrator.js` (council judges + aggregator path)
+  - `backend/src/orchestrator/adaptiveRouter.js` (single/hybrid judge path)
+- Added explicit SSE/runtime events for throttling visibility:
+  - `rate_limited`
+  - `retry_scheduled`
+  - `retry_exhausted`
+- Updated frontend SSE registry in `frontend/src/lib/constants.js` to consume new event types.
+- Added retry/concurrency env configuration examples in `backend/.env.example`.
+- Added backend tests in `backend/tests/services/providerResilience.test.js` covering:
+  - 429 retry success path
+  - `Retry-After` handling
+  - retry exhaustion behavior
+  - non-429 no-retry behavior
+  - shared concurrency limit enforcement
+- Validation:
+  - Backend tests pass (`114/114`).
 
 # Executor's Feedback or Assistance Requests
 
@@ -99,3 +134,6 @@ No blockers.
 - If `context7` MCP is unavailable in the environment, log that constraint and continue with local codebase/source-of-truth inspection.
 - On this Windows environment, Vitest may require running outside the default sandbox due `spawn EPERM`; rerun tests with broader execution permissions when this occurs.
 - Keep raw `console.*` usage centralized in logger utilities; avoid direct console usage in backend routes/services to preserve structured log schema.
+- Distinguish CI wiring failures from runtime evaluation failures: if config/health pass but report shows `429`, prioritize Phase 1 resilience work over workflow rewrites.
+- Keep Cursor session memory aligned with available MCP servers: `exa`, `context7`, and `playwright`.
+- For provider throttling resilience, centralize retries in a shared wrapper (not per-judge ad hoc logic) so event visibility and retry policy remain consistent across council and adaptive paths.

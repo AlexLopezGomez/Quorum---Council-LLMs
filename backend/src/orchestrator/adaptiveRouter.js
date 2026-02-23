@@ -3,6 +3,7 @@ import { runDeterministicChecks } from '../evaluators/deterministicChecks.js';
 import { evaluateFaithfulness } from '../services/judges/openai.js';
 import { evaluateContextRelevancy } from '../services/judges/gemini.js';
 import { evaluateTestCase } from '../services/orchestrator.js';
+import { executeWithProviderResilience } from '../services/providerResilience.js';
 import { logger } from '../utils/logger.js';
 
 const EVALUATION_TIMEOUT = parseInt(process.env.EVALUATION_TIMEOUT) || 30000;
@@ -71,7 +72,13 @@ async function runSingleStrategy(testCase, testCaseIndex, emitAndSave, costTrack
   emitAndSave('judge_start', { judge: 'gemini', metric: 'contextRelevancy', testCaseIndex, timestamp: new Date().toISOString() });
 
   try {
-    const geminiResult = await runJudgeWithTimeout('gemini', evaluateContextRelevancy, testCase);
+    const geminiResult = await executeWithProviderResilience({
+      provider: 'gemini',
+      operation: 'contextRelevancy',
+      run: () => runJudgeWithTimeout('gemini', evaluateContextRelevancy, testCase),
+      emitEvent: emitAndSave,
+      context: { judge: 'gemini', metric: 'contextRelevancy', testCaseIndex },
+    });
     result.judges.gemini = geminiResult;
     emitAndSave('judge_complete', { judge: 'gemini', metric: 'contextRelevancy', testCaseIndex, result: geminiResult, timestamp: new Date().toISOString() });
 
@@ -121,7 +128,13 @@ async function runHybridStrategy(testCase, testCaseIndex, emitAndSave, costTrack
   emitAndSave('judge_start', { judge: 'openai', metric: 'faithfulness', testCaseIndex, timestamp: new Date().toISOString() });
 
   try {
-    const openaiResult = await runJudgeWithTimeout('openai', evaluateFaithfulness, testCase);
+    const openaiResult = await executeWithProviderResilience({
+      provider: 'openai',
+      operation: 'faithfulness',
+      run: () => runJudgeWithTimeout('openai', evaluateFaithfulness, testCase),
+      emitEvent: emitAndSave,
+      context: { judge: 'openai', metric: 'faithfulness', testCaseIndex },
+    });
     result.judges.openai = openaiResult;
     emitAndSave('judge_complete', { judge: 'openai', metric: 'faithfulness', testCaseIndex, result: openaiResult, timestamp: new Date().toISOString() });
 

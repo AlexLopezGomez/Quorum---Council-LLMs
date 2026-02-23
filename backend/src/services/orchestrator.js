@@ -5,6 +5,7 @@ import { aggregateResults } from './aggregator.js';
 import { routeTestCase } from '../orchestrator/adaptiveRouter.js';
 import { CostTracker } from './costTracker.js';
 import { fireWebhooks } from './webhookService.js';
+import { executeWithProviderResilience } from './providerResilience.js';
 import { logger } from '../utils/logger.js';
 
 const EVALUATION_TIMEOUT = parseInt(process.env.EVALUATION_TIMEOUT) || 30000;
@@ -26,9 +27,9 @@ export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveE
   };
 
   const judges = [
-    { name: 'openai', fn: evaluateFaithfulness, metric: 'faithfulness' },
-    { name: 'anthropic', fn: evaluateGroundedness, metric: 'groundedness' },
-    { name: 'gemini', fn: evaluateContextRelevancy, metric: 'contextRelevancy' },
+    { name: 'openai', provider: 'openai', fn: evaluateFaithfulness, metric: 'faithfulness' },
+    { name: 'anthropic', provider: 'anthropic', fn: evaluateGroundedness, metric: 'groundedness' },
+    { name: 'gemini', provider: 'gemini', fn: evaluateContextRelevancy, metric: 'contextRelevancy' },
   ];
 
   const emitAndSave = (event, data) => {
@@ -42,7 +43,7 @@ export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveE
     },
   });
 
-  const judgePromises = judges.map(async ({ name, fn, metric }) => {
+  const judgePromises = judges.map(async ({ name, provider, fn, metric }) => {
     emitAndSave('judge_start', {
       judge: name,
       metric,
@@ -51,7 +52,13 @@ export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveE
     });
 
     try {
-      const result = await runJudgeWithTimeout(name, fn, testCase, EVALUATION_TIMEOUT);
+      const result = await executeWithProviderResilience({
+        provider,
+        operation: metric,
+        run: () => runJudgeWithTimeout(name, fn, testCase, EVALUATION_TIMEOUT),
+        emitEvent: emitAndSave,
+        context: { judge: name, metric, testCaseIndex },
+      });
       results.judges[name] = result;
 
       emitAndSave('judge_complete', {
@@ -96,7 +103,13 @@ export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveE
     });
 
     try {
-      const aggregatorResult = await aggregateResults(testCase, results.judges);
+      const aggregatorResult = await executeWithProviderResilience({
+        provider: 'anthropic',
+        operation: 'aggregate',
+        run: () => aggregateResults(testCase, results.judges),
+        emitEvent: emitAndSave,
+        context: { component: 'aggregator', testCaseIndex },
+      });
       results.aggregator = aggregatorResult;
 
       emitAndSave('aggregator_complete', {

@@ -61,6 +61,8 @@ runs:
         # Install from local cli/ directory when running inside the Quorum repo itself,
         # otherwise fall back to the published npm package.
         if [ -f "$GITHUB_WORKSPACE/cli/package.json" ]; then
+          # node_modules is gitignored, so install deps first before global install
+          npm install --prefix "$GITHUB_WORKSPACE/cli" --omit=dev
           npm install -g "$GITHUB_WORKSPACE/cli"
         else
           npm install -g @quorum/cli

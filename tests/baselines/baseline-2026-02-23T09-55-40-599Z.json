@@ -1,0 +1,1965 @@
+{
+  "timestamp": "2026-02-23T09:55:40.602Z",
+  "results": [
+    {
+      "testCaseIndex": 0,
+      "judges": {
+        "gemini": {
+          "judge": "gemini",
+          "metric": "contextRelevancy",
+          "model": "gemini-2.5-flash",
+          "score": 1,
+          "reason": "The context directly and completely answers the user's query by stating the monthly rent for a shared room at The Grove Coliving and includes relevant details about what the rent covers.",
+          "details": {
+            "relevantPassages": 1,
+            "totalPassages": 1,
+            "missingTopics": [],
+            "noiseLevel": "low"
+          },
+          "tokens": {
+            "input": 413,
+            "output": 99,
+            "total": 512
+          },
+          "cost": 0.000081,
+          "latency": 2883
+        }
+      },
+      "aggregator": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "model": "local",
+        "finalScore": 1,
+        "verdict": "PASS",
+        "synthesis": "Single-judge evaluation (Gemini/Context Relevancy): The context directly and completely answers the user's query by stating the monthly rent for a shared room at The Grove Coliving and includes relevant details about what the rent covers.",
+        "disagreements": [],
+        "recommendation": "The context directly and completely answers the user's query by stating the monthly rent for a shared room at The Grove Coliving and includes relevant details about what the rent covers.",
+        "cost": 0,
+        "latency": 0
+      },
+      "strategy": "single",
+      "riskScore": 0.3,
+      "riskFactors": [
+        "low_risk_keywords: what is",
+        "low_context_count: 1"
+      ],
+      "strategyCost": 0.000081,
+      "id": "factual-01",
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": 1,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": 1,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "overallVerdict": "PASS"
+    },
+    {
+      "testCaseIndex": 1,
+      "judges": {
+        "openai": {
+          "judge": "openai",
+          "metric": "faithfulness",
+          "model": "gpt-4o-mini",
+          "score": 1,
+          "reason": "All claims in the actual output are fully supported by the retrieval context.",
+          "details": {
+            "totalClaims": 2,
+            "supportedClaims": 2,
+            "unsupportedClaims": 0,
+            "examples": []
+          },
+          "tokens": {
+            "input": 360,
+            "output": 66,
+            "total": 426
+          },
+          "cost": 0.000094,
+          "latency": 1907
+        }
+      },
+      "aggregator": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "model": "local-hybrid",
+        "finalScore": 0.83,
+        "verdict": "FAIL",
+        "synthesis": "Hybrid evaluation: deterministic avg 0.44, faithfulness 1. All claims in the actual output are fully supported by the retrieval context.",
+        "disagreements": [],
+        "recommendation": "All claims in the actual output are fully supported by the retrieval context.",
+        "cost": 0,
+        "latency": 0
+      },
+      "strategy": "hybrid",
+      "riskScore": 0.45,
+      "riskFactors": [
+        "low_context_count: 1"
+      ],
+      "deterministicChecks": {
+        "checks": {
+          "entityMatch": {
+            "score": 0,
+            "detail": "0/1 output entities found in context/query"
+          },
+          "freshness": {
+            "score": 0.7,
+            "detail": "no_year_references"
+          },
+          "contextOverlap": {
+            "score": 0.62,
+            "detail": "jaccard: 18 shared / 29 total tokens"
+          },
+          "completeness": {
+            "score": 0.45,
+            "detail": "5/11 query terms in output"
+          }
+        },
+        "avgScore": 0.44,
+        "latency": 0
+      },
+      "strategyCost": 0.000094,
+      "id": "factual-02",
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": 1,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": 0.83,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "overallVerdict": "PASS"
+    },
+    {
+      "testCaseIndex": 2,
+      "judges": {
+        "openai": {
+          "judge": "openai",
+          "metric": "faithfulness",
+          "model": "gpt-4o-mini",
+          "score": 1,
+          "reason": "All claims in the actual output are fully supported by the retrieval context.",
+          "details": {
+            "totalClaims": 6,
+            "supportedClaims": 6,
+            "unsupportedClaims": 0,
+            "examples": []
+          },
+          "tokens": {
+            "input": 373,
+            "output": 66,
+            "total": 439
+          },
+          "cost": 0.000096,
+          "latency": 1564
+        }
+      },
+      "aggregator": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "model": "local-hybrid",
+        "finalScore": 0.87,
+        "verdict": "FAIL",
+        "synthesis": "Hybrid evaluation: deterministic avg 0.55, faithfulness 1. All claims in the actual output are fully supported by the retrieval context.",
+        "disagreements": [],
+        "recommendation": "All claims in the actual output are fully supported by the retrieval context.",
+        "cost": 0,
+        "latency": 0
+      },
+      "strategy": "hybrid",
+      "riskScore": 0.45,
+      "riskFactors": [
+        "low_context_count: 1"
+      ],
+      "deterministicChecks": {
+        "checks": {
+          "entityMatch": {
+            "score": 0.33,
+            "detail": "1/3 output entities found in context/query"
+          },
+          "freshness": {
+            "score": 0.7,
+            "detail": "no_year_references"
+          },
+          "contextOverlap": {
+            "score": 0.68,
+            "detail": "jaccard: 21 shared / 31 total tokens"
+          },
+          "completeness": {
+            "score": 0.5,
+            "detail": "4/8 query terms in output"
+          }
+        },
+        "avgScore": 0.55,
+        "latency": 0
+      },
+      "strategyCost": 0.000096,
+      "id": "factual-03",
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": 1,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": 0.87,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "overallVerdict": "PASS"
+    },
+    {
+      "testCaseIndex": 3,
+      "judges": {
+        "gemini": {
+          "judge": "gemini",
+          "metric": "contextRelevancy",
+          "model": "gemini-2.5-flash",
+          "score": 1,
+          "reason": "The context directly identifies the neighborhood and provides a detailed description of its key features and nearby amenities, fully addressing the query.",
+          "details": {
+            "relevantPassages": 1,
+            "totalPassages": 1,
+            "missingTopics": [],
+            "noiseLevel": "low"
+          },
+          "tokens": {
+            "input": 418,
+            "output": 88,
+            "total": 506
+          },
+          "cost": 0.000077,
+          "latency": 2707
+        }
+      },
+      "aggregator": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "model": "local",
+        "finalScore": 1,
+        "verdict": "PASS",
+        "synthesis": "Single-judge evaluation (Gemini/Context Relevancy): The context directly identifies the neighborhood and provides a detailed description of its key features and nearby amenities, fully addressing the query.",
+        "disagreements": [],
+        "recommendation": "The context directly identifies the neighborhood and provides a detailed description of its key features and nearby amenities, fully addressing the query.",
+        "cost": 0,
+        "latency": 0
+      },
+      "strategy": "single",
+      "riskScore": 0.3,
+      "riskFactors": [
+        "low_risk_keywords: what is",
+        "low_context_count: 1"
+      ],
+      "strategyCost": 0.000077,
+      "id": "factual-04",
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": 1,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": 1,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "overallVerdict": "PASS"
+    },
+    {
+      "testCaseIndex": 4,
+      "judges": {
+        "gemini": {
+          "judge": "gemini",
+          "metric": "contextRelevancy",
+          "model": "gemini-2.5-flash",
+          "score": 1,
+          "reason": "The context fully and clearly outlines both the booking process steps and the immediate pre-move-in process (receiving access codes), directly answering both parts of the user's query without any irrelevant information.",
+          "details": {
+            "relevantPassages": 1,
+            "totalPassages": 1,
+            "missingTopics": [],
+            "noiseLevel": "low"
+          },
+          "tokens": {
+            "input": 445,
+            "output": 104,
+            "total": 549
+          },
+          "cost": 0.000086,
+          "latency": 4270
+        }
+      },
+      "aggregator": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "model": "local",
+        "finalScore": 1,
+        "verdict": "PASS",
+        "synthesis": "Single-judge evaluation (Gemini/Context Relevancy): The context fully and clearly outlines both the booking process steps and the immediate pre-move-in process (receiving access codes), directly answering both parts of the user's query without any irrelevant information.",
+        "disagreements": [],
+        "recommendation": "The context fully and clearly outlines both the booking process steps and the immediate pre-move-in process (receiving access codes), directly answering both parts of the user's query without any irrelevant information.",
+        "cost": 0,
+        "latency": 0
+      },
+      "strategy": "single",
+      "riskScore": 0.3,
+      "riskFactors": [
+        "low_risk_keywords: what is",
+        "low_context_count: 1"
+      ],
+      "strategyCost": 0.000086,
+      "id": "factual-05",
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": 1,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": 1,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "overallVerdict": "PASS"
+    },
+    {
+      "testCaseIndex": 5,
+      "judges": {
+        "gemini": {
+          "judge": "gemini",
+          "metric": "contextRelevancy",
+          "model": "gemini-2.5-flash",
+          "score": 1,
+          "reason": "The context provides a clear and comprehensive comparison between studio pods and shared rooms, detailing differences in privacy, bathroom facilities, and pricing, which directly answers the user's query.",
+          "details": {
+            "relevantPassages": 1,
+            "totalPassages": 1,
+            "missingTopics": [],
+            "noiseLevel": "low"
+          },
+          "tokens": {
+            "input": 447,
+            "output": 99,
+            "total": 546
+          },
+          "cost": 0.000084,
+          "latency": 3413
+        }
+      },
+      "aggregator": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "model": "local",
+        "finalScore": 1,
+        "verdict": "PASS",
+        "synthesis": "Single-judge evaluation (Gemini/Context Relevancy): The context provides a clear and comprehensive comparison between studio pods and shared rooms, detailing differences in privacy, bathroom facilities, and pricing, which directly answers the user's query.",
+        "disagreements": [],
+        "recommendation": "The context provides a clear and comprehensive comparison between studio pods and shared rooms, detailing differences in privacy, bathroom facilities, and pricing, which directly answers the user's query.",
+        "cost": 0,
+        "latency": 0
+      },
+      "strategy": "single",
+      "riskScore": 0.3,
+      "riskFactors": [
+        "low_risk_keywords: what is",
+        "low_context_count: 1"
+      ],
+      "strategyCost": 0.000084,
+      "id": "factual-06",
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": 1,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": 1,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "overallVerdict": "PASS"
+    },
+    {
+      "testCaseIndex": 6,
+      "judges": {
+        "openai": {
+          "judge": "openai",
+          "metric": "faithfulness",
+          "model": "gpt-4o-mini",
+          "score": 0.7,
+          "reason": "The actual output contains a minor unsupported detail regarding the lack of information about coliving options near Stanford University, which is not explicitly stated in the retrieval context.",
+          "details": {
+            "totalClaims": 3,
+            "supportedClaims": 2,
+            "unsupportedClaims": 1,
+            "examples": [
+              "I do not have any information about coliving options near Stanford University."
+            ]
+          },
+          "tokens": {
+            "input": 378,
+            "output": 101,
+            "total": 479
+          },
+          "cost": 0.000117,
+          "latency": 1709
+        }
+      },
+      "aggregator": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "model": "local-hybrid",
+        "finalScore": 0.66,
+        "verdict": "FAIL",
+        "synthesis": "Hybrid evaluation: deterministic avg 0.56, faithfulness 0.7. The actual output contains a minor unsupported detail regarding the lack of information about coliving options near Stanford University, which is not explicitly stated in the retrieval context.",
+        "disagreements": [],
+        "recommendation": "The actual output contains a minor unsupported detail regarding the lack of information about coliving options near Stanford University, which is not explicitly stated in the retrieval context.",
+        "cost": 0,
+        "latency": 0
+      },
+      "strategy": "hybrid",
+      "riskScore": 0.45,
+      "riskFactors": [
+        "low_context_count: 1"
+      ],
+      "deterministicChecks": {
+        "checks": {
+          "entityMatch": {
+            "score": 0.6,
+            "detail": "3/5 output entities found in context/query"
+          },
+          "freshness": {
+            "score": 0.7,
+            "detail": "no_year_references"
+          },
+          "contextOverlap": {
+            "score": 0.23,
+            "detail": "jaccard: 10 shared / 43 total tokens"
+          },
+          "completeness": {
+            "score": 0.71,
+            "detail": "5/7 query terms in output"
+          }
+        },
+        "avgScore": 0.56,
+        "latency": 0
+      },
+      "strategyCost": 0.000117,
+      "id": "factual-07",
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": 0.7,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": 0.66,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "overallVerdict": "PASS"
+    },
+    {
+      "testCaseIndex": 7,
+      "judges": {
+        "openai": {
+          "judge": "openai",
+          "metric": "faithfulness",
+          "model": "gpt-4o-mini",
+          "score": 0.7,
+          "reason": "The actual output contains minor unsupported details regarding the timing of events, which do not significantly affect the overall message about the community events.",
+          "details": {
+            "totalClaims": 4,
+            "supportedClaims": 2,
+            "unsupportedClaims": 2,
+            "examples": [
+              "Welcome dinner is stated to be at 7 PM, but the output claims it is at 5 PM.",
+              "Movie night is stated to be at 8 PM, but the output claims it is at a different time."
+            ]
+          },
+          "tokens": {
+            "input": 401,
+            "output": 128,
+            "total": 529
+          },
+          "cost": 0.000137,
+          "latency": 2151
+        }
+      },
+      "aggregator": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "model": "local-hybrid",
+        "finalScore": 0.61,
+        "verdict": "FAIL",
+        "synthesis": "Hybrid evaluation: deterministic avg 0.41, faithfulness 0.7. The actual output contains minor unsupported details regarding the timing of events, which do not significantly affect the overall message about the community events.",
+        "disagreements": [],
+        "recommendation": "The actual output contains minor unsupported details regarding the timing of events, which do not significantly affect the overall message about the community events.",
+        "cost": 0,
+        "latency": 0
+      },
+      "strategy": "hybrid",
+      "riskScore": 0.45,
+      "riskFactors": [
+        "low_context_count: 1"
+      ],
+      "deterministicChecks": {
+        "checks": {
+          "entityMatch": {
+            "score": 0,
+            "detail": "0/2 output entities found in context/query"
+          },
+          "freshness": {
+            "score": 0.7,
+            "detail": "no_year_references"
+          },
+          "contextOverlap": {
+            "score": 0.53,
+            "detail": "jaccard: 20 shared / 38 total tokens"
+          },
+          "completeness": {
+            "score": 0.4,
+            "detail": "2/5 query terms in output"
+          }
+        },
+        "avgScore": 0.41,
+        "latency": 0
+      },
+      "strategyCost": 0.000137,
+      "id": "factual-08",
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": 0.7,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": 0.61,
+          "verdict": "WARN",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "overallVerdict": "WARN"
+    },
+    {
+      "testCaseIndex": 8,
+      "judges": {
+        "openai": {
+          "judge": "openai",
+          "metric": "faithfulness",
+          "model": "gpt-4o-mini",
+          "score": 1,
+          "reason": "All claims in the actual output are fully supported by the retrieval context.",
+          "details": {
+            "totalClaims": 5,
+            "supportedClaims": 5,
+            "unsupportedClaims": 0,
+            "examples": []
+          },
+          "tokens": {
+            "input": 383,
+            "output": 66,
+            "total": 449
+          },
+          "cost": 0.000097,
+          "latency": 1461
+        }
+      },
+      "aggregator": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "model": "local-hybrid",
+        "finalScore": 0.89,
+        "verdict": "PASS",
+        "synthesis": "Hybrid evaluation: deterministic avg 0.64, faithfulness 1. All claims in the actual output are fully supported by the retrieval context.",
+        "disagreements": [],
+        "recommendation": "All claims in the actual output are fully supported by the retrieval context.",
+        "cost": 0,
+        "latency": 0
+      },
+      "strategy": "hybrid",
+      "riskScore": 0.45,
+      "riskFactors": [
+        "low_context_count: 1"
+      ],
+      "deterministicChecks": {
+        "checks": {
+          "entityMatch": {
+            "score": 0.67,
+            "detail": "2/3 output entities found in context/query"
+          },
+          "freshness": {
+            "score": 0.7,
+            "detail": "no_year_references"
+          },
+          "contextOverlap": {
+            "score": 0.55,
+            "detail": "jaccard: 18 shared / 33 total tokens"
+          },
+          "completeness": {
+            "score": 0.63,
+            "detail": "5/8 query terms in output"
+          }
+        },
+        "avgScore": 0.64,
+        "latency": 0
+      },
+      "strategyCost": 0.000097,
+      "id": "factual-09",
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": 1,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": 0.89,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "overallVerdict": "PASS"
+    },
+    {
+      "testCaseIndex": 9,
+      "judges": {
+        "gemini": {
+          "judge": "gemini",
+          "metric": "contextRelevancy",
+          "model": "gemini-2.5-flash",
+          "score": 1,
+          "reason": "The context is highly relevant and sufficient to fully answer the query about the pet policy, covering allowed pets, prohibited pets, fees, and requirements.",
+          "details": {
+            "relevantPassages": 1,
+            "totalPassages": 1,
+            "missingTopics": [],
+            "noiseLevel": "low"
+          },
+          "tokens": {
+            "input": 463,
+            "output": 93,
+            "total": 556
+          },
+          "cost": 0.000084,
+          "latency": 3226
+        }
+      },
+      "aggregator": {
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "model": "local",
+        "finalScore": 1,
+        "verdict": "PASS",
+        "synthesis": "Single-judge evaluation (Gemini/Context Relevancy): The context is highly relevant and sufficient to fully answer the query about the pet policy, covering allowed pets, prohibited pets, fees, and requirements.",
+        "disagreements": [],
+        "recommendation": "The context is highly relevant and sufficient to fully answer the query about the pet policy, covering allowed pets, prohibited pets, fees, and requirements.",
+        "cost": 0,
+        "latency": 0
+      },
+      "strategy": "single",
+      "riskScore": 0.3,
+      "riskFactors": [
+        "low_risk_keywords: what is",
+        "low_context_count: 1"
+      ],
+      "strategyCost": 0.000084,
+      "id": "factual-10",
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": 1,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": 1,
+          "verdict": "PASS",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "overallVerdict": "PASS"
+    },
+    {
+      "testCaseIndex": 0,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "hall-01"
+    },
+    {
+      "testCaseIndex": 1,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "hall-02"
+    },
+    {
+      "testCaseIndex": 2,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "hall-03"
+    },
+    {
+      "testCaseIndex": 3,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "hall-04"
+    },
+    {
+      "testCaseIndex": 4,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "hall-05"
+    },
+    {
+      "testCaseIndex": 5,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "hall-06"
+    },
+    {
+      "testCaseIndex": 6,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "hall-07"
+    },
+    {
+      "testCaseIndex": 7,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "hall-08"
+    },
+    {
+      "testCaseIndex": 8,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "hall-09"
+    },
+    {
+      "testCaseIndex": 9,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "hall-10"
+    },
+    {
+      "testCaseIndex": 0,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "edge-01"
+    },
+    {
+      "testCaseIndex": 1,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "edge-02"
+    },
+    {
+      "testCaseIndex": 2,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "edge-03"
+    },
+    {
+      "testCaseIndex": 3,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "edge-04"
+    },
+    {
+      "testCaseIndex": 4,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "edge-05"
+    },
+    {
+      "testCaseIndex": 5,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "edge-06"
+    },
+    {
+      "testCaseIndex": 6,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "edge-07"
+    },
+    {
+      "testCaseIndex": 7,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "edge-08"
+    },
+    {
+      "testCaseIndex": 8,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "edge-09"
+    },
+    {
+      "testCaseIndex": 9,
+      "overallVerdict": "ERROR",
+      "strategy": "unknown",
+      "judges": {},
+      "aggregator": {
+        "verdict": "ERROR",
+        "finalScore": null
+      },
+      "metricVerdicts": [
+        {
+          "metric": "faithfulness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "groundedness",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.7,
+            "warn": 0.4
+          }
+        },
+        {
+          "metric": "contextRelevancy",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.6,
+            "warn": 0.3
+          }
+        },
+        {
+          "metric": "finalScore",
+          "score": null,
+          "verdict": "SKIP",
+          "threshold": {
+            "pass": 0.65,
+            "warn": 0.4
+          }
+        }
+      ],
+      "id": "edge-10"
+    }
+  ]
+}

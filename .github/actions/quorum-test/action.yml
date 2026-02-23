@@ -1,0 +1,204 @@
+name: 'Quorum Test'
+description: 'Run Quorum AI evaluation quality gate and post results to PR'
+
+inputs:
+  quorum-url:
+    description: 'Quorum backend URL (e.g. https://quorum.example.com)'
+    required: true
+  quorum-email:
+    description: 'Quorum auth email (use a secret)'
+    required: true
+  quorum-password:
+    description: 'Quorum auth password (use a secret)'
+    required: true
+  config:
+    description: 'Path to .quorum.yml config file'
+    required: false
+    default: '.quorum.yml'
+  strategy:
+    description: 'Override evaluation strategy (auto|single|hybrid|council)'
+    required: false
+    default: ''
+  update-baseline:
+    description: 'Save this run as the new baseline artifact'
+    required: false
+    default: 'false'
+  baseline-artifact-name:
+    description: 'Name for the uploaded baseline artifact'
+    required: false
+    default: 'quorum-baseline'
+  github-token:
+    description: 'GitHub token for posting PR comments (pass secrets.GITHUB_TOKEN)'
+    required: false
+    default: ''
+  node-version:
+    description: 'Node.js version to use'
+    required: false
+    default: '20'
+
+outputs:
+  verdict:
+    description: 'Evaluation verdict: PASS, WARN, FAIL, or ERROR'
+    value: ${{ steps.parse.outputs.verdict }}
+  exit-code:
+    description: 'Raw exit code from quorum test'
+    value: ${{ steps.run.outputs.exit_code }}
+  report-path:
+    description: 'Path to the markdown report file'
+    value: ${{ steps.run.outputs.report_path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install Quorum CLI
+      shell: bash
+      run: |
+        # Install from local cli/ directory when running inside the Quorum repo itself,
+        # otherwise fall back to the published npm package.
+        if [ -f "$GITHUB_WORKSPACE/cli/package.json" ]; then
+          npm install -g "$GITHUB_WORKSPACE/cli"
+        else
+          npm install -g @quorum/cli
+        fi
+
+    - name: Check backend health
+      shell: bash
+      run: |
+        echo "Checking Quorum backend at ${{ inputs.quorum-url }}/health ..."
+        HTTP_STATUS=$(curl -s -o /tmp/quorum-health.json -w "%{http_code}" "${{ inputs.quorum-url }}/health" || echo "000")
+        if [ "$HTTP_STATUS" != "200" ]; then
+          echo "::error::Quorum backend health check failed (HTTP $HTTP_STATUS). Ensure the backend is running and reachable."
+          exit 1
+        fi
+        MONGO=$(node -e "try{const d=require('fs').readFileSync('/tmp/quorum-health.json','utf8');console.log(JSON.parse(d).mongodb||'unknown')}catch{console.log('unknown')}")
+        echo "Backend healthy. MongoDB: $MONGO"
+
+    - name: Run Quorum test
+      id: run
+      shell: bash
+      env:
+        QUORUM_EMAIL: ${{ inputs.quorum-email }}
+        QUORUM_PASSWORD: ${{ inputs.quorum-password }}
+      run: |
+        REPORT_PATH="${RUNNER_TEMP}/quorum-report-${{ github.run_id }}.md"
+        echo "report_path=$REPORT_PATH" >> "$GITHUB_OUTPUT"
+
+        ARGS="--ci --reporter markdown --config ${{ inputs.config }} --endpoint ${{ inputs.quorum-url }}"
+
+        if [ "${{ inputs.update-baseline }}" = "true" ]; then
+          ARGS="$ARGS --update-baseline"
+        fi
+        if [ -n "${{ inputs.strategy }}" ]; then
+          ARGS="$ARGS --strategy ${{ inputs.strategy }}"
+        fi
+
+        set +e
+        # shellcheck disable=SC2086
+        quorum test $ARGS > "$REPORT_PATH" 2>&1
+        EXIT_CODE=$?
+        set -e
+
+        echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
+
+        echo "--- Quorum report ---"
+        cat "$REPORT_PATH"
+        echo "--- end report ---"
+
+    - name: Parse verdict from report
+      id: parse
+      shell: bash
+      run: |
+        REPORT_PATH="${{ steps.run.outputs.report_path }}"
+        VERDICT=$(grep -oE '\*\*Overall\*\*:.*' "$REPORT_PATH" 2>/dev/null | grep -oE '(PASS|WARN|FAIL|ERROR)' | head -1 || true)
+        if [ -z "$VERDICT" ]; then
+          VERDICT=$([ "${{ steps.run.outputs.exit_code }}" = "0" ] && echo "PASS" || echo "FAIL")
+        fi
+        echo "verdict=$VERDICT" >> "$GITHUB_OUTPUT"
+        echo "Verdict: $VERDICT"
+
+    - name: Post or update PR comment
+      if: github.event_name == 'pull_request' && inputs.github-token != ''
+      uses: actions/github-script@v7
+      env:
+        REPORT_PATH: ${{ steps.run.outputs.report_path }}
+        VERDICT: ${{ steps.parse.outputs.verdict }}
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const fs = require('fs');
+          const marker = '<!-- quorum-report -->';
+          const reportPath = process.env.REPORT_PATH;
+          const verdict = process.env.VERDICT;
+
+          let reportBody = '';
+          try {
+            reportBody = fs.readFileSync(reportPath, 'utf8').trim();
+          } catch (err) {
+            reportBody = `_Could not read report: ${err.message}_`;
+          }
+
+          const statusLine = verdict === 'PASS'
+            ? '> ✅ Quality gate **passed**'
+            : verdict === 'WARN'
+            ? '> ⚠️ Quality gate passed with **warnings**'
+            : '> ❌ Quality gate **failed** — merge is blocked';
+
+          const body = [
+            marker,
+            '### Quorum Evaluation Report',
+            '',
+            statusLine,
+            '',
+            reportBody,
+            '',
+            `_Updated: ${new Date().toUTCString()} · Run [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})_`,
+          ].join('\n');
+
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+
+          const existing = comments.find(c => c.body && c.body.startsWith(marker));
+
+          if (existing) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: existing.id,
+              body,
+            });
+            console.log(`Updated existing PR comment #${existing.id}`);
+          } else {
+            const { data: created } = await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+            console.log(`Created new PR comment #${created.id}`);
+          }
+
+    - name: Upload baseline artifact
+      if: inputs.update-baseline == 'true' && steps.run.outputs.exit_code == '0'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.baseline-artifact-name }}
+        path: tests/baselines/
+        if-no-files-found: warn
+
+    - name: Enforce quality gate
+      shell: bash
+      run: |
+        EXIT_CODE="${{ steps.run.outputs.exit_code }}"
+        if [ "$EXIT_CODE" != "0" ]; then
+          echo "::error::Quorum quality gate failed (verdict: ${{ steps.parse.outputs.verdict }}). See the evaluation report above."
+          exit "$EXIT_CODE"
+        fi
+        echo "Quality gate passed."

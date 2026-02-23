@@ -1,1074 +1,792 @@
-# Quorum CI/CD Quality Gate — Implementation Plan
+# Quorum Main Implementation Guide
 
-## Context
+Last updated: 2026-02-23
+Owner: Product + Engineering
+Scope: This is the main build-and-ship guide for upcoming sessions and days.
 
-Quorum is pivoting from "evaluation dashboard you look at" to "CI/CD quality gate that blocks bad deployments." The core evaluation engine (Council-of-LLMs, adaptive orchestration, deterministic checks) stays untouched. We're building new layers on top: configurable thresholds, a CLI tool, a GitHub Action, a golden dataset for meta-evaluation, and a PII sanitization stub in the SDK.
+## 1. Why this document exists
 
-**Execution**: 7 commits, one at a time. Each commit has a checkpoint with verification steps.
+Quorum is moving from "evaluation dashboard" to "CI/CD quality gate that blocks bad AI releases".
+This document defines exactly how we execute that shift without losing product focus or over-engineering too early.
 
----
+This guide is the source of truth for:
 
-## Key Constraints (Verified Against Codebase)
+- What to build first
+- Why each decision is made
+- How each decision affects product outcomes
+- What "done" means for each phase
+- How to run day-to-day implementation sessions
 
-| Constraint | Source | Detail |
-|------------|--------|--------|
-| 10-case limit per request | `backend/src/utils/validation.js:4` | CLI must chunk datasets into batches of 10 |
-| Cookie-based auth | `backend/src/routes/results.js:30` | `/api/results/:jobId` filters by `userId`; CLI must login first |
-| Strategy override | `orchestrator.js:135`, `adaptiveRouter.js:164-184` | `council` bypasses adaptive router entirely; `hybrid`/`single` skip risk scoring |
-| Cost in API response | `adaptiveRouter.js:239`, `results.js:52-61` | `summary.totalCost` + per-result `strategyCost` available |
-| ESM everywhere | `backend/package.json`, `sdk/package.json` | `"type": "module"`, all imports use `.js` extensions |
-| Vitest v4.0.18 | `backend/package.json` devDependencies | `"test": "vitest run"`, no config file (defaults) |
-| No existing CLI, tests/, .github/ | Verified via glob | All are new directories |
+## 2. Current reality snapshot (as of 2026-02-23)
 
----
+### 2.1 Core already implemented
 
-## Commit 1: Zod Schemas + testCaseSchema Update
+- Council + adaptive orchestration backend
+- Threshold evaluator and related tests
+- Golden datasets + meta-eval script
+- CLI package (`test`, `init`, `validate`) with tests
 
-### Status: [ ] Not Started
+### 2.2 Pending from original plan
 
-### New Files
+- Commit 5: GitHub Action quality gate
+- Commit 6: SDK PII sanitization
+- Commit 7: CI/CD documentation package
 
-**`backend/src/schemas/testSuiteConfig.js`** (~60 lines)
-- Zod schema for `.quorum.yml` config format
-- `metricThresholdSchema`: `{ pass: number(0-1), warn: number(0-1) }` with `.refine(d => d.warn <= d.pass)`
-- `metricsConfigSchema`: optional keys for `faithfulness`, `groundedness`, `contextRelevancy`, `finalScore`; `.refine()` ensures at least one metric defined
-- `ciOptionsSchema`: `failOnWarn` (default false), `failOnError` (true), `failOnRegression` (false), `regressionThreshold` (0.05), `baselinePath` (optional string)
-- `testSuiteConfigSchema`: `version: z.literal(1)`, `datasets: z.array(z.string()).min(1)`, `metrics`, `strategy` (auto|single|hybrid|council, default auto), `ci` (optional with defaults)
-- Export `testSuiteConfigSchema` and `parseConfig(rawObject)` helper
+### 2.3 Structural gaps blocking enterprise readiness
 
-**`backend/src/schemas/testRunResult.js`** (~70 lines)
-- Zod schema for CLI output (the `TestRunResult` contract)
-- `metricVerdictSchema`: `{ metric: string, score: number|null, verdict: PASS|WARN|FAIL|SKIP, threshold?: {pass, warn} }`
-- `testCaseResultSchema`: `{ index: number, id?: string, metricVerdicts[], overallVerdict, strategy: string, riskScore?: number, metadata?: record }`
-- `regressionSchema`: `{ metric: string, previous: number, current: number, delta: number, testCaseId?: string }`
-- `testRunResultSchema`: `{ runId, timestamp, config, dataset, strategyDistribution: record<number>, results[], summary, regressions[], overallVerdict }`
-- Summary: `{ total, passed, warned, failed, errored, skipped, passRate, avgScores: record<number|null>, totalCost }`
+- SDK and backend auth mismatch (`apiKey` in SDK, cookie-only backend auth flow)
+- Missing service-to-service auth model for SDK/CLI automation
+- Missing `.github` action/workflow to enforce gates in CI
+- Missing PII sanitizer implementation in SDK
+- Ingestion path drops important metadata (`metadata`, `capturedAt`) before evaluation
+- Insecure JWT secret fallback for production path
+- Plan/docs drift and broken docs links
 
-### Modified Files
+## 3. Product strategy for next sessions
 
-**`backend/src/utils/validation.js`** (lines 9-28)
-```diff
- export const testCaseSchema = z.object({
-+  id: z.string().max(100).optional(),
-   input: z.string().min(1).max(MAX_INPUT_LENGTH),
-   actualOutput: z.string().min(1).max(MAX_OUTPUT_LENGTH),
-   expectedOutput: z.string().max(MAX_OUTPUT_LENGTH).optional(),
-   retrievalContext: z.array(z.string().max(MAX_CONTEXT_LENGTH)).min(1).max(MAX_CONTEXT_PASSAGES),
-+  metadata: z.record(z.unknown()).optional(),
- });
-```
+We will run a dual-track strategy:
 
-**`backend/src/models/Evaluation.js`** (testCase sub-schema, ~line 4-12)
-```diff
- const testCaseSchema = new mongoose.Schema({
-+  id: { type: String },
-   input: { type: String, required: true },
-   actualOutput: { type: String, required: true },
-   expectedOutput: { type: String },
-   retrievalContext: [{ type: String }],
-+  metadata: { type: mongoose.Schema.Types.Mixed },
- }, { _id: false });
-```
+1. PMF Track (product value): keep improving quality-gate outcomes and user trust.
+2. Enterprise Foundation Track (deal unblockers): implement only the enterprise features that repeatedly block adoption.
 
-### Tests
+Reason:
 
-**`backend/tests/schemas/testSuiteConfig.test.js`**
-1. Valid minimal config (version + 1 dataset + 1 metric) -> passes
-2. Valid full config with all fields -> passes
-3. Missing version -> fails
-4. Wrong version (2) -> fails
-5. Empty datasets array -> fails
-6. No metrics defined (empty object) -> fails (refine guard)
-7. Metric with warn > pass -> fails (refine guard)
-8. Metric with warn === pass -> passes
-9. ci defaults applied when omitted -> correct defaults
-10. regressionThreshold out of range -> fails
+- Product-only strategy fails when deals die at security/procurement.
+- Enterprise-only strategy risks feature bloat before value scales.
+- Dual track keeps delivery velocity while removing known blockers.
 
-**`backend/tests/schemas/testRunResult.test.js`**
-1. Valid complete run result -> passes
-2. Missing required summary.total -> fails
-3. Invalid overallVerdict enum value -> fails
-4. Empty results array -> passes (zero cases is valid edge)
-5. Regression with negative delta -> passes (schema allows it)
+Product impact:
 
-**`backend/tests/utils/validation.test.js`**
-1. testCaseSchema with `id` -> passes
-2. testCaseSchema without `id` -> passes (backwards compat)
-3. testCaseSchema with `metadata: { domain: 'coliving' }` -> passes
-4. testCaseSchema with `id` exceeding 100 chars -> fails
-5. evaluateRequestSchema still works with existing payloads -> passes
+- Faster adoption in current users
+- Higher conversion for mid-market and enterprise opportunities
+- Lower technical debt from "bolt-on enterprise" later
 
-### Checkpoint 1
+## 4. Decision framework (non-negotiable)
 
-```bash
-cd backend && npm test
-```
+Use this to decide what goes in scope:
 
-- [ ] All 20+ new tests pass
-- [ ] Existing `gemini.test.js` (10 tests) still passes
-- [ ] Manual: POST to `/api/evaluate` with `{ id: "test-1", metadata: { domain: "coliving" } }` in a test case -> 202 accepted
-- [ ] Manual: POST without `id`/`metadata` -> still works (backwards compat)
+1. Build if it protects release quality directly.
+2. Build if it repeatedly blocks deals (>= 2-3 real opportunities).
+3. Build if it materially reduces reliability incidents.
+4. Do not build if it is speculative or single-customer vanity.
 
----
+## 5. Original commit status (explicit)
 
-## Commit 2: Threshold Evaluator + Tests
+### Completed and removed from active build queue
 
-### Status: [ ] Not Started
+- Commit 1: Schemas + validation/model updates
+- Commit 2: Threshold evaluator + tests
+- Commit 3: Golden datasets + meta-evaluation
+- Commit 4: CLI implementation + tests
 
-### New Files
+### Active and pending
 
-**`backend/src/evaluators/thresholdEvaluator.js`** (~120 lines)
+- Commit 5: GitHub Action quality gate
+- Commit 6: SDK PII sanitization
+- Commit 7: Documentation refresh and operational docs
 
-Lives in backend so meta-eval script (Commit 3) can import directly. CLI duplicates later (Commit 4). Backend copy also enables future threshold-based webhooks.
+## 6. Architecture decisions (with rationale and product effect)
 
-```js
-// Key constants and functions:
+This section is mandatory reference before changing architecture.
 
-const METRIC_JUDGE_MAP = {
-  faithfulness: 'openai',
-  groundedness: 'anthropic',
-  contextRelevancy: 'gemini',
-};
-// Matches hardcoded judge names in orchestrator.js:237-247
+### AD-01: Keep monolith API for now, add hard boundaries by module
 
-export function evaluateThresholds(results, thresholdConfig)
-// -> { results: evaluatedResults[], summary, overallVerdict }
+Decision:
 
-// Internal helpers (not exported):
-function evaluateMetrics(result, thresholdConfig)     // per-result metric verdicts
-function evaluateSingleMetric(metric, score, config)  // score >= pass -> PASS, >= warn -> WARN, else FAIL, null -> SKIP
-function computeOverallVerdict(metricVerdicts, result) // worst non-SKIP verdict; ERROR from aggregator
-function computeRunVerdict(evaluated)                  // worst across all cases
-function computeSummary(evaluated)                     // { total, passed, warned, failed, errored, skipped, passRate }
-```
+- Keep current Express backend process for now.
+- Enforce clear module boundaries for auth, orchestration, ingest, and policy.
 
-**passRate denominator**: SKIPs are **excluded** from the denominator. If 10 cases produce 6 PASS, 2 FAIL, 2 SKIP → `passRate = 6 / (6+2) = 75%`, not `6/10 = 60%`. Rationale: SKIP means "metric not evaluated" (e.g., `single` strategy has no faithfulness judge), penalizing for missing data would make `auto` strategy always score worse than `council`.
+Why:
 
-Pattern to follow: `deterministicChecks.js` — standalone exported functions, no classes, simple return objects.
+- Current scale does not justify service split risk and overhead.
+- Main risk today is reliability/auth/compliance, not microservice decomposition.
 
-### Edge Cases (Must All Have Tests)
+Product effect:
 
-| Case | Input | Expected |
-|------|-------|----------|
-| All judges error | `aggregator.verdict === 'ERROR'`, all scores null | Overall: ERROR (not FAIL) |
-| Hybrid strategy | Only `openai` judge present | Missing metrics: SKIP (not FAIL) |
-| Single strategy | Only `gemini` judge present | faithfulness/groundedness: SKIP |
-| Boundary: score === pass | 0.7 with pass threshold 0.7 | PASS (uses `>=`) |
-| Boundary: score just below | 0.699 with pass 0.7, warn 0.4 | WARN |
-| Score of 0 | 0.0 with any threshold > 0 | FAIL |
-| Score of 1 | 1.0 with any threshold | PASS |
-| Empty results | `[]` | overall SKIP, passRate 0 |
-| finalScore metric | From `result.aggregator.finalScore` | Evaluated like any metric |
-| Null score without error | Judge returned `score: null` but no error | SKIP |
+- Faster shipping in next sessions.
+- Lower coordination overhead.
+- Easier rollback and diagnosis during rapid iteration.
 
-### Tests
+Tradeoff:
 
-**`backend/tests/evaluators/thresholdEvaluator.test.js`** (~25 cases)
-
-```
-describe('evaluateThresholds')
-  describe('evaluateSingleMetric')
-    - score above pass threshold -> PASS
-    - score between warn and pass -> WARN
-    - score below warn threshold -> FAIL
-    - score exactly at pass boundary -> PASS
-    - score exactly at warn boundary -> WARN
-    - null score -> SKIP
-    - undefined score -> SKIP
-
-  describe('per-test-case overall verdict')
-    - all metrics PASS -> PASS
-    - one FAIL, rest PASS -> FAIL (worst-of)
-    - one WARN, rest PASS -> WARN
-    - all SKIP -> SKIP
-    - ERROR aggregator -> ERROR regardless of metric scores
-
-  describe('strategy-specific handling')
-    - council result: all 3 judges present -> all metrics evaluated
-    - hybrid result: only openai present -> anthropic/gemini SKIP
-    - single result: only gemini present -> faithfulness/groundedness SKIP
-
-  describe('run-level verdict')
-    - all test cases PASS -> PASS
-    - one FAIL -> overall FAIL
-    - one ERROR, no FAIL -> overall ERROR
-    - one WARN, no FAIL/ERROR -> overall WARN
-    - empty results -> overall SKIP
-
-  describe('summary computation')
-    - mixed verdicts: correct counts
-    - passRate: 2/5 = 40 (only non-SKIP in denominator)
-    - passRate with SKIPs excluded: 3 PASS, 1 FAIL, 2 SKIP → 3/4 = 75%
-    - zero test cases: passRate 0
-    - all SKIP: passRate 0 (0/0 guarded to 0)
-
-  describe('finalScore metric')
-    - finalScore from aggregator evaluated when threshold configured
-    - null finalScore -> SKIP
-    - finalScore passes/warns/fails at correct boundaries
-```
-
-### Checkpoint 2
-
-```bash
-cd backend && npm test
-```
-
-- [ ] All ~25 new threshold evaluator tests pass
-- [ ] All previous tests still pass (Commit 1 + existing Gemini tests)
-- [ ] No file exceeds 250 lines
+- Not horizontally optimal long-term.
+- Mitigation: queue/worker path is planned in Phase 3.
 
 ---
 
-## Commit 3: Golden Dataset + Meta-Evaluation
+### AD-02: Quality gate is core product, not add-on
 
-### Status: [ ] Not Started
+Decision:
 
-### Key Design: expectedScoreRange (NOT expectedVerdict)
+- GitHub Action + policy evaluation become first-class product surface.
 
-Golden dataset stores `metadata.expectedScoreRange` instead of `metadata.expectedVerdict`. This decouples test expectations from threshold configuration.
+Why:
 
-**Why**: If thresholds change, `expectedVerdict` becomes wrong. A case with faithfulness 0.72 is FAIL at 0.85 but PASS at 0.70. Score ranges are stable.
+- Business value is deployment prevention for bad AI changes.
+- Dashboard-only value does not enforce behavior in engineering workflows.
 
-```json
-// Hallucination case:
-{ "expectedScoreRange": { "faithfulness": { "max": 0.5 }, "groundedness": { "max": 0.5 } } }
+Product effect:
 
-// Good answer:
-{ "expectedScoreRange": { "faithfulness": { "min": 0.85 }, "groundedness": { "min": 0.80 } } }
-
-// Edge case:
-{ "expectedScoreRange": { "faithfulness": { "min": 0.4, "max": 0.8 } } }
-```
-
-### New Files
-
-**`tests/golden/coliving-factual.jsonl`** — 10 well-grounded coliving Q&A
-
-Each line is a JSON object. Domain: coliving/student housing.
-
-Topics to cover:
-1. Monthly rent for shared room (exact match from context)
-2. Lease notice period (direct from policy doc)
-3. Included amenities list (all from context)
-4. Neighborhood location description (faithful to context)
-5. Booking/move-in process (step-by-step from docs)
-6. Comparison between two room types (both from context)
-7. "I don't know" response (context genuinely doesn't cover query)
-8. Community event schedule (from context)
-9. Utility cost breakdown (from context)
-10. Pet policy details (verbatim from policy)
-
-All: `expectedScoreRange: { faithfulness: { min: 0.85 }, groundedness: { min: 0.80 }, contextRelevancy: { min: 0.80 } }`
-
-**`tests/golden/coliving-hallucinations.jsonl`** — 10 cases where bot invents facts
-
-1. Context about Building A, bot responds with Building B's pricing
-2. Context says "no availability", bot says "2 units available"
-3. No parking mentioned, bot invents parking details
-4. Bot adds specific move-in dates not in context
-5. Bot cites a "community policy" that doesn't exist
-6. Context is studio, bot describes 2-bedroom
-7. Bot invents amenities not in context
-8. Context has last month's pricing, bot presents as current without caveat
-9. Bot fabricates a resident testimonial
-10. Bot combines info from 2 different buildings into one
-
-All: `expectedScoreRange: { faithfulness: { max: 0.5 }, groundedness: { max: 0.5 } }`
-
-**`tests/golden/coliving-edge.jsonl`** — 10 subtle edge cases
-
-1. Mostly correct but one wrong detail buried in response
-2. Correct info from a context chunk about a DIFFERENT query
-3. Answer technically in context but misleadingly presented
-4. Bot hedges appropriately on incomplete context
-5. Contradictory context chunks, bot picks one
-6. Response is grounded but doesn't answer the question asked
-7. Bot paraphrases correctly but loses critical nuance
-8. Correct answer but context is stale (freshness, not faithfulness)
-9. Bot refuses to answer but context DOES have the answer
-10. Multiple chunks combined correctly but combination is misleading
-
-All: `expectedScoreRange` varies per case with min/max ranges
-
-**`tests/golden/.quorum.yml`**
-```yaml
-version: 1
-datasets:
-  - coliving-factual.jsonl
-  - coliving-hallucinations.jsonl
-  - coliving-edge.jsonl
-metrics:
-  faithfulness:
-    pass: 0.7
-    warn: 0.4
-  groundedness:
-    pass: 0.7
-    warn: 0.4
-  contextRelevancy:
-    pass: 0.6
-    warn: 0.3
-  finalScore:
-    pass: 0.65
-    warn: 0.4
-strategy: auto
-ci:
-  failOnWarn: false
-  failOnError: true
-  failOnRegression: true
-  regressionThreshold: 0.05
-  baselinePath: ../baselines/
-```
-
-**`tests/baselines/.gitkeep`** — Populated after first run
-
-**`tests/meta-eval/runMetaEval.js`** (~150 lines)
-- Standalone Node script: `node tests/meta-eval/runMetaEval.js --endpoint http://localhost:3000 --email user@test.com --password pass`
-- Accepts `--endpoint`, `--email`, `--password`, `--strategy` (auto|council|single|hybrid|all)
-- Auth: POST `/api/auth/login`, extract `quorum_token` from `set-cookie` header
-- Loads all 3 JSONL files from `tests/golden/`
-- For each dataset: chunk by 10 -> POST `/api/evaluate` -> poll `/api/results/:jobId` (2s interval, 120s timeout)
-- **Imports `evaluateThresholds` from `../../backend/src/evaluators/thresholdEvaluator.js`** (not duplicated)
-- Compares each judge's raw score against `metadata.expectedScoreRange` (min/max bounds per metric)
-- When `--strategy all`: runs each dataset through all 4 strategies for comparison
-- **Cost warning**: `--strategy all` multiplies API cost ×4. Single strategy run ≈ $0.10 (30 cases × 4 LLM calls). `--strategy all` ≈ $0.40 per run. Script prints estimated cost before starting and requires `--confirm-cost` flag (or `--yes`) to proceed.
-- Output format:
-  ```
-  === Quorum Meta-Evaluation Report ===
-
-  Strategy: council
-  Category: coliving-hallucinations (10 cases)
-    Scores in expected range: 9/10 (90%)
-    Out-of-range:
-      hall-07: faithfulness 0.62 (expected max 0.5)
-    Cost: $0.035
-
-  Category: coliving-factual (10 cases)
-    Scores in expected range: 10/10 (100%)
-    Cost: $0.032
-
-  Category: coliving-edge (10 cases)
-    Scores in expected range: 7/10 (70%)
-    Cost: $0.034
-
-  Overall agreement: 87% (26/30)
-  Total cost: $0.101
-  ```
-- Saves full results to `tests/baselines/meta-eval-{strategy}-{timestamp}.json`
-
-**Low agreement handling**: If overall agreement drops below 70%, the script:
-1. Flags out-of-range cases with `⚠ REVIEW NEEDED` in the report
-2. Suggests widening `expectedScoreRange` for borderline cases (scores within 0.1 of the boundary)
-3. Does NOT auto-fail — low agreement often means the golden case expectations need tuning, not that the judges are wrong
-4. Saves a `review-needed.json` with only the out-of-range cases for manual inspection
-
-### Checkpoint 3
-
-```bash
-# Prerequisites: backend running with MongoDB, user account created
-cd backend && npm run dev
-
-# In another terminal, run meta-eval
-node tests/meta-eval/runMetaEval.js \
-  --endpoint http://localhost:3000 \
-  --email <your-email> \
-  --password <your-password> \
-  --strategy council
-```
-
-- [ ] Script authenticates successfully
-- [ ] All 30 cases process without errors
-- [ ] Hallucination cases: judges score faithfulness/groundedness < 0.5 for majority (>7/10)
-- [ ] Factual cases: judges score > 0.80 for majority (>8/10)
-- [ ] Edge cases: mixed results (expected)
-- [ ] Baseline JSON saved to `tests/baselines/`
-- [ ] Dashboard still works (navigate to frontend, paste sample JSON, run eval)
+- Direct integration with release lifecycle.
+- Clear "pass/fail" decision point for teams.
+- Better retention through workflow lock-in.
 
 ---
 
-## Commit 4: CLI Tool
+### AD-03: Dual auth model (interactive + service auth)
 
-### Status: [ ] Not Started
+Decision:
 
-### New Package: `cli/`
+- Keep cookie auth for browser UX.
+- Add service auth for SDK/CLI automation (scoped API keys or OAuth client credentials).
 
-**`cli/package.json`**
-```json
-{
-  "name": "@quorum/cli",
-  "version": "0.1.0",
-  "description": "Quorum CLI - adaptive AI evaluation for CI/CD",
-  "type": "module",
-  "bin": { "quorum": "./bin/quorum.js" },
-  "dependencies": {
-    "commander": "^12.0.0",
-    "chalk": "^5.3.0",
-    "ora": "^8.0.0",
-    "js-yaml": "^4.1.0",
-    "zod": "^3.24.1"
-  },
-  "devDependencies": {
-    "vitest": "^4.0.18"
-  },
-  "engines": { "node": ">=20.0.0" },
-  "scripts": { "test": "vitest run" }
-}
-```
+Why:
 
-### File Tree
+- Current cookie-only model blocks non-browser integrations.
+- CI systems and server workflows need non-interactive authentication.
 
-```
-cli/
-  package.json
-  bin/
-    quorum.js              # Entry point with #!/usr/bin/env node
-  src/
-    commands/
-      test.js                # Main: load config -> auth -> evaluate -> threshold -> report
-      init.js                # Scaffold .quorum.yml + tests/ dir
-      validate.js            # Validate config + dataset files
-    config/
-      loader.js              # Find + parse .quorum.yml (YAML -> Zod)
-      schema.js              # Duplicated testSuiteConfigSchema (~40 lines)
-    dataset/
-      parser.js              # JSONL/JSON dataset loader
-    evaluation/
-      client.js              # HTTP: postEvaluation, pollResults, chunkArray
-      thresholds.js          # Duplicated thresholdEvaluator (~100 lines)
-    regression/
-      detector.js            # Compare current vs baseline by test case id
-      baseline.js            # Read/write baseline JSON files
-    reporting/
-      terminal.js            # chalk + ora terminal reporter
-      markdown.js            # GitHub markdown for PR comments
-    auth.js                  # Login via /api/auth/login, cookie extraction
-  templates/
-    quorum.yml             # Default config for `quorum init`
-    example.jsonl            # 3 example test cases
-  tests/
-    config/loader.test.js
-    dataset/parser.test.js
-    evaluation/thresholds.test.js
-    regression/detector.test.js
-    auth.test.js
-```
+Product effect:
 
-### Command: `quorum test`
+- SDK usable in backend pipelines at scale.
+- CLI and automation become enterprise-credible.
+- Lower integration friction.
 
-```
-quorum test [options]
+Risk:
 
-Options:
-  -c, --config <path>       Path to .quorum.yml (default: .quorum.yml)
-  -e, --endpoint <url>      Quorum backend URL (default: http://localhost:3000)
-  --ci                      CI mode: JSON output, no colors/spinners
-  --reporter <type>         terminal | markdown | json (default: terminal)
-  --update-baseline         Save this run as new baseline
-  --strategy <strategy>     Override strategy from config
-  --timeout <ms>            Per-evaluation timeout (default: 120000)
-  --email <email>           Auth email (or QUORUM_EMAIL env)
-  --password <password>     Auth password (or QUORUM_PASSWORD env)
-```
-
-**Flow**:
-1. `loadConfig(configPath)` -> parse YAML, validate with Zod, apply defaults
-2. `authenticate(endpoint, email, password)` -> POST `/api/auth/login`, extract `quorum_token` cookie
-3. For each dataset in `config.datasets`:
-   a. `parseDataset(path, configDir)` -> load JSONL/JSON, return test case array (handles UTF-8 BOM via `text.replace(/^\uFEFF/, '')`)
-   b. `chunkArray(testCases, 10)` -> split for the 10-case API limit
-   c. For each chunk: `postEvaluation(endpoint, chunk, strategy, cookie)` -> get `jobId`
-      - **On 401 during chunk**: re-authenticate once and retry the chunk. If re-auth fails, abort with descriptive error.
-   d. `pollResults(endpoint, jobId, timeout, cookie)` -> poll every 2s until 200 or timeout
-   e. Merge all chunk results into single array
-   f. **On chunk failure (non-auth)**: log error with chunk index + test case range, continue with remaining chunks, mark failed chunk cases as `verdict: ERROR` in results
-4. `evaluateThresholds(mergedResults, config.metrics)` -> per-metric verdicts
-5. If baseline exists: `detectRegressions(current, baseline, config.ci.regressionThreshold)`
-6. Report with selected reporter (report includes partial failure warnings if any chunks errored)
-7. If `--update-baseline`: write current results as baseline JSON
-8. Exit code: 0 if PASS (or WARN when `failOnWarn: false`), 1 otherwise
-
-**Global timeout**: In addition to per-evaluation `--timeout`, enforce a global timeout of `--timeout × number_of_chunks × 1.5`. For 30 cases (3 chunks) with 120s timeout: global = `120 × 3 × 1.5 = 540s`. If global timeout is reached, report partial results and exit 1.
-
-### Duplicated Modules (Keep In Sync)
-
-Both have header comment: `// Synced from backend/src/... — keep in sync manually`
-
-| CLI File | Backend Source | Lines |
-|----------|---------------|-------|
-| `cli/src/config/schema.js` | `backend/src/schemas/testSuiteConfig.js` | ~40 |
-| `cli/src/evaluation/thresholds.js` | `backend/src/evaluators/thresholdEvaluator.js` | ~100 |
-
-### Tests
-
-**`cli/tests/config/loader.test.js`** (~8 cases)
-- Valid YAML parsed correctly
-- Missing file throws descriptive error
-- Invalid YAML syntax throws
-- Schema validation errors include field paths
-- Defaults applied for omitted optional fields
-
-**`cli/tests/dataset/parser.test.js`** (~10 cases)
-- Valid JSONL: 3 lines -> 3 objects
-- JSONL with empty lines: skipped
-- JSONL with malformed line: error with line number
-- JSON array format: `[{...}, {...}]`
-- JSON wrapped format: `{ testCases: [{...}] }`
-- Unsupported file extension (.csv): descriptive error
-- UTF-8 BOM: file with BOM prefix parsed correctly (BOM stripped)
-- UTF-8 with special characters (accents, emojis): preserved correctly
-
-**`cli/tests/evaluation/thresholds.test.js`** (~15 cases)
-- Mirror key tests from backend `thresholdEvaluator.test.js` to ensure parity
-- Same fixtures, same expected outputs
-
-**`cli/tests/regression/detector.test.js`** (~8 cases)
-- Regression detected: score dropped by > threshold
-- No regression: score stable
-- Score improved: not flagged
-- Missing baseline: returns empty array
-- Test case without `id`: skipped (graceful degradation)
-- New test case not in baseline: not flagged
-- Multiple regressions across different metrics
-
-**`cli/tests/auth.test.js`** (~7 cases)
-- Successful login: cookie extracted from set-cookie header
-- Failed login (401): descriptive error thrown
-- Missing credentials: error mentions env vars
-- Env var fallback: `QUORUM_EMAIL` and `QUORUM_PASSWORD` used
-- Re-auth on 401 mid-run: `authenticate()` called again, new cookie used for retry
-- Re-auth failure: descriptive error with "session expired" message
-
-**`cli/tests/evaluation/client.test.js`** (~5 cases)
-- Partial chunk failure: chunk 2 of 3 fails → results contain ERROR entries for failed chunk
-- Global timeout reached: partial results reported, exit code 1
-- All chunks fail: descriptive aggregate error, exit code 1
-- Network error (ECONNREFUSED): error message includes endpoint URL and "is the backend running?" hint
-- Polling 401 mid-run: triggers re-auth flow
-
-### Checkpoint 4
-
-```bash
-# Install CLI dependencies
-cd cli && npm install
-
-# Run CLI tests
-npm test
-
-# Test init command
-node bin/quorum.js init
-# -> Creates .quorum.yml and tests/ in current dir
-
-# Test validate command
-node bin/quorum.js validate --config tests/golden/.quorum.yml
-# -> "Config valid. 3 datasets found."
-
-# Test full evaluation (backend must be running)
-node bin/quorum.js test \
-  --config ../tests/golden/.quorum.yml \
-  --endpoint http://localhost:3000 \
-  --email <email> \
-  --password <password>
-# -> Colored terminal output with PASS/WARN/FAIL per case
-
-# Test CI mode
-node bin/quorum.js test \
-  --config ../tests/golden/.quorum.yml \
-  --endpoint http://localhost:3000 \
-  --email <email> \
-  --password <password> \
-  --ci
-# -> JSON output only, exit code 0 or 1
-
-# Test baseline save + regression detection
-node bin/quorum.js test \
-  --config ../tests/golden/.quorum.yml \
-  --endpoint http://localhost:3000 \
-  --email <email> \
-  --password <password> \
-  --update-baseline
-# -> Baseline saved
-
-node bin/quorum.js test \
-  --config ../tests/golden/.quorum.yml \
-  --endpoint http://localhost:3000 \
-  --email <email> \
-  --password <password>
-# -> "Compared against baseline: 0 regressions detected"
-```
-
-- [ ] All ~44 CLI tests pass
-- [ ] `quorum init` creates valid config + example dataset
-- [ ] `quorum validate` catches invalid configs
-- [ ] `quorum test` processes all 30 golden cases (chunked by 10)
-- [ ] Terminal output shows colored PASS/WARN/FAIL
-- [ ] `--ci` produces valid JSON, no ANSI codes
-- [ ] Exit code 0 when all pass, 1 when any fail
-- [ ] `--update-baseline` writes file, subsequent run compares against it
-- [ ] Dashboard still works (no regressions)
+- Security complexity increases.
+- Mitigation: scoped keys, rotation, audit events, explicit revocation flows.
 
 ---
 
-## Commit 5: GitHub Action
+### AD-04: PII sanitizer default ON in SDK
 
-### Status: [ ] Not Started
+Decision:
 
-### New Files
+- Add SDK sanitizer with opt-out (`sanitize: false`).
 
-**`.github/actions/quorum-test/action.yml`**
-```yaml
-name: 'Quorum Test'
-description: 'Run Quorum evaluation as a CI quality gate'
-inputs:
-  config:
-    description: 'Path to .quorum.yml'
-    required: false
-    default: '.quorum.yml'
-  endpoint:
-    description: 'Quorum backend URL'
-    required: true
-  email:
-    description: 'Quorum auth email'
-    required: true
-  password:
-    description: 'Quorum auth password'
-    required: true
-  strategy:
-    description: 'Override evaluation strategy'
-    required: false
-  update-baseline:
-    description: 'Update baseline after run'
-    required: false
-    default: 'false'
-  node-version:
-    description: 'Node.js version'
-    required: false
-    default: '20'
-runs:
-  using: 'composite'
-  steps:
-    - uses: actions/setup-node@v4
-      with:
-        node-version: ${{ inputs.node-version }}
+Why:
 
-    - name: Validate required secrets
-      shell: bash
-      run: |
-        missing=""
-        [ -z "${{ inputs.endpoint }}" ] && missing="$missing QUORUM_ENDPOINT"
-        [ -z "${{ inputs.email }}" ] && missing="$missing QUORUM_EMAIL"
-        [ -z "${{ inputs.password }}" ] && missing="$missing QUORUM_PASSWORD"
-        if [ -n "$missing" ]; then
-          echo "::error::Missing required secrets:$missing. Configure them in Settings > Secrets."
-          exit 1
-        fi
+- Data handling trust is central in AI evaluations.
+- Most users will not configure sanitization correctly if default OFF.
 
-    - name: Verify backend connectivity
-      shell: bash
-      run: |
-        if ! curl -sf --max-time 10 "${{ inputs.endpoint }}/api/health" > /dev/null 2>&1; then
-          echo "::error::Cannot reach Quorum backend at ${{ inputs.endpoint }}. Ensure the backend is deployed and accessible from GitHub Actions runners (not localhost)."
-          exit 1
-        fi
+Product effect:
 
-    - name: Install Quorum CLI
-      shell: bash
-      run: cd cli && npm ci
+- Better default compliance posture.
+- Stronger buyer trust and procurement confidence.
 
-    - name: Run Quorum tests
-      shell: bash
-      id: test
-      continue-on-error: true
-      run: |
-        node cli/bin/quorum.js test \
-          --config "${{ inputs.config }}" \
-          --endpoint "${{ inputs.endpoint }}" \
-          --email "${{ inputs.email }}" \
-          --password "${{ inputs.password }}" \
-          --reporter markdown \
-          --ci \
-          ${{ inputs.strategy && format('--strategy {0}', inputs.strategy) || '' }} \
-          ${{ inputs.update-baseline == 'true' && '--update-baseline' || '' }} \
-          > quorum-report.md 2>&1
-        echo "exit_code=$?" >> $GITHUB_OUTPUT
+Tradeoff:
 
-    - name: Comment on PR
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const fs = require('fs');
-          const report = fs.readFileSync('quorum-report.md', 'utf8');
-          // Use HTML comment as hidden marker for upsert — resilient to heading changes
-          const MARKER = '<!-- quorum-eval-report -->';
-          const { data: comments } = await github.rest.issues.listComments({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: context.issue.number,
-          });
-          const existing = comments.find(c =>
-            c.body.includes(MARKER)
-          );
-          const body = MARKER + '\n' + (report || '## Quorum Evaluation Report\n\nNo output captured.');
-          if (existing) {
-            await github.rest.issues.updateComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: existing.id,
-              body,
-            });
-          } else {
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body,
-            });
-          }
-
-    - name: Upload baseline as artifact
-      if: inputs.update-baseline == 'true'
-      uses: actions/upload-artifact@v4
-      with:
-        name: quorum-baseline-${{ github.sha }}
-        path: tests/baselines/
-        retention-days: 90
-
-    - name: Fail if tests failed
-      if: steps.test.outputs.exit_code != '0'
-      shell: bash
-      run: exit 1
-```
-
-**`.github/workflows/quorum-example.yml`**
-```yaml
-name: Quorum Quality Gate
-on:
-  pull_request:
-    paths:
-      - 'prompts/**'
-      - 'knowledge-base/**'
-      - 'tests/golden/**'
-
-jobs:
-  evaluate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: ./.github/actions/quorum-test
-        with:
-          endpoint: ${{ secrets.QUORUM_ENDPOINT }}
-          email: ${{ secrets.QUORUM_EMAIL }}
-          password: ${{ secrets.QUORUM_PASSWORD }}
-          config: 'tests/golden/.quorum.yml'
-```
-
-### Networking Requirement
-
-The GitHub Action runner must be able to reach the Quorum backend over the network. `localhost` will **not** work — the backend must be deployed at a public URL (e.g., Fly.io, Railway, or a VPS). The `Verify backend connectivity` step checks this upfront with a curl to `/api/health` and fails fast with a clear error message if unreachable.
-
-### Baseline Persistence
-
-GitHub Actions runners are ephemeral — baselines saved to the filesystem are lost after the job ends. Two strategies:
-1. **GitHub Artifacts** (implemented above): `actions/upload-artifact@v4` saves baselines with 90-day retention. Users download and commit them to the repo.
-2. **Auto-commit** (documented in `docs/ci-cd-guide.md`): Users can add a workflow step to commit baseline changes to a `quorum-baselines` branch.
-
-### Checkpoint 5
-
-- [ ] `action.yml` is valid YAML (linter passes)
-- [ ] Example workflow references correct action path
-- [ ] PR comment uses upsert pattern with HTML marker (updates existing comment, doesn't spam)
-- [ ] Comment upsert works even if heading text changes (marker-based, not heading-based)
-- [ ] Action fails CI run when exit code != 0
-- [ ] Missing secrets → clear error message listing which secrets are missing
-- [ ] Unreachable backend → clear error message before any evaluation starts
-- [ ] Baseline uploaded as GitHub Artifact when `update-baseline: true`
-
-E2E test (if GitHub Actions access available):
-```bash
-# Create a test branch, push, open PR
-git checkout -b test-github-action
-echo "test" >> prompts/test.txt
-git add . && git commit -m "Test action"
-git push origin test-github-action
-# Open PR -> action should trigger -> comment should appear
-```
+- Possible false positives in replacements.
+- Mitigation: document limitations and future custom patterns.
 
 ---
 
-## Commit 6: PII Sanitization Stub
+### AD-05: Rate-limit resilience by controlled concurrency + retry-after handling
 
-### Status: [ ] Not Started
+Decision:
 
-### New Files
+- Add provider-aware concurrency limits.
+- Honor provider `Retry-After` and emit explicit SSE events for throttling.
 
-**`sdk/src/sanitizer.js`** (~50 lines)
-```js
-const PATTERNS = [
-  { name: 'email', regex: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, replacement: '[EMAIL]' },
-  { name: 'phone', regex: /(\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g, replacement: '[PHONE]' },
-  { name: 'ssn', regex: /\b\d{3}-\d{2}-\d{4}\b/g, replacement: '[SSN]' },
-  { name: 'creditCard', regex: /\b(?:\d{4}[-\s]?){3}\d{4}\b/g, replacement: '[CREDIT_CARD]' },
-];
+Why:
 
-export function sanitize(text) { /* replace PII, return string */ }
-export function sanitizePayload(payload) { /* sanitize input, actualOutput, expectedOutput, retrievalContext[] */ }
-```
+- Current burst behavior can create avoidable 429 failures.
+- Silent waits degrade user trust and create false failure perceptions.
 
-### Known Limitations (Document in SDK README)
+Product effect:
 
-This is a **stub** — a baseline defense, not a production PII filter. Known gaps:
-
-| Limitation | Detail | Mitigation |
-|-----------|--------|------------|
-| US-only phone format | `+34 612 345 678` (Spain) not matched | Document: users with EU data should add custom patterns via future `customPatterns` config |
-| No Spanish ID (DNI/NIE) | `12345678Z` or `X1234567A` not matched | Same as above — pluggable pattern system planned |
-| False positives | 10-digit IDs, order numbers matching phone regex | Acceptable for a stub — prefer false positives over leaked PII |
-| Replacement tokens in LLM context | `[EMAIL]` as literal text may confuse judges | Tested: judges handle placeholder tokens correctly for scoring faithfulness (they evaluate structure, not literal text). Add note in `docs/ci-cd-guide.md` |
-| No address detection | Street addresses not covered | Out of scope for regex — would need NER model |
-
-**Future**: Replace regex stub with a pluggable `sanitizerConfig` in the SDK constructor that accepts custom patterns:
-```js
-const rs = new Quorum({
-  sanitize: true,
-  sanitizerPatterns: [
-    { name: 'dniNie', regex: /\b[XYZ]?\d{7,8}[A-Z]\b/gi, replacement: '[DNI]' },
-    { name: 'esPhone', regex: /(\+34[\s.-]?)?[6-9]\d{2}[\s.-]?\d{3}[\s.-]?\d{3}/g, replacement: '[PHONE]' },
-  ],
-});
-```
-This is NOT part of Commit 6 — document as roadmap in SDK README.
-
-### Modified Files
-
-**`sdk/src/collector.js`** — 3 changes:
-1. Import: `import { sanitizePayload } from './sanitizer.js';`
-2. Constructor: `this._sanitize = config.sanitize !== false;` (ON by default)
-3. `capture()`: `const processed = this._sanitize ? sanitizePayload(payload) : payload;`
-
-**`sdk/src/index.js`** — Add exports: `export { sanitize, sanitizePayload } from './sanitizer.js';`
-
-**`sdk/src/types.js`** — Add JSDoc: `@property {boolean} [sanitize=true] - Sanitize PII before sending`
-
-**`sdk/package.json`** — Add devDependencies + test script:
-```json
-{
-  "devDependencies": { "vitest": "^4.0.18" },
-  "scripts": { "test": "vitest run" }
-}
-```
-
-### Tests
-
-**`sdk/tests/sanitizer.test.js`** (~12 cases)
-1. Email: `user@example.com` -> `[EMAIL]`
-2. Phone: `(555) 123-4567` -> `[PHONE]`
-3. Phone: `+1 555-123-4567` -> `[PHONE]`
-4. SSN: `123-45-6789` -> `[SSN]`
-5. Credit card: `4111 1111 1111 1111` -> `[CREDIT_CARD]`
-6. Credit card with dashes: `4111-1111-1111-1111` -> `[CREDIT_CARD]`
-7. Multiple PII in one string: all replaced
-8. No PII: string unchanged
-9. Non-string input (number, null): returned unchanged
-10. `sanitizePayload`: all text fields sanitized
-11. `sanitizePayload`: metadata preserved unchanged
-12. `sanitizePayload`: undefined `expectedOutput` stays undefined
-
-**`sdk/tests/collector.test.js`** (~3 cases)
-1. Default `sanitize: true`: captured payload has PII replaced
-2. `sanitize: false`: captured payload has PII intact
-3. Sanitization happens before buffering (verify buffer contents)
-
-### Checkpoint 6
-
-```bash
-cd sdk && npm install && npm test
-```
-
-- [ ] All ~15 sanitizer/collector tests pass
-- [ ] Manual test:
-  ```js
-  import { Quorum } from './src/index.js';
-  const rs = new Quorum({ endpoint: 'http://localhost:3000' });
-  rs.capture({
-    input: 'My email is test@example.com and SSN 123-45-6789',
-    actualOutput: 'Call us at (555) 123-4567',
-    retrievalContext: ['Card: 4111 1111 1111 1111'],
-  });
-  // Verify buffer contains [EMAIL], [SSN], [PHONE], [CREDIT_CARD] replacements
-  ```
-- [ ] `sanitize: false` config skips all sanitization
-- [ ] Backend still accepts sanitized payloads (no validation issues)
+- Higher evaluation completion rate.
+- More predictable latency under load.
+- Better operator visibility.
 
 ---
 
-## Commit 7: Documentation
+### AD-06: Evaluate production with sampling, not 100 percent traffic
 
-### Status: [ ] Not Started
+Decision:
 
-### Files
+- Add sampled production evaluation strategy (configurable sampling rate).
 
-**`docs/ci-cd-guide.md`** — Full guide
-- Quick Start (5 minutes)
-- Writing Test Datasets (JSONL format, schema)
-- Configuring `.quorum.yml` (all options documented)
-- Understanding Threshold Evaluation (how scores become verdicts)
-- Regression Detection (baselines, delta thresholds)
-- GitHub Actions Setup (secrets, workflow triggers)
-- Troubleshooting (common errors, timeout tuning)
+Why:
 
-**`cli/README.md`** — CLI reference
-- Installation
-- Commands: `test`, `init`, `validate`
-- All flags with descriptions
-- Examples
+- Full-traffic evaluation cost becomes prohibitive quickly.
+- Teams need quality signal, not full duplication cost.
 
-**`README.md`** — Update root readme
-- Add "CI/CD Quality Gate" section
-- Show `quorum test` example
-- Link to `docs/ci-cd-guide.md` and `cli/README.md`
+Product effect:
 
-### Checkpoint 7
-
-- [ ] All links in docs resolve correctly
-- [ ] Code examples in docs are accurate
-- [ ] `quorum --help` output matches README
+- Scalable monitoring economics.
+- Better continuous quality visibility post-deploy.
 
 ---
 
-## End-to-End Integration Test
+### AD-07: Stage-level diagnosis over single aggregate score
 
-After all 7 commits, run this full E2E sequence:
+Decision:
 
-```bash
-# 1. Start infrastructure
-docker run -d -p 27017:27017 mongo:7
-cd backend && npm run dev  # Terminal 1
+- Extend results model to include stage-level signals:
+  - ingestion
+  - parsing
+  - chunking
+  - retrieval
+  - rerank
+  - generation
 
-# 2. Create a test user (if not exists)
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@quorum.dev","password":"testpass123","username":"tester"}'
+Why:
 
-# 3. Run all backend tests
-cd backend && npm test
-# Expected: 60+ tests pass (Gemini 10 + schemas 20 + threshold 25 + validation 5)
+- Many RAG failures originate before final generation.
+- Aggregate score hides root cause.
 
-# 4. Run SDK tests
-cd sdk && npm test
-# Expected: ~15 tests pass
+Product effect:
 
-# 5. Run CLI tests
-cd cli && npm test
-# Expected: ~44 tests pass
+- Faster debugging.
+- Better user trust in verdict explainability.
+- Lower MTTR for quality regressions.
 
-# 6. Test CLI init
-mkdir /tmp/quorum-test && cd /tmp/quorum-test
-node <project>/cli/bin/quorum.js init
-# -> .quorum.yml + tests/example.jsonl created
+## 7. Execution roadmap (dates, outputs, acceptance gates)
 
-# 7. Test CLI validate
-node <project>/cli/bin/quorum.js validate
-# -> "Config valid. 1 dataset found."
+## Phase 0: Immediate unblockers
+Window: 2026-02-23 to 2026-03-08
+Goal: remove blockers that prevent Quorum from functioning as a credible quality gate in real teams.
 
-# 8. Run golden dataset via CLI
-cd <project>
-node cli/bin/quorum.js test \
-  --config tests/golden/.quorum.yml \
-  --endpoint http://localhost:3000 \
-  --email test@quorum.dev \
-  --password testpass123
-# -> Colored terminal output: 30 cases evaluated with verdicts
+### WP0.1 - Commit 5: GitHub Action quality gate
 
-# 9. Run with --ci --reporter json
-node cli/bin/quorum.js test \
-  --config tests/golden/.quorum.yml \
-  --endpoint http://localhost:3000 \
-  --email test@quorum.dev \
-  --password testpass123 \
-  --ci --reporter json > /tmp/results.json
-echo $?  # Should be 0 or 1
-cat /tmp/results.json | python3 -m json.tool  # Valid JSON
+Deliverables:
 
-# 10. Save baseline + check regression
-node cli/bin/quorum.js test \
-  --config tests/golden/.quorum.yml \
-  --endpoint http://localhost:3000 \
-  --email test@quorum.dev \
-  --password testpass123 \
-  --update-baseline
-# -> "Baseline saved to tests/baselines/..."
+- `.github/actions/quorum-test/action.yml`
+- `.github/workflows/quorum-example.yml`
 
-node cli/bin/quorum.js test \
-  --config tests/golden/.quorum.yml \
-  --endpoint http://localhost:3000 \
-  --email test@quorum.dev \
-  --password testpass123
-# -> "Compared against baseline: X regressions detected"
+Key decisions:
 
-# 11. Run meta-evaluation
-node tests/meta-eval/runMetaEval.js \
-  --endpoint http://localhost:3000 \
-  --email test@quorum.dev \
-  --password testpass123 \
-  --strategy council
-# -> Agreement report + baseline saved
+- Action fails pipeline on non-zero `quorum test` result.
+- PR comment uses marker upsert (single evolving comment).
+- Baseline artifact upload supported.
 
-# 12. Test SDK PII sanitization
-node -e "
-  import { Quorum } from './sdk/src/index.js';
-  const rs = new Quorum({ endpoint: 'http://localhost:3000' });
-  rs.capture({ input: 'email: user@test.com', actualOutput: 'Call (555) 123-4567', retrievalContext: ['SSN: 123-45-6789'] });
-  console.log(rs._buffer[0].input);  // Should show [EMAIL]
-  console.log(rs._buffer[0].actualOutput);  // Should show [PHONE]
-  console.log(rs._buffer[0].retrievalContext[0]);  // Should show [SSN]
-  rs.close();
-"
+Product effect:
 
-# 13. Dashboard still works
-# Open http://localhost:5173, paste test JSON, run evaluation
-# -> Should stream results with judge cards as before
-```
+- Quality gate becomes enforceable in CI.
+- Faster feedback in PR context.
 
-### Success Criteria
+Critical checks:
 
-| # | Criterion | Verified By |
-|---|-----------|-------------|
-| 1 | `quorum init` creates working config + example dataset | E2E step 6 |
-| 2 | `quorum test` evaluates and outputs colored verdicts | E2E step 8 |
-| 3 | `quorum test --ci` outputs JSON with exit code 0/1 | E2E step 9 |
-| 4 | GitHub Action posts markdown comment on PR | Checkpoint 5 |
-| 5 | Meta-eval validates judges catch hallucinations (>80% agreement) | E2E step 11 |
-| 6 | SDK sanitizes PII before sending | E2E step 12 |
-| 7 | Dashboard works exactly as before | E2E step 13 |
-| 8 | Every new file has tests | Test counts per commit |
-| 9 | No file exceeds 250 lines | Manual check |
-| 10 | All ~120+ tests pass across backend/sdk/cli | E2E steps 3-5 |
+- Health endpoint path must be aligned (`/health` or `/api/health`, choose one and standardize).
+- Secret validation and clear failure messages.
+
+Acceptance:
+
+- Action runs in a real PR.
+- Report is posted/updated (not spammed).
+- Failed evaluation blocks merge.
 
 ---
 
-## Architecture Decisions
+### WP0.2 - Commit 6: SDK PII sanitizer
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| ThresholdEvaluator location | Backend first, duplicate to CLI | Meta-eval imports from backend; enables future webhook thresholds |
-| Schema duplication | ~40 lines in CLI | Separate package; shared workspace overkill |
-| Golden dataset expectations | `expectedScoreRange` not `expectedVerdict` | Decoupled from threshold config changes |
-| YAML parsing | CLI only | Backend receives JSON over HTTP |
-| Auth | Cookie-based via login | Reuses existing auth system |
-| Dataset batching | Chunk by 10 | Backend Zod limit (`validation.js:4`) |
-| Polling | 2s interval, 120s timeout | Council on 10 cases takes 30-60s |
-| PII default | ON (opt-out) | Security-first |
-| Test framework | Vitest everywhere | Backend already uses it |
-| Regression matching | By test case `id` | Graceful degradation when absent |
+Deliverables:
+
+- `sdk/src/sanitizer.js`
+- `sdk/tests/sanitizer.test.js`
+- `sdk/tests/collector.test.js`
+- SDK package test setup
+
+Key decisions:
+
+- Default sanitize ON.
+- Preserve metadata.
+- Explicit opt-out path.
+
+Product effect:
+
+- Better trust and legal posture for SDK adoption.
+
+Acceptance:
+
+- Sanitizer tests pass.
+- Collector tests verify before-buffer sanitization.
+- SDK exposes sanitizer functions publicly.
 
 ---
 
-## What This Does NOT Change
+### WP0.3 - Service auth and SDK/backend contract fix
 
-- Evaluation engine (judges, orchestrator, aggregator, adaptive router)
-- Frontend dashboard
-- Existing API contracts (backwards-compatible `id`/`metadata` additions only)
-- Webhook system
-- SSE streaming
-- Cost tracker
+Deliverables:
+
+- Backend supports non-cookie service auth path for ingest/evaluate.
+- Key issuance, key scopes, key revocation APIs.
+- Auth audit events for key usage.
+
+Key decisions:
+
+- Scope keys to org/project and route-level permissions.
+- Do not store plaintext keys; store one-way hash and metadata.
+
+Product effect:
+
+- Quorum becomes automation-native.
+- Removes major integration blocker for backend users.
+
+Acceptance:
+
+- SDK with service auth can ingest successfully without browser login.
+- Revoked keys are rejected immediately.
+
+---
+
+### WP0.4 - Preserve ingest metadata and timestamps
+
+Deliverables:
+
+- Ingest mapping carries `metadata` and `capturedAt` into stored/evaluated data model.
+
+Product effect:
+
+- Better traceability and incident investigation.
+- Enables richer analytics and governance.
+
+Acceptance:
+
+- End-to-end test confirms metadata arrives in persisted evaluation artifacts.
+
+---
+
+### WP0.5 - Security hardening and doc correction
+
+Deliverables:
+
+- Fail-fast startup if required production secrets are missing.
+- Remove insecure JWT production fallback.
+- Fix README/docs path drift and plan status drift.
+
+Product effect:
+
+- Lower security risk.
+- Less operator confusion.
+
+Acceptance:
+
+- Production startup fails with clear message if secrets missing.
+- Docs links are valid in CI.
+
+---
+
+### Phase 0 release gate
+
+All must be true:
+
+- [ ] CI gate runs in GitHub Actions
+- [ ] SDK service auth works in automation
+- [ ] PII sanitizer implemented and tested
+- [ ] Ingest metadata preserved
+- [ ] Security startup guardrails active
+- [ ] Docs reflect real system state
+
+## Phase 1: Reliability and runtime resilience
+Window: 2026-03-09 to 2026-04-05
+Goal: make evaluation execution predictable under provider limits and production load.
+
+### WP1.1 - Provider concurrency control
+
+Deliverables:
+
+- Shared concurrency limiter per provider
+- Configurable limits by environment
+
+Product effect:
+
+- Reduces burst-related provider failures.
+- Stabilizes throughput.
+
+Acceptance:
+
+- Load tests show lower 429 rate at same workload profile.
+
+---
+
+### WP1.2 - Retry-after orchestration and throttling events
+
+Deliverables:
+
+- Retry/backoff wrapper with jitter
+- Explicit SSE events: `rate_limited`, `retry_scheduled`, `retry_exhausted`
+
+Product effect:
+
+- Better UX transparency during waits
+- Better CLI/observability integration
+
+Acceptance:
+
+- Integration tests validate 429 + retry flows.
+
+---
+
+### WP1.3 - Reliability telemetry and alerts
+
+Deliverables:
+
+- Metrics:
+  - provider_429_rate
+  - evaluation_completion_rate
+  - p95_evaluation_duration
+  - retry_attempt_distribution
+
+Product effect:
+
+- Faster detection of regressions.
+- Better operator confidence.
+
+Acceptance:
+
+- Alerting thresholds configured and exercised in staging.
+
+---
+
+### Phase 1 release gate
+
+- [ ] 429-related failure rate reduced materially
+- [ ] Retry behavior is deterministic and visible
+- [ ] Observability dashboards exist and are actionable
+
+## Phase 2: Enterprise IAM and governance foundation
+Window: 2026-04-06 to 2026-05-03
+Goal: support multi-tenant enterprise use with auditable control boundaries.
+
+### WP2.1 - Tenant model
+
+Deliverables:
+
+- Organization + project model
+- Data partitioning by tenant scope
+
+Product effect:
+
+- Safe multi-customer operation.
+- Enterprise governance compatibility.
+
+Acceptance:
+
+- Cross-tenant access tests prove isolation.
+
+---
+
+### WP2.2 - RBAC enforcement
+
+Deliverables:
+
+- Roles: `admin`, `maintainer`, `viewer` minimum
+- Route-level and operation-level authorization checks
+
+Product effect:
+
+- Least privilege support.
+- Required security baseline for enterprise buyers.
+
+Acceptance:
+
+- Authorization matrix tests for key workflows.
+
+---
+
+### WP2.3 - Policy objects for quality gates
+
+Deliverables:
+
+- Versioned policy definitions:
+  - thresholds
+  - fail-on rules
+  - strategy constraints by environment
+
+Product effect:
+
+- Reproducible release governance.
+- Easier rollback and audit.
+
+Acceptance:
+
+- Policy version attached to every gate decision.
+
+---
+
+### WP2.4 - Baseline governance workflow
+
+Deliverables:
+
+- Baseline create/update approval metadata:
+  - approver
+  - timestamp
+  - commit SHA/reference
+
+Product effect:
+
+- Reduces accidental drift in evaluation standards.
+- Improves accountability.
+
+Acceptance:
+
+- Every baseline mutation is fully attributable.
+
+---
+
+### Phase 2 release gate
+
+- [ ] Tenant isolation enforced
+- [ ] RBAC fully active on protected flows
+- [ ] Gate policies versioned and linked to decisions
+- [ ] Baseline updates auditable
+
+## Phase 3: Compliance, scale, and enterprise-grade operations
+Window: 2026-05-04 to 2026-06-28
+Goal: complete compliance-operational layer and scale path.
+
+### WP3.1 - Audit and retention controls
+
+Deliverables:
+
+- Retention policy engine
+- Immutable audit export package for gate decisions and auth events
+
+Product effect:
+
+- Better procurement readiness.
+- Easier enterprise security reviews.
+
+Acceptance:
+
+- Export package passes internal compliance checklist.
+
+---
+
+### WP3.2 - SSO and provisioning roadmap execution start
+
+Deliverables:
+
+- OIDC/SAML integration path
+- SCIM provisioning plan and pilot scope
+
+Product effect:
+
+- Unlocks enterprise IT integration expectations.
+
+Acceptance:
+
+- At least one SSO provider integration validated end-to-end in staging.
+
+---
+
+### WP3.3 - Durable execution path (if load threshold exceeded)
+
+Trigger conditions:
+
+- sustained concurrent jobs exceed single-process reliability envelope
+- or SLO violations persist despite Phase 1 controls
+
+Deliverables:
+
+- Queue + worker architecture for evaluation jobs
+
+Product effect:
+
+- Better reliability and scale headroom.
+
+Acceptance:
+
+- Controlled failover/restart behavior with no job-loss for accepted tasks.
+
+---
+
+### WP3.4 - Enterprise analytics and reporting
+
+Deliverables:
+
+- Tenant/project dashboards:
+  - pass/fail trend
+  - regression trend
+  - cost by strategy/provider
+
+Product effect:
+
+- Makes Quorum useful for engineering leadership and compliance stakeholders.
+
+Acceptance:
+
+- Reports can be exported and used in release/governance reviews.
+
+---
+
+### Phase 3 release gate
+
+- [ ] Compliance evidence export ready
+- [ ] Enterprise identity path validated
+- [ ] Scale path available if needed
+- [ ] Governance analytics available
+
+## 8. Product features prioritized from market pain
+
+These are prioritized because they map directly to repeated buyer pain.
+
+### P0 features
+
+1. CI quality gate in GitHub
+2. Security review package export
+3. Service auth for automation
+4. PII-safe SDK defaults
+5. Stage-level failure diagnosis
+
+### P1 features
+
+1. Sampled production evaluation policies
+2. Judge reliability calibration against human reference sets
+3. Baseline approval workflow
+
+### P2 features
+
+1. Trust center artifacts
+2. SSO/SCIM end-to-end rollout
+3. Advanced enterprise reporting packs
+
+## 9. Testing strategy and mandatory gates
+
+### Required test layers
+
+1. Unit tests
+- schema validation
+- threshold evaluation
+- sanitizer behavior
+- auth policy logic
+
+2. Integration tests
+- service auth flow
+- rate-limit retry flow
+- CI gate command flow
+- metadata propagation ingest -> result
+
+3. E2E tests
+- CLI against live backend
+- GitHub Action happy/fail paths
+
+### Merge gate (mandatory)
+
+A change cannot merge unless:
+
+- tests pass in touched packages
+- no broken docs links for changed docs
+- security-sensitive changes include test coverage
+
+## 10. SLOs and KPI targets
+
+Track weekly:
+
+- Evaluation completion rate
+- Provider 429 rate
+- p95 evaluation duration
+- CI gate pass/fail trend
+- Regression detection precision (true vs noisy flags)
+- Cost per evaluated test case
+
+Target direction:
+
+- Reliability up
+- Cost per useful signal down
+- Time to diagnose root cause down
+
+## 11. Rollout and rollback policy
+
+### Rollout
+
+1. Feature behind flag where risk is medium/high.
+2. Staging burn-in with synthetic and real datasets.
+3. Progressive production enablement by tenant/project.
+
+### Rollback
+
+Every major work package must define:
+
+- kill switch location
+- rollback command/procedure
+- data migration reversal strategy (if applicable)
+
+No package is release-ready without rollback documentation.
+
+## 12. Daily execution protocol for upcoming sessions
+
+Use this in every implementation session:
+
+1. Start with this file and confirm active phase/work package.
+2. Define exact scope for session in 3-7 tasks.
+3. Implement code + tests in same session when possible.
+4. Update this document:
+   - status checkboxes
+   - decisions changed
+   - risks discovered
+5. Record what is blocked and next action.
+
+## 13. Work package template (for future additions)
+
+When adding new work, use this template:
+
+### WPX.Y - Name
+
+Status: [ ] Not started / [ ] In progress / [ ] Done
+Owner:
+Target date:
+
+Problem:
+
+Decision:
+
+Why this decision:
+
+Product effect:
+
+Implementation scope:
+
+Out of scope:
+
+Dependencies:
+
+Test plan:
+
+Acceptance criteria:
+
+Rollback plan:
+
+## 14. Active checklist (single-page view)
+
+### Phase 0
+
+- [x] WP0.1 GitHub Action quality gate
+- [ ] WP0.2 SDK PII sanitizer
+- [ ] WP0.3 Service auth and contract fix
+- [ ] WP0.4 Ingest metadata propagation
+- [ ] WP0.5 Security/doc hardening
+
+### Phase 1
+
+- [ ] WP1.1 Provider concurrency control
+- [ ] WP1.2 Retry-after + throttling events
+- [ ] WP1.3 Reliability telemetry and alerts
+
+### Phase 2
+
+- [ ] WP2.1 Tenant model
+- [ ] WP2.2 RBAC enforcement
+- [ ] WP2.3 Versioned gate policy objects
+- [ ] WP2.4 Baseline governance workflow
+
+### Phase 3
+
+- [ ] WP3.1 Audit + retention controls
+- [ ] WP3.2 SSO/SCIM path
+- [ ] WP3.3 Durable execution path (conditional)
+- [ ] WP3.4 Enterprise reporting
+
+## 15. Final note for implementers
+
+The goal is not to "look enterprise".
+The goal is to ship a product that:
+
+- blocks bad AI releases reliably
+- explains failures clearly
+- integrates cleanly into real engineering workflows
+- passes enterprise trust scrutiny without killing product velocity
+
+If a task does not advance one of those outcomes, it is not priority work.

@@ -1,0 +1,35 @@
+name: Quorum AI Quality Gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  quorum-test:
+    name: Quorum Evaluation
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write  # required to post/update PR comments
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Quorum quality gate
+        id: quorum
+        uses: ./.github/actions/quorum-test
+        with:
+          quorum-url: ${{ secrets.QUORUM_URL }}
+          quorum-email: ${{ secrets.QUORUM_EMAIL }}
+          quorum-password: ${{ secrets.QUORUM_PASSWORD }}
+          config: .quorum.yml
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Save a new baseline when merging to main
+          update-baseline: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+
+      - name: Print verdict
+        if: always()
+        run: echo "Quorum verdict ${{ steps.quorum.outputs.verdict }} (exit ${{ steps.quorum.outputs.exit-code }})"

@@ -90,18 +90,29 @@ runs:
         REPORT_PATH="${RUNNER_TEMP}/quorum-report-${{ github.run_id }}.md"
         echo "report_path=$REPORT_PATH" >> "$GITHUB_OUTPUT"
 
-        ARGS="--ci --reporter markdown --config ${{ inputs.config }} --endpoint ${{ inputs.quorum-url }}"
+        CONFIG_PATH="${{ inputs.config }}"
+        if [ ! -f "$CONFIG_PATH" ]; then
+          if [ "$CONFIG_PATH" = ".quorum.yml" ] && [ -f "tests/golden/.quorum.yml" ]; then
+            echo "::warning::Config file .quorum.yml not found. Falling back to tests/golden/.quorum.yml"
+            CONFIG_PATH="tests/golden/.quorum.yml"
+          else
+            echo "::error::Config file not found: $CONFIG_PATH"
+            echo "::error::Set the 'config' input to a valid path in the repository."
+            exit 1
+          fi
+        fi
+
+        ARGS=(--ci --reporter markdown --config "$CONFIG_PATH" --endpoint "${{ inputs.quorum-url }}")
 
         if [ "${{ inputs.update-baseline }}" = "true" ]; then
-          ARGS="$ARGS --update-baseline"
+          ARGS+=(--update-baseline)
         fi
         if [ -n "${{ inputs.strategy }}" ]; then
-          ARGS="$ARGS --strategy ${{ inputs.strategy }}"
+          ARGS+=(--strategy "${{ inputs.strategy }}")
         fi
 
         set +e
-        # shellcheck disable=SC2086
-        quorum test $ARGS > "$REPORT_PATH" 2>&1
+        quorum test "${ARGS[@]}" > "$REPORT_PATH" 2>&1
         EXIT_CODE=$?
         set -e
 

@@ -25,7 +25,7 @@ jobs:
           quorum-url: ${{ secrets.QUORUM_URL }}
           quorum-email: ${{ secrets.QUORUM_EMAIL }}
           quorum-password: ${{ secrets.QUORUM_PASSWORD }}
-          config: .quorum.yml
+          config: tests/golden/.quorum.yml
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # Save a new baseline when merging to main
           update-baseline: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}

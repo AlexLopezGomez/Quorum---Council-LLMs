@@ -80,6 +80,13 @@ Documentation support update completed:
 - Guide defines minimum required understanding (critical flows/contracts/observability) vs non-critical deep details.
 - Upgraded the guide to a technical deep-dive format (execution path, concrete modules/routes, data contracts, observability workflow, and technical self-checklist).
 
+CI workflow fix completed for Quorum quality gate:
+- Root cause identified: `.github/workflows/quorum-example.yml` referenced `config: .quorum.yml`, but repo config lives at `tests/golden/.quorum.yml`.
+- Updated workflow input to `config: tests/golden/.quorum.yml`.
+- Hardened `.github/actions/quorum-test/action.yml` with config-file preflight:
+  - Fallback from missing `.quorum.yml` to `tests/golden/.quorum.yml`.
+  - Explicit actionable error when provided config path does not exist.
+
 # Executor's Feedback or Assistance Requests
 
 No blockers.

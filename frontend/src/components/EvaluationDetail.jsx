@@ -91,7 +91,7 @@ export function EvaluationDetail() {
     );
   }
 
-  const { testCases, results, summary } = data;
+  const { testCases, results, summary, name } = data;
   const total = testCases?.length ?? 0;
   const currentTestCase = testCases?.[currentIndex];
   const currentResult = results?.[currentIndex];
@@ -117,10 +117,18 @@ export function EvaluationDetail() {
     </div>
   );
 
+  const nameBadge = (
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-gray-50 text-gray-600 border border-gray-200">
+      <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+      {name || jobId}
+    </span>
+  );
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Evaluation Detail"
+        badge={nameBadge}
         subtitle={total > 0 ? `Test case ${currentIndex + 1} of ${total}` : undefined}
         action={navAction}
       />

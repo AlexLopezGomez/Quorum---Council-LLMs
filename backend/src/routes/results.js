@@ -60,6 +60,7 @@ router.get('/:jobId', async (req, res) => {
 
     res.json({
       jobId,
+      name: evaluation.name || '',
       userId: evaluation.userId,
       status: evaluation.status,
       testCases: evaluation.testCases,

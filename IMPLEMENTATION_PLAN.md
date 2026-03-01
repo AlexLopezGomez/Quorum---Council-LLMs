@@ -1,6 +1,6 @@
 # Quorum Main Implementation Guide
 
-Last updated: 2026-02-23 (CI incident update)
+Last updated: 2026-02-23 (status refresh after WP0.1/WP1.1/WP1.2)
 Owner: Product + Engineering
 Scope: This is the main build-and-ship guide for upcoming sessions and days.
 
@@ -25,10 +25,11 @@ This guide is the source of truth for:
 - Threshold evaluator and related tests
 - Golden datasets + meta-eval script
 - CLI package (`test`, `init`, `validate`) with tests
+- GitHub Action quality gate wiring (WP0.1)
+- Provider throttling resilience foundation (WP1.1 + WP1.2)
 
 ### 2.2 Pending from original plan
 
-- Commit 5: GitHub Action quality gate
 - Commit 6: SDK PII sanitization
 - Commit 7: CI/CD documentation package
 
@@ -42,12 +43,12 @@ This guide is the source of truth for:
 - Insecure JWT secret fallback for production path
 - Plan/docs drift and broken docs links
 
-### 2.4 Active reliability incident (new)
+### 2.4 Reliability incident status (updated)
 
 - GitHub Action config-path issue is resolved (`tests/golden/.quorum.yml` is now used).
-- Current blocker is runtime rate limiting during evaluation (`HTTP 429`), not workflow wiring.
+- Runtime rate limiting during evaluation (`HTTP 429`) remains a reliability risk.
 - Latest PR run produced `Overall: ERROR` with 25 errored cases, primarily due to `Evaluate request failed (429)` and `Polling failed (429)`.
-- Immediate priority is to harden runtime resilience (concurrency control + retry/backoff + visibility), not to rework the CI workflow.
+- Runtime resilience hardening for throttling is implemented (WP1.1 + WP1.2); next step is telemetry validation and tuning (WP1.3).
 
 ## 3. Product strategy for next sessions
 
@@ -85,10 +86,10 @@ Use this to decide what goes in scope:
 - Commit 2: Threshold evaluator + tests
 - Commit 3: Golden datasets + meta-evaluation
 - Commit 4: CLI implementation + tests
+- Commit 5: GitHub Action quality gate
 
 ### Active and pending
 
-- Commit 5: GitHub Action quality gate
 - Commit 6: SDK PII sanitization
 - Commit 7: Documentation refresh and operational docs
 
@@ -255,8 +256,8 @@ Product effect:
 Window: 2026-02-23 to 2026-03-08
 Goal: remove blockers that prevent Quorum from functioning as a credible quality gate in real teams.
 
-### WP0.1 - Commit 5: GitHub Action quality gate
-
+### WP0.1 - Commit 5: GitHub Action quality gate (Done)
+Status: Completed (2026-02-23)
 Deliverables:
 
 - `.github/actions/quorum-test/action.yml`
@@ -385,7 +386,7 @@ Acceptance:
 
 All must be true:
 
-- [ ] CI gate runs in GitHub Actions
+- [x] CI gate runs in GitHub Actions
 - [ ] SDK service auth works in automation
 - [ ] PII sanitizer implemented and tested
 - [ ] Ingest metadata preserved
@@ -397,6 +398,7 @@ Window: 2026-03-09 to 2026-04-05
 Goal: make evaluation execution predictable under provider limits and production load.
 
 ### WP1.1 - Provider concurrency control
+Status: Implemented (2026-02-23), CI/runtime validation ongoing via WP1.3
 
 Deliverables:
 
@@ -416,6 +418,7 @@ Acceptance:
 ---
 
 ### WP1.2 - Retry-after orchestration and throttling events
+Status: Implemented (2026-02-23), CI/runtime validation ongoing via WP1.3
 
 Deliverables:
 
@@ -776,8 +779,8 @@ Rollback plan:
 
 ### Phase 1
 
-- [ ] WP1.1 Provider concurrency control (**urgent due to active 429 CI failures**)
-- [ ] WP1.2 Retry-after + throttling events (**urgent due to active 429 CI failures**)
+- [x] WP1.1 Provider concurrency control
+- [x] WP1.2 Retry-after + throttling events
 - [ ] WP1.3 Reliability telemetry and alerts
 
 ### Phase 2

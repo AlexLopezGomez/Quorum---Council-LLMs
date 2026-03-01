@@ -13,7 +13,8 @@
       "Bash(node -e \"import\\(''@google/genai''\\).then\\(m => console.log\\(''OK:'', Object.keys\\(m\\)\\)\\)\")",
       "Bash(node -e:*)",
       "Bash(test:*)",
-      "mcp__exa__web_search_exa"
+      "mcp__exa__web_search_exa",
+      "WebSearch"
     ]
   }
 }

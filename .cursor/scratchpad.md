@@ -122,6 +122,11 @@ WP1.1 + WP1.2 implementation completed:
 - Validation:
   - Backend tests pass (`114/114`).
 
+Planning status sync completed:
+- Updated `IMPLEMENTATION_PLAN.md` status markers to match current state.
+- Marked Commit 5 / WP0.1 as completed in commit/phase gates where applicable.
+- Marked WP1.1 and WP1.2 as implemented with validation pending under WP1.3.
+
 # Executor's Feedback or Assistance Requests
 
 No blockers.

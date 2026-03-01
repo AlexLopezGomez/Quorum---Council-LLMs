@@ -1,5 +1,6 @@
 import { Transport } from './transport.js';
 import { createCorrelationId } from './observability.js';
+import { sanitizePayload } from './sanitizer.js';
 
 export class Quorum {
   /**
@@ -16,6 +17,7 @@ export class Quorum {
     this._flushing = false;
     this._timer = null;
     this._correlationId = config.correlationId || createCorrelationId();
+    this._sanitize = config.sanitize !== false;
 
     if (this._flushInterval > 0) {
       this._timer = setInterval(() => this.flush(), this._flushInterval);
@@ -27,9 +29,10 @@ export class Quorum {
    * @param {import('./types.js').CapturePayload} payload
    */
   capture(payload) {
-    const metadata = payload.metadata || {};
+    const safe = this._sanitize ? sanitizePayload(payload) : payload;
+    const metadata = safe.metadata || {};
     this._buffer.push({
-      ...payload,
+      ...safe,
       metadata: {
         ...metadata,
         correlationId: metadata.correlationId || this._correlationId,

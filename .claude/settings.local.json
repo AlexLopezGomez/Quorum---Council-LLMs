@@ -14,7 +14,9 @@
       "Bash(node -e:*)",
       "Bash(test:*)",
       "mcp__exa__web_search_exa",
-      "WebSearch"
+      "WebSearch",
+      "Bash(npx playwright:*)",
+      "mcp__playwright__browser_evaluate"
     ]
   }
 }

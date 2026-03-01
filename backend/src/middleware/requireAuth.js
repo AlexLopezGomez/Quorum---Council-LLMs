@@ -12,7 +12,7 @@ export async function requireAuth(req, res, next) {
 
   try {
     const payload = verifyToken(token);
-    const user = await User.findById(payload.sub).select('-passwordHash');
+    const user = await User.findById(payload.sub).select('-passwordHash -apiKeys');
 
     if (!user) {
       logger.audit(

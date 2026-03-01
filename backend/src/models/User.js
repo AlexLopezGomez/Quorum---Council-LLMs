@@ -1,7 +1,13 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
+import { decrypt } from '../utils/encryption.js';
 
 const SALT_ROUNDS = 12;
+
+const encryptedKeySchema = new mongoose.Schema(
+  { iv: String, encrypted: String, authTag: String },
+  { _id: false }
+);
 
 const userSchema = new mongoose.Schema(
   {
@@ -24,6 +30,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    apiKeys: {
+      openai: { type: encryptedKeySchema, default: undefined },
+      anthropic: { type: encryptedKeySchema, default: undefined },
+      google: { type: encryptedKeySchema, default: undefined },
+    },
   },
   { timestamps: true }
 );
@@ -45,6 +56,16 @@ userSchema.methods.toPublicJSON = function () {
     username: this.username,
     createdAt: this.createdAt,
   };
+};
+
+userSchema.methods.getDecryptedApiKeys = function () {
+  const result = { openai: null, anthropic: null, google: null };
+  for (const p of ['openai', 'anthropic', 'google']) {
+    if (this.apiKeys?.[p]) {
+      result[p] = decrypt(this.apiKeys[p]);
+    }
+  }
+  return result;
 };
 
 export const User = mongoose.model('User', userSchema);

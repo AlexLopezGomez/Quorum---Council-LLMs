@@ -1,15 +1,12 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { AGGREGATOR_PROMPT, formatPrompt } from '../utils/prompts.js';
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
 const MODEL = 'claude-sonnet-4-20250514';
 const INPUT_COST_PER_1K = 0.003;
 const OUTPUT_COST_PER_1K = 0.015;
 
-export async function aggregateResults(testCase, judgeResults) {
+export async function aggregateResults(testCase, judgeResults, apiKey) {
+  const client = new Anthropic({ apiKey: apiKey || process.env.ANTHROPIC_API_KEY });
   const startTime = Date.now();
 
   const formatJudgeResult = (result) => {
@@ -36,7 +33,7 @@ export async function aggregateResults(testCase, judgeResults) {
     expectedOutput: testCase.expectedOutput || 'Not provided',
   });
 
-  const response = await anthropic.messages.create({
+  const response = await client.messages.create({
     model: MODEL,
     max_tokens: 1024,
     messages: [

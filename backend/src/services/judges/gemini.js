@@ -1,13 +1,12 @@
 import { GoogleGenAI } from '@google/genai';
 import { CONTEXT_RELEVANCY_PROMPT, formatPrompt } from '../../utils/prompts.js';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
-
 const MODEL = 'gemini-2.5-flash';
 const INPUT_COST_PER_1K = 0.0001;
 const OUTPUT_COST_PER_1K = 0.0004;
 
-export async function evaluateContextRelevancy(testCase) {
+export async function evaluateContextRelevancy(testCase, apiKey) {
+  const ai = new GoogleGenAI({ apiKey: apiKey || process.env.GOOGLE_API_KEY });
   const startTime = Date.now();
 
   const prompt = formatPrompt(CONTEXT_RELEVANCY_PROMPT, {

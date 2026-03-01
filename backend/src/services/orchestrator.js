@@ -19,7 +19,7 @@ async function runJudgeWithTimeout(name, judgeFn, testCase, timeout) {
   return Promise.race([judgeFn(testCase), timeoutPromise]);
 }
 
-export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveEvent) {
+export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveEvent, userKeys = {}) {
   const results = {
     testCaseIndex,
     judges: {},
@@ -27,9 +27,9 @@ export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveE
   };
 
   const judges = [
-    { name: 'openai', provider: 'openai', fn: evaluateFaithfulness, metric: 'faithfulness' },
-    { name: 'anthropic', provider: 'anthropic', fn: evaluateGroundedness, metric: 'groundedness' },
-    { name: 'gemini', provider: 'gemini', fn: evaluateContextRelevancy, metric: 'contextRelevancy' },
+    { name: 'openai', provider: 'openai', fn: (tc) => evaluateFaithfulness(tc, userKeys.openai), metric: 'faithfulness' },
+    { name: 'anthropic', provider: 'anthropic', fn: (tc) => evaluateGroundedness(tc, userKeys.anthropic), metric: 'groundedness' },
+    { name: 'gemini', provider: 'gemini', fn: (tc) => evaluateContextRelevancy(tc, userKeys.google), metric: 'contextRelevancy' },
   ];
 
   const emitAndSave = (event, data) => {
@@ -106,7 +106,7 @@ export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveE
       const aggregatorResult = await executeWithProviderResilience({
         provider: 'anthropic',
         operation: 'aggregate',
-        run: () => aggregateResults(testCase, results.judges),
+        run: () => aggregateResults(testCase, results.judges, userKeys.anthropic),
         emitEvent: emitAndSave,
         context: { component: 'aggregator', testCaseIndex },
       });
@@ -154,7 +154,7 @@ export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveE
   return results;
 }
 
-export async function runEvaluation(testCases, jobId, emitEvent, saveEvent, updateDocument, options = {}) {
+export async function runEvaluation(testCases, jobId, emitEvent, saveEvent, updateDocument, options = {}, userKeys = {}) {
   const allResults = [];
   let totalCost = 0;
   const costTracker = new CostTracker();
@@ -197,9 +197,9 @@ export async function runEvaluation(testCases, jobId, emitEvent, saveEvent, upda
 
     let result;
     if (useAdaptive) {
-      result = await routeTestCase(testCases[i], i, emitEvent, saveEvent, costTracker, options);
+      result = await routeTestCase(testCases[i], i, emitEvent, saveEvent, costTracker, options, userKeys);
     } else {
-      result = await evaluateTestCase(testCases[i], i, emitEvent, saveEvent);
+      result = await evaluateTestCase(testCases[i], i, emitEvent, saveEvent, userKeys);
       result.strategy = 'council';
     }
     allResults.push(result);

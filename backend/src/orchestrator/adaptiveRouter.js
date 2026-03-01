@@ -61,7 +61,7 @@ function computeHybridScore(deterministicResults, judgeResult) {
   return Math.round((detAvg * detWeight + judgeScore * judgeWeight) * 100) / 100;
 }
 
-async function runSingleStrategy(testCase, testCaseIndex, emitAndSave, costTracker) {
+async function runSingleStrategy(testCase, testCaseIndex, emitAndSave, costTracker, userKeys = {}) {
   const result = {
     testCaseIndex,
     judges: {},
@@ -75,7 +75,7 @@ async function runSingleStrategy(testCase, testCaseIndex, emitAndSave, costTrack
     const geminiResult = await executeWithProviderResilience({
       provider: 'gemini',
       operation: 'contextRelevancy',
-      run: () => runJudgeWithTimeout('gemini', evaluateContextRelevancy, testCase),
+      run: () => runJudgeWithTimeout('gemini', (tc) => evaluateContextRelevancy(tc, userKeys.google), testCase),
       emitEvent: emitAndSave,
       context: { judge: 'gemini', metric: 'contextRelevancy', testCaseIndex },
     });
@@ -109,7 +109,7 @@ async function runSingleStrategy(testCase, testCaseIndex, emitAndSave, costTrack
   return result;
 }
 
-async function runHybridStrategy(testCase, testCaseIndex, emitAndSave, costTracker) {
+async function runHybridStrategy(testCase, testCaseIndex, emitAndSave, costTracker, userKeys = {}) {
   const result = {
     testCaseIndex,
     judges: {},
@@ -131,7 +131,7 @@ async function runHybridStrategy(testCase, testCaseIndex, emitAndSave, costTrack
     const openaiResult = await executeWithProviderResilience({
       provider: 'openai',
       operation: 'faithfulness',
-      run: () => runJudgeWithTimeout('openai', evaluateFaithfulness, testCase),
+      run: () => runJudgeWithTimeout('openai', (tc) => evaluateFaithfulness(tc, userKeys.openai), testCase),
       emitEvent: emitAndSave,
       context: { judge: 'openai', metric: 'faithfulness', testCaseIndex },
     });
@@ -168,7 +168,7 @@ async function runHybridStrategy(testCase, testCaseIndex, emitAndSave, costTrack
   return result;
 }
 
-export async function routeTestCase(testCase, testCaseIndex, emitEvent, saveEvent, costTracker, options = {}) {
+export async function routeTestCase(testCase, testCaseIndex, emitEvent, saveEvent, costTracker, options = {}, userKeys = {}) {
   const emitAndSave = (event, data) => {
     emitEvent(event, data);
     saveEvent(event, data);
@@ -227,7 +227,7 @@ export async function routeTestCase(testCase, testCaseIndex, emitEvent, saveEven
 
   switch (strategy) {
     case 'council':
-      result = await evaluateTestCase(testCase, testCaseIndex, emitEvent, saveEvent);
+      result = await evaluateTestCase(testCase, testCaseIndex, emitEvent, saveEvent, userKeys);
       result.strategy = 'council';
       // Track council costs
       if (costTracker) {
@@ -243,15 +243,15 @@ export async function routeTestCase(testCase, testCaseIndex, emitEvent, saveEven
       break;
 
     case 'hybrid':
-      result = await runHybridStrategy(testCase, testCaseIndex, emitAndSave, costTracker);
+      result = await runHybridStrategy(testCase, testCaseIndex, emitAndSave, costTracker, userKeys);
       break;
 
     case 'single':
-      result = await runSingleStrategy(testCase, testCaseIndex, emitAndSave, costTracker);
+      result = await runSingleStrategy(testCase, testCaseIndex, emitAndSave, costTracker, userKeys);
       break;
 
     default:
-      result = await evaluateTestCase(testCase, testCaseIndex, emitEvent, saveEvent);
+      result = await evaluateTestCase(testCase, testCaseIndex, emitEvent, saveEvent, userKeys);
       result.strategy = 'council';
       break;
   }

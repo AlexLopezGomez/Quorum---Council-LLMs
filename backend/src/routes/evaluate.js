@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { nanoid } from 'nanoid';
 import { validateEvaluateRequest } from '../utils/validation.js';
 import { Evaluation } from '../models/Evaluation.js';
+import { User } from '../models/User.js';
 import { runEvaluation } from '../services/orchestrator.js';
 import { sseManager } from '../utils/sse.js';
 import { logger } from '../utils/logger.js';
@@ -152,7 +153,15 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
       }
     };
 
-    runEvaluation(testCases, jobId, emitEvent, saveEvent, updateDocument, options || {}).catch(async (error) => {
+    let userKeys = { openai: null, anthropic: null, google: null };
+    try {
+      const userWithKeys = await User.findById(req.user._id).select('apiKeys');
+      userKeys = userWithKeys.getDecryptedApiKeys();
+    } catch (err) {
+      logger.warn('keys.decrypt.failed', logger.withReq(req, { metadata: { message: err.message } }));
+    }
+
+    runEvaluation(testCases, jobId, emitEvent, saveEvent, updateDocument, options || {}, userKeys).catch(async (error) => {
       logger.error(
         'evaluation.failed',
         logger.withReq(req, {

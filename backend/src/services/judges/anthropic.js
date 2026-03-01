@@ -1,15 +1,12 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { GROUNDEDNESS_PROMPT, formatPrompt } from '../../utils/prompts.js';
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
 const MODEL = 'claude-3-haiku-20240307';
 const INPUT_COST_PER_1K = 0.00025;
 const OUTPUT_COST_PER_1K = 0.00125;
 
-export async function evaluateGroundedness(testCase) {
+export async function evaluateGroundedness(testCase, apiKey) {
+  const client = new Anthropic({ apiKey: apiKey || process.env.ANTHROPIC_API_KEY });
   const startTime = Date.now();
 
   const prompt = formatPrompt(GROUNDEDNESS_PROMPT, {
@@ -18,7 +15,7 @@ export async function evaluateGroundedness(testCase) {
     retrievalContext: testCase.retrievalContext,
   });
 
-  const response = await anthropic.messages.create({
+  const response = await client.messages.create({
     model: MODEL,
     max_tokens: 2048,
     messages: [

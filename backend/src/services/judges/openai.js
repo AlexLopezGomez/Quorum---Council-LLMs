@@ -1,15 +1,12 @@
 import OpenAI from 'openai';
 import { FAITHFULNESS_PROMPT, formatPrompt } from '../../utils/prompts.js';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const MODEL = 'gpt-4o-mini';
 const INPUT_COST_PER_1K = 0.00015;
 const OUTPUT_COST_PER_1K = 0.0006;
 
-export async function evaluateFaithfulness(testCase) {
+export async function evaluateFaithfulness(testCase, apiKey) {
+  const client = new OpenAI({ apiKey: apiKey || process.env.OPENAI_API_KEY });
   const startTime = Date.now();
 
   const prompt = formatPrompt(FAITHFULNESS_PROMPT, {
@@ -18,7 +15,7 @@ export async function evaluateFaithfulness(testCase) {
     retrievalContext: testCase.retrievalContext,
   });
 
-  const response = await openai.chat.completions.create({
+  const response = await client.chat.completions.create({
     model: MODEL,
     messages: [
       {

@@ -8,6 +8,7 @@ import { TestCaseUpload } from './components/TestCaseUpload';
 import { StreamingEvaluation } from './components/StreamingEvaluation';
 import { EvaluationHistory } from './components/EvaluationHistory';
 import { WebhookManager } from './components/webhooks/WebhookManager';
+import { ApiKeysManager } from './components/ApiKeysManager';
 import { EvaluationDetail } from './components/EvaluationDetail';
 import { ErrorAlert } from './components/ui/ErrorAlert';
 
@@ -71,6 +72,7 @@ function AppContent() {
             <Route path="history" element={<EvaluationHistory />} />
             <Route path="history/:jobId" element={<EvaluationDetail />} />
             <Route path="webhooks" element={<WebhookManager />} />
+            <Route path="settings" element={<ApiKeysManager />} />
           </Routes>
         </div>
       </main>

@@ -134,6 +134,24 @@ export async function testWebhook(id, signal) {
   return fetchJson(`${API_BASE}/webhooks/${id}/test`, { method: 'POST' }, signal);
 }
 
+// ─── API Keys ─────────────────────────────────────────────────────────────────
+
+export async function getKeys(signal) {
+  return fetchJson(`${API_BASE}/keys`, {}, signal);
+}
+
+export async function setKey(provider, key) {
+  return fetchJson(`${API_BASE}/keys/${provider}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key }),
+  });
+}
+
+export async function deleteKey(provider) {
+  return fetchJson(`${API_BASE}/keys/${provider}`, { method: 'DELETE' });
+}
+
 // ─── Auth ───────────────────────────────────────────────────
 
 export const authApi = {

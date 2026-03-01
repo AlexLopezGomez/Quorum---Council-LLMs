@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
 import { NAV_ITEMS } from '../../lib/constants';
 import { StatusIndicator } from '../ui/StatusIndicator';
 import { useEvaluation } from '../../context/EvaluationContext';
@@ -67,6 +67,17 @@ export function Sidebar() {
 
             {user && (
                 <div className="px-3 pb-4 border-t border-surface-border pt-4">
+                    <button
+                        onClick={() => navigate('/app/settings')}
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors mb-1 ${
+                            pathname.startsWith('/app/settings')
+                                ? 'bg-surface-tertiary text-text-primary font-medium'
+                                : 'text-text-secondary hover:bg-surface-tertiary hover:text-text-primary'
+                        }`}
+                    >
+                        <Settings size={18} />
+                        Settings
+                    </button>
                     <div className="flex items-center gap-3 px-2">
                         <div className="w-8 h-8 rounded-lg bg-surface-tertiary flex items-center justify-center text-sm font-medium text-text-primary shrink-0">
                             {user.username?.[0]?.toUpperCase() ?? '?'}

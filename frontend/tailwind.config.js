@@ -3,18 +3,21 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["'New York'", 'ui-serif', 'Georgia', 'serif'],
+      },
       colors: {
         surface: {
           DEFAULT: '#FFFFFF',
-          secondary: '#F9FAFB',
-          tertiary: '#F3F4F6',
-          border: '#E5E7EB',
-          'border-strong': '#D1D5DB',
+          secondary: '#F5F3EF',
+          tertiary: '#EEEBE4',
+          border: '#DDD9D1',
+          'border-strong': '#C9C4BB',
         },
         text: {
-          primary: '#111827',
-          secondary: '#6B7280',
-          tertiary: '#9CA3AF',
+          primary: '#3b3c36',
+          secondary: '#6e6e66',
+          tertiary: '#9e9d97',
         },
         openai: {
           DEFAULT: '#10A37F',
@@ -34,7 +37,7 @@ export default {
         strategy: {
           council: '#8B5CF6',
           hybrid: '#F59E0B',
-          single: '#6B7280',
+          single: '#3b3c36',
         },
         verdict: {
           pass: '#10B981',
@@ -42,8 +45,8 @@ export default {
           fail: '#EF4444',
         },
         accent: {
-          DEFAULT: '#111827',
-          hover: '#1F2937',
+          DEFAULT: '#d99058',
+          hover: '#c47d45',
           foreground: '#FFFFFF',
         },
       },

@@ -12,21 +12,21 @@ Key principles: generous whitespace, subtle depth through shadows not borders, w
 ```js
 // tailwind.config.js — extend colors
 colors: {
-  // Base neutrals (warm gray, not blue-gray)
+  // Base neutrals (warm earthy scale)
   surface: {
     DEFAULT: '#FFFFFF',
-    secondary: '#F9FAFB',    // Page background, sidebar bg
-    tertiary: '#F3F4F6',     // Hover states, input backgrounds
-    border: '#E5E7EB',       // Subtle dividers
-    'border-strong': '#D1D5DB', // Active borders, table headers
+    secondary: '#F5F3EF',    // Page background, sidebar bg (warm parchment)
+    tertiary: '#EEEBE4',     // Hover states, input backgrounds
+    border: '#DDD9D1',       // Subtle dividers
+    'border-strong': '#C9C4BB', // Active borders, table headers
   },
   text: {
-    primary: '#111827',      // Headings, primary content
-    secondary: '#6B7280',    // Descriptions, meta info, timestamps
-    tertiary: '#9CA3AF',     // Placeholders, disabled
+    primary: '#3b3c36',      // Ash black — headings, primary content
+    secondary: '#6e6e66',    // Warm mid gray — descriptions, meta
+    tertiary: '#9e9d97',     // Warm light gray — placeholders, disabled
   },
 
-  // Judge colors (keep existing)
+  // Judge colors (unchanged)
   openai: {
     DEFAULT: '#10A37F',
     light: '#ECFDF5',
@@ -43,24 +43,25 @@ colors: {
     border: '#BFDBFE',
   },
 
-  // Strategy colors (NEW)
+  // Strategy colors
   strategy: {
     council: '#8B5CF6',      // Purple — full evaluation
     hybrid: '#F59E0B',       // Amber — mixed approach
-    single: '#6B7280',       // Gray — fast/cheap
+    single: '#3b3c36',       // Ash black — fast/cheap
   },
 
-  // Verdict colors
+  // Verdict colors (unchanged)
   verdict: {
     pass: '#10B981',         // Green
     warn: '#F59E0B',         // Amber
     fail: '#EF4444',         // Red
   },
 
-  // Accent
+  // Accent (copper glow)
   accent: {
-    DEFAULT: '#111827',      // Primary buttons (dark)
-    hover: '#1F2937',
+    DEFAULT: '#d99058',      // Copper glow — primary buttons
+    hover: '#c47d45',        // Deeper copper
+    foreground: '#FFFFFF',
   }
 }
 ```
@@ -483,5 +484,5 @@ Size: 18px for nav items, 16px for inline, 14px for badges/meta.
 - No drop shadows heavier than shadow-sm on cards
 - No ALL CAPS except table headers and stat labels
 - No emoji in the UI
-- No font changes — use the system font stack (Tailwind default: Inter if loaded, else system)
+- Font is New York serif (`font-family: 'New York', ui-serif, Georgia, serif`) — do not override it
 - No dark mode (out of scope, adds complexity for no demo value)

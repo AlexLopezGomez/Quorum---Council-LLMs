@@ -11,6 +11,7 @@ import historyRouter from './routes/history.js';
 import webhooksRouter from './routes/webhooks.js';
 import ingestRouter from './routes/ingest.js';
 import authRouter from './routes/auth.js';
+import keysRouter from './routes/keys.js';
 import observabilityRouter from './routes/observability.js';
 import swaggerUi from 'swagger-ui-express';
 import { sseManager } from './utils/sse.js';
@@ -69,6 +70,7 @@ app.use('/api/evaluate', requireAuth, evaluateRouter);
 app.use('/api/history', requireAuth, historyRouter);
 app.use('/api/webhooks', requireAuth, webhooksRouter);
 app.use('/api/results', requireAuth, resultsRouter);
+app.use('/api/keys', requireAuth, keysRouter);
 app.use('/api/observability', requireAuth, observabilityRouter);
 
 app.get('/health', (req, res) => {

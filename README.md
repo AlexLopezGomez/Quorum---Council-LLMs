@@ -87,7 +87,7 @@ docker-compose --profile demo up --build
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for Mermaid diagrams and the full SSE event protocol.
+See [ARCHITECTURE.md](./docs/ARCHITECTURE.md) for Mermaid diagrams and the full SSE event protocol.
 
 ## SDK Usage
 
@@ -186,8 +186,8 @@ Interactive docs at **http://localhost:3000/api/docs** (Swagger UI).
 
 ## Documentation
 
-- [ARCHITECTURE.md](./ARCHITECTURE.md) — System diagrams, data flow, SSE protocol, cost model
-- [DECISIONS.md](./DECISIONS.md) — 10 architectural decision records
+- [ARCHITECTURE.md](./docs/ARCHITECTURE.md) — System diagrams, data flow, SSE protocol, cost model
+- [DECISIONS.md](./docs/DECISIONS.md) — 10 architectural decision records
 - [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) — Frontend component patterns and styling guide
 - [sdk/README.md](./sdk/README.md) — SDK quickstart and integration patterns
 - [docs/observability-audit.md](./docs/observability-audit.md) — Correlation IDs, audit events, retention, and incident runbook

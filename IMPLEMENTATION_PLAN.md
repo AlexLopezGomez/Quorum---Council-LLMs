@@ -387,11 +387,11 @@ Acceptance:
 All must be true:
 
 - [x] CI gate runs in GitHub Actions
-- [ ] SDK service auth works in automation
-- [ ] PII sanitizer implemented and tested
-- [ ] Ingest metadata preserved
-- [ ] Security startup guardrails active
-- [ ] Docs reflect real system state
+- [x] SDK service auth works in automation
+- [x] PII sanitizer implemented and tested
+- [x] Ingest metadata preserved
+- [x] Security startup guardrails active
+- [x] Docs reflect real system state
 
 ## Phase 1: Reliability and runtime resilience
 Window: 2026-03-09 to 2026-04-05
@@ -772,10 +772,10 @@ Rollback plan:
 ### Phase 0
 
 - [x] WP0.1 GitHub Action quality gate
-- [ ] WP0.2 SDK PII sanitizer
-- [ ] WP0.3 Service auth and contract fix
-- [ ] WP0.4 Ingest metadata propagation
-- [ ] WP0.5 Security/doc hardening
+- [x] WP0.2 SDK PII sanitizer
+- [x] WP0.3 Service auth and contract fix
+- [x] WP0.4 Ingest metadata propagation
+- [x] WP0.5 Security/doc hardening
 
 ### Phase 1
 

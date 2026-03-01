@@ -12,14 +12,16 @@ import webhooksRouter from './routes/webhooks.js';
 import ingestRouter from './routes/ingest.js';
 import authRouter from './routes/auth.js';
 import keysRouter from './routes/keys.js';
+import serviceKeysRouter from './routes/serviceKeys.js';
 import observabilityRouter from './routes/observability.js';
 import swaggerUi from 'swagger-ui-express';
 import { sseManager } from './utils/sse.js';
 import { Evaluation } from './models/Evaluation.js';
 import { spec } from './utils/openapi.js';
-import { requireAuth } from './middleware/requireAuth.js';
+import { requireAuth, requireAnyAuth } from './middleware/requireAuth.js';
 import { requestContext } from './middleware/requestContext.js';
 import { logger } from './utils/logger.js';
+import { validateProductionSecrets } from './utils/validateSecrets.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -63,14 +65,15 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/auth', authRouter);
-app.use('/api/stream', requireAuth, streamRouter);
-app.use('/api/ingest', requireAuth, ingestRouter);
+app.use('/api/stream', requireAnyAuth, streamRouter);
+app.use('/api/ingest', requireAnyAuth, ingestRouter);
+app.use('/api/results', requireAnyAuth, resultsRouter);
 
 app.use('/api/evaluate', requireAuth, evaluateRouter);
 app.use('/api/history', requireAuth, historyRouter);
 app.use('/api/webhooks', requireAuth, webhooksRouter);
-app.use('/api/results', requireAuth, resultsRouter);
 app.use('/api/keys', requireAuth, keysRouter);
+app.use('/api/service-keys', requireAuth, serviceKeysRouter);
 app.use('/api/observability', requireAuth, observabilityRouter);
 
 app.get('/health', (req, res) => {
@@ -150,6 +153,7 @@ async function cleanupStaleJobs() {
 
 async function start() {
   try {
+    validateProductionSecrets();
     await connectWithRetry();
     await cleanupStaleJobs();
 

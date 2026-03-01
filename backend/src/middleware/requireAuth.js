@@ -1,6 +1,7 @@
 import { COOKIE_NAME, verifyToken } from '../utils/auth.js';
 import { User } from '../models/User.js';
 import { logger } from '../utils/logger.js';
+import { requireServiceAuth } from './requireServiceAuth.js';
 
 export async function requireAuth(req, res, next) {
   const token = req.cookies?.[COOKIE_NAME];
@@ -40,4 +41,15 @@ export async function requireAuth(req, res, next) {
     );
     return res.status(401).json({ error: 'Authentication required' });
   }
+}
+
+export async function requireAnyAuth(req, res, next) {
+  const hasCookie = !!req.cookies?.[COOKIE_NAME];
+  const hasBearer = req.headers['authorization']?.startsWith('Bearer ');
+
+  if (hasCookie) return requireAuth(req, res, next);
+  if (hasBearer) return requireServiceAuth(req, res, next);
+
+  logger.audit('auth.missing', logger.withReq(req, { actor: 'unknown', statusCode: 401 }));
+  return res.status(401).json({ error: 'Authentication required' });
 }

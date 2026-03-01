@@ -16,7 +16,8 @@
       "mcp__exa__web_search_exa",
       "WebSearch",
       "Bash(npx playwright:*)",
-      "mcp__playwright__browser_evaluate"
+      "mcp__playwright__browser_evaluate",
+      "Bash(npx vitest:*)"
     ]
   }
 }

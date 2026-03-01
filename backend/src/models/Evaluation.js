@@ -8,6 +8,7 @@ const testCaseSchema = new mongoose.Schema(
     expectedOutput: { type: String },
     retrievalContext: [{ type: String }],
     metadata: { type: mongoose.Schema.Types.Mixed },
+    capturedAt: { type: String },
   },
   { _id: false }
 );

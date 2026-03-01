@@ -81,11 +81,13 @@ router.post('/', createValidationMiddleware(ingestRequestSchema), async (req, re
       })
     );
 
-    const testCases = captures.map(({ input, actualOutput, expectedOutput, retrievalContext }) => ({
+    const testCases = captures.map(({ input, actualOutput, expectedOutput, retrievalContext, metadata, capturedAt }) => ({
       input,
       actualOutput,
       expectedOutput,
       retrievalContext,
+      metadata,
+      capturedAt,
     }));
 
     const evaluation = new Evaluation({

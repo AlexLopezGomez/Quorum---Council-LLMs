@@ -133,3 +133,4 @@ No blockers. Render deployment is ready to push.
 - `package-lock.json` is gitignored in this repo — always use `npm install` (not `npm ci`) in deploy scripts.
 - Backend architecture (SSE streaming, in-memory state, background async processing) is incompatible with Vercel serverless. Use a long-running server platform (Render, Railway, Fly.io) instead.
 - Render uses `NODE_VERSION` env var to set the Node.js runtime; always pin it explicitly when no root package.json exists.
+- `backend/src/utils/auth.js` has a top-level throw for missing JWT_SECRET in production — this runs at import time, before DEMO_MODE can be checked in `start()`. Must guard with `&& !DEMO_MODE`.

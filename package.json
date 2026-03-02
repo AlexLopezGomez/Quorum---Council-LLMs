@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "record-demo": "node scripts/record-demo.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.58.2"
+  }
+}

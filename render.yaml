@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: quorum
+    runtime: node
+    plan: free
+    buildCommand: cd frontend && npm ci && npm run build && cd ../backend && npm ci
+    startCommand: cd backend && node src/index.js
+    envVars:
+      - key: DEMO_MODE
+        value: "true"
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"

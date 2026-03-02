@@ -1,0 +1,94 @@
+export const DEMO_TEST_CASES = [
+  {
+    input: "What medication dosage is appropriate for treating hypertension in elderly patients?",
+    actualOutput: "For elderly patients with hypertension, initial treatment typically begins with a low dose of amlodipine (2.5-5mg daily) or lisinopril (5-10mg daily). The dosage should be titrated gradually based on blood pressure response and tolerability. Combination therapy may be needed if monotherapy is insufficient.",
+    expectedOutput: "Treatment should start with low-dose monotherapy, typically amlodipine 2.5-5mg or an ACE inhibitor, with gradual titration.",
+    retrievalContext: [
+      "JNC 8 guidelines recommend initiating antihypertensive therapy in patients aged 60 and older when blood pressure exceeds 150/90 mmHg. First-line options include thiazide diuretics, calcium channel blockers (amlodipine), ACE inhibitors, or ARBs.",
+      "In elderly patients, amlodipine is commonly started at 2.5mg daily due to increased sensitivity to vasodilatory effects. Dose may be increased to 5-10mg based on response.",
+      "ACE inhibitors such as lisinopril should be initiated at lower doses (5-10mg) in elderly patients due to age-related decline in renal function. Serum creatinine and potassium should be monitored."
+    ]
+  },
+  {
+    input: "What are the legal requirements for forming a limited liability company in Delaware?",
+    actualOutput: "To form an LLC in Delaware, you must file a Certificate of Formation with the Delaware Division of Corporations, pay the $90 filing fee, designate a registered agent in Delaware, and create an operating agreement. Delaware does not require LLC members to be disclosed publicly.",
+    expectedOutput: "File Certificate of Formation, pay $90 fee, appoint registered agent, create operating agreement.",
+    retrievalContext: [
+      "Delaware LLC formation requires filing a Certificate of Formation with the Division of Corporations. The filing fee is $90 as of 2024. A registered agent with a physical address in Delaware must be designated.",
+      "Delaware does not require LLCs to list members or managers in the Certificate of Formation, providing privacy protection. However, an operating agreement, while not filed with the state, is strongly recommended.",
+      "Delaware LLCs are subject to an annual tax of $300, due by June 1st each year. Failure to pay results in penalties and potential administrative dissolution."
+    ]
+  },
+  {
+    input: "How does the process of cellular respiration produce ATP?",
+    actualOutput: "Cellular respiration produces ATP through three main stages: glycolysis (2 ATP), the Krebs cycle (2 ATP), and the electron transport chain (approximately 34 ATP). The process converts glucose and oxygen into carbon dioxide, water, and energy stored as ATP.",
+    retrievalContext: [
+      "Glycolysis occurs in the cytoplasm and breaks down one glucose molecule into two pyruvate molecules, producing a net gain of 2 ATP and 2 NADH.",
+      "The Krebs cycle (citric acid cycle) takes place in the mitochondrial matrix. Each turn of the cycle produces 1 ATP, 3 NADH, and 1 FADH2. Two turns occur per glucose molecule.",
+      "The electron transport chain, located in the inner mitochondrial membrane, uses electrons from NADH and FADH2 to create a proton gradient. ATP synthase then uses this gradient to produce approximately 34 ATP molecules per glucose."
+    ]
+  },
+  {
+    input: "What are the main differences between TCP and UDP protocols?",
+    actualOutput: "TCP is a connection-oriented protocol that ensures reliable delivery through handshaking, sequencing, and acknowledgment. UDP is connectionless, offering faster but unreliable delivery without error checking. TCP is used for web browsing and email, while UDP is preferred for streaming and gaming.",
+    retrievalContext: [
+      "TCP (Transmission Control Protocol) is a connection-oriented protocol that establishes a reliable connection using a three-way handshake. It guarantees delivery through sequence numbers and acknowledgments.",
+      "UDP (User Datagram Protocol) is a connectionless protocol that sends data without establishing a connection. It does not guarantee delivery or ordering, making it faster but less reliable than TCP.",
+      "Common TCP applications include HTTP/HTTPS, email (SMTP), and file transfer (FTP). UDP is commonly used for DNS queries, video streaming, VoIP, and online gaming where speed matters more than reliability."
+    ]
+  },
+  {
+    input: "What is the recommended investment allocation for a conservative retirement portfolio?",
+    actualOutput: "A conservative retirement portfolio typically allocates 60-70% to bonds and fixed-income securities, 20-30% to equities (preferring blue-chip and dividend stocks), and 5-10% to cash equivalents. This allocation prioritizes capital preservation while providing modest growth to outpace inflation.",
+    expectedOutput: "Heavy bond allocation (60-70%), limited equity exposure (20-30%), small cash position.",
+    retrievalContext: [
+      "Conservative portfolio theory suggests that investors near or in retirement should allocate 60-70% of their portfolio to fixed-income instruments such as government bonds, investment-grade corporate bonds, and Treasury Inflation-Protected Securities (TIPS).",
+      "The equity portion of a conservative portfolio (typically 20-30%) should focus on large-cap dividend-paying stocks and index funds to provide growth while minimizing volatility.",
+      "Financial advisors generally recommend maintaining 5-10% in cash or cash equivalents (money market funds, short-term CDs) for liquidity needs and opportunistic rebalancing."
+    ]
+  },
+  {
+    input: "What is the capital of Japan?",
+    actualOutput: "The capital of Japan is Tokyo.",
+    expectedOutput: "Tokyo",
+    retrievalContext: [
+      "Tokyo is the capital city of Japan and the most populous metropolitan area in the world with over 37 million residents."
+    ]
+  },
+  {
+    input: "Who invented the telephone?",
+    actualOutput: "Alexander Graham Bell is credited with inventing the telephone in 1876.",
+    expectedOutput: "Alexander Graham Bell",
+    retrievalContext: [
+      "Alexander Graham Bell was a Scottish-born inventor who is credited with patenting the first practical telephone on March 7, 1876."
+    ]
+  },
+  {
+    input: "What is the current GDP of the European Union?",
+    actualOutput: "The European Union's GDP is approximately $16.6 trillion as of 2023, making it one of the largest economies in the world.",
+    retrievalContext: [
+      "According to World Bank data from 2019, the European Union's combined GDP was approximately $15.6 trillion, making it the third-largest economy globally behind the United States and China.",
+      "The EU economy experienced a significant contraction in 2020 due to the COVID-19 pandemic, with GDP declining by approximately 6.1%."
+    ]
+  },
+  {
+    input: "How does a neural network learn?",
+    actualOutput: "Neural networks learn through backpropagation, adjusting connection weights to minimize prediction errors. Training involves forward passes (making predictions), computing loss, and backward passes (updating weights via gradient descent). This process repeats over many iterations until the network converges.",
+    expectedOutput: "Neural networks use backpropagation and gradient descent to iteratively adjust weights and minimize prediction errors.",
+    retrievalContext: [
+      "Neural networks learn by adjusting the weights of connections between neurons through a process called backpropagation. During training, the network makes a prediction (forward pass), computes the error (loss function), and then propagates the error backward to update weights.",
+      "Gradient descent is the optimization algorithm used to minimize the loss function by computing partial derivatives of the loss with respect to each weight and adjusting weights in the direction that reduces the error.",
+      "Training typically requires many epochs (complete passes through the training data) and uses techniques like learning rate scheduling, batch normalization, and dropout to improve convergence and prevent overfitting.",
+      "Key factors affecting neural network training include architecture choice, hyperparameter tuning, data quality, and regularization techniques."
+    ]
+  },
+  {
+    input: "What safety precautions should be followed when handling concentrated sulfuric acid?",
+    actualOutput: "When handling concentrated sulfuric acid, always wear chemical-resistant gloves, safety goggles, and a lab coat. Work in a well-ventilated area or fume hood. Always add acid to water (never water to acid) to prevent violent exothermic reactions. Have a spill kit and eye wash station readily available. Store in compatible containers away from organic materials.",
+    retrievalContext: [
+      "Concentrated sulfuric acid (H2SO4, >96%) is a highly corrosive substance that can cause severe burns on contact with skin. Appropriate PPE includes acid-resistant gloves (neoprene or butyl rubber), splash-proof safety goggles, and a chemical-resistant apron or lab coat.",
+      "The dilution of concentrated sulfuric acid is highly exothermic. ALWAYS add acid to water slowly while stirring, never add water to concentrated acid as this can cause the solution to boil and splatter.",
+      "Emergency procedures for sulfuric acid exposure: flush affected area with copious amounts of water for at least 15 minutes. For eye exposure, use an emergency eye wash station immediately. Seek medical attention for all exposures."
+    ]
+  }
+];

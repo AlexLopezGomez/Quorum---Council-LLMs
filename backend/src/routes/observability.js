@@ -4,11 +4,23 @@ import { AuditEvent } from '../models/AuditEvent.js';
 import { logger } from '../utils/logger.js';
 
 const router = Router();
+const MAX_FILTER_LENGTH = 128;
+
+function normalizeFilter(input) {
+  if (typeof input !== 'string') return null;
+  const trimmed = input.trim().slice(0, MAX_FILTER_LENGTH);
+  return trimmed || null;
+}
 
 router.get('/search', async (req, res) => {
   try {
-    const { requestId, jobId, limit = '100' } = req.query;
-    const parsedLimit = Math.min(Number.parseInt(limit, 10) || 100, 500);
+    const requestId = normalizeFilter(req.query.requestId);
+    const jobId = normalizeFilter(req.query.jobId);
+    const limit = String(req.query.limit ?? '100');
+    const parsedLimitRaw = Number.parseInt(limit, 10);
+    const parsedLimit = Number.isFinite(parsedLimitRaw)
+      ? Math.min(Math.max(parsedLimitRaw, 1), 500)
+      : 100;
 
     if (!requestId && !jobId) {
       return res.status(400).json({ error: 'requestId or jobId is required' });

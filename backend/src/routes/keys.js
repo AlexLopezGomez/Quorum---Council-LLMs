@@ -28,7 +28,7 @@ router.put('/:provider', async (req, res) => {
   }
 
   const { key } = req.body;
-  if (!key || typeof key !== 'string' || !key.trim()) {
+  if (!key || typeof key !== 'string' || !key.trim() || key.trim().length > 2048) {
     return res.status(400).json({ error: 'key is required' });
   }
 

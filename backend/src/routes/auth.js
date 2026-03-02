@@ -1,12 +1,33 @@
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 import { User } from '../models/User.js';
 import { signToken, setTokenCookie, clearTokenCookie } from '../utils/auth.js';
 import { createValidationMiddleware } from '../utils/validation.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { logger } from '../utils/logger.js';
+import { DEMO_MODE, DEMO_USER } from '../demo/demoConfig.js';
 
 const router = Router();
+const authRateLimitWindowMs = 15 * 60 * 1000;
+const authRateLimitMessage = { error: 'Too many authentication attempts. Please try again later.' };
+
+const registerLimiter = rateLimit({
+  windowMs: authRateLimitWindowMs,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: authRateLimitMessage,
+});
+
+const loginLimiter = rateLimit({
+  windowMs: authRateLimitWindowMs,
+  max: 8,
+  skipSuccessfulRequests: true,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: authRateLimitMessage,
+});
 
 const registerSchema = z.object({
   email: z.string().email().max(255),
@@ -26,7 +47,8 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
-router.post('/register', createValidationMiddleware(registerSchema), async (req, res) => {
+router.post('/register', registerLimiter, createValidationMiddleware(registerSchema), async (req, res) => {
+  if (DEMO_MODE) return res.status(201).json({ user: DEMO_USER.toPublicJSON() });
   try {
     const { email, username, password } = req.validatedBody;
     logger.info('auth.register.attempt', logger.withReq(req, { metadata: { email, username } }));
@@ -85,7 +107,8 @@ router.post('/register', createValidationMiddleware(registerSchema), async (req,
   }
 });
 
-router.post('/login', createValidationMiddleware(loginSchema), async (req, res) => {
+router.post('/login', loginLimiter, createValidationMiddleware(loginSchema), async (req, res) => {
+  if (DEMO_MODE) return res.json({ user: DEMO_USER.toPublicJSON() });
   try {
     const { email, password } = req.validatedBody;
     logger.info('auth.login.attempt', logger.withReq(req, { metadata: { email } }));
@@ -129,6 +152,7 @@ router.post('/login', createValidationMiddleware(loginSchema), async (req, res) 
 });
 
 router.post('/logout', (req, res) => {
+  if (DEMO_MODE) return res.json({ message: 'Logged out' });
   clearTokenCookie(res);
   logger.audit(
     'auth.logout.success',
@@ -141,7 +165,8 @@ router.post('/logout', (req, res) => {
   res.json({ message: 'Logged out' });
 });
 
-router.get('/me', requireAuth, (req, res) => {
+router.get('/me', DEMO_MODE ? (req, _res, next) => { req.user = DEMO_USER; next(); } : requireAuth, (req, res) => {
+  if (DEMO_MODE) return res.json({ user: DEMO_USER.toPublicJSON() });
   logger.info('auth.me.fetched', logger.withReq(req, { userId: req.user._id, statusCode: 200 }));
   res.json({ user: req.user.toPublicJSON() });
 });

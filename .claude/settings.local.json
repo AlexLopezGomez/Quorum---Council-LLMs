@@ -17,7 +17,12 @@
       "WebSearch",
       "Bash(npx playwright:*)",
       "mcp__playwright__browser_evaluate",
-      "Bash(npx vitest:*)"
+      "Bash(npx vitest:*)",
+      "Bash(DEMO_MODE=true node:*)",
+      "Bash(npx vite:*)",
+      "Bash(timeout 5 bash:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)"
     ]
   }
 }

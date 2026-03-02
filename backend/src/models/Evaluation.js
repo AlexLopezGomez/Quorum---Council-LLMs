@@ -2,13 +2,13 @@ import mongoose from 'mongoose';
 
 const testCaseSchema = new mongoose.Schema(
   {
-    id: { type: String },
-    input: { type: String, required: true },
-    actualOutput: { type: String, required: true },
-    expectedOutput: { type: String },
-    retrievalContext: [{ type: String }],
+    id: { type: String, maxlength: 100 },
+    input: { type: String, required: true, minlength: 1, maxlength: 1000 },
+    actualOutput: { type: String, required: true, minlength: 1, maxlength: 5000 },
+    expectedOutput: { type: String, maxlength: 5000 },
+    retrievalContext: [{ type: String, maxlength: 10000 }],
     metadata: { type: mongoose.Schema.Types.Mixed },
-    capturedAt: { type: String },
+    capturedAt: { type: String, maxlength: 100 },
   },
   { _id: false }
 );
@@ -98,10 +98,13 @@ const evaluationSchema = new mongoose.Schema(
       required: true,
       unique: true,
       index: true,
+      minlength: 1,
+      maxlength: 64,
     },
     name: {
       type: String,
       default: '',
+      maxlength: 100,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,

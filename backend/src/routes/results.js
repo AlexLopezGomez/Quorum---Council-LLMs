@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { Evaluation } from '../models/Evaluation.js';
 import { logger } from '../utils/logger.js';
+import { DEMO_MODE } from '../demo/demoConfig.js';
+import { demoStore } from '../demo/demoStore.js';
 
 const router = Router();
 
@@ -28,7 +30,9 @@ router.get('/:jobId', async (req, res) => {
   const { jobId } = req.params;
 
   try {
-    const evaluation = await Evaluation.findOne({ jobId, userId: req.user._id });
+    const evaluation = DEMO_MODE
+      ? demoStore.get(jobId)
+      : await Evaluation.findOne({ jobId, userId: req.user._id });
 
     if (!evaluation) {
       logger.warn(
@@ -61,7 +65,6 @@ router.get('/:jobId', async (req, res) => {
     res.json({
       jobId,
       name: evaluation.name || '',
-      userId: evaluation.userId,
       status: evaluation.status,
       testCases: evaluation.testCases,
       results: evaluation.results,
@@ -82,7 +85,6 @@ router.get('/:jobId', async (req, res) => {
     );
     res.status(500).json({
       error: 'Failed to fetch results',
-      message: error.message,
     });
   }
 });

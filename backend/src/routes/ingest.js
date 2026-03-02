@@ -182,7 +182,7 @@ router.post('/', createValidationMiddleware(ingestRequestSchema), async (req, re
         metadata: { message: error.message },
       })
     );
-    res.status(500).json({ error: 'Failed to ingest captures', message: error.message });
+    res.status(500).json({ error: 'Failed to ingest captures' });
   }
 });
 

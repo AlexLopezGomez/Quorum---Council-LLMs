@@ -3,8 +3,11 @@ services:
     image: mongo:7
     container_name: quorum-mongodb
     restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:-quorum}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-change-me-in-production}
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - mongodb_data:/data/db
     healthcheck:
@@ -27,7 +30,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - MONGODB_URI=mongodb://mongodb:27017/quorum
+      - MONGODB_URI=mongodb://${MONGO_USER:-quorum}:${MONGO_PASSWORD:-change-me-in-production}@mongodb:27017/quorum?authSource=admin
       - FRONTEND_URL=http://localhost:8080
       - EVALUATION_TIMEOUT=30000
     depends_on:

@@ -19,11 +19,15 @@ import { sseManager } from './utils/sse.js';
 import { Evaluation } from './models/Evaluation.js';
 import { spec } from './utils/openapi.js';
 import { requireAuth, requireAnyAuth } from './middleware/requireAuth.js';
+import { requireServiceScope } from './middleware/requireServiceAuth.js';
 import { requestContext } from './middleware/requestContext.js';
 import { logger } from './utils/logger.js';
 import { validateProductionSecrets } from './utils/validateSecrets.js';
+import { DEMO_MODE, DEMO_USER } from './demo/demoConfig.js';
+import { serveFrontend } from './demo/staticServe.js';
 
 const app = express();
+app.set('query parser', 'simple');
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/quorum';
 sseManager.setLogger(logger);
@@ -38,7 +42,7 @@ const limiter = rateLimit({
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: DEMO_MODE ? true : (process.env.FRONTEND_URL || 'http://localhost:5173'),
     credentials: true,
   })
 );
@@ -64,24 +68,28 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/auth', authRouter);
-app.use('/api/stream', requireAnyAuth, streamRouter);
-app.use('/api/ingest', requireAnyAuth, ingestRouter);
-app.use('/api/results', requireAnyAuth, resultsRouter);
+const demoAuth = (req, _res, next) => { req.user = DEMO_USER; next(); };
+const authMw = DEMO_MODE ? demoAuth : requireAuth;
+const anyAuthMw = DEMO_MODE ? demoAuth : requireAnyAuth;
 
-app.use('/api/evaluate', requireAuth, evaluateRouter);
-app.use('/api/history', requireAuth, historyRouter);
-app.use('/api/webhooks', requireAuth, webhooksRouter);
-app.use('/api/keys', requireAuth, keysRouter);
-app.use('/api/service-keys', requireAuth, serviceKeysRouter);
-app.use('/api/observability', requireAuth, observabilityRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/stream', anyAuthMw, requireServiceScope(['ingest', 'evaluate']), streamRouter);
+app.use('/api/ingest', anyAuthMw, requireServiceScope('ingest'), ingestRouter);
+app.use('/api/results', anyAuthMw, requireServiceScope(['ingest', 'evaluate']), resultsRouter);
+
+app.use('/api/evaluate', authMw, evaluateRouter);
+app.use('/api/history', authMw, historyRouter);
+app.use('/api/webhooks', authMw, webhooksRouter);
+app.use('/api/keys', authMw, keysRouter);
+app.use('/api/service-keys', authMw, serviceKeysRouter);
+app.use('/api/observability', authMw, observabilityRouter);
 
 app.get('/health', (req, res) => {
   logger.info('system.health.check', logger.withReq(req, { statusCode: 200 }));
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    mongodb: DEMO_MODE ? 'demo_mode' : (mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'),
   });
 });
 
@@ -153,12 +161,18 @@ async function cleanupStaleJobs() {
 
 async function start() {
   try {
-    validateProductionSecrets();
-    await connectWithRetry();
-    await cleanupStaleJobs();
+    if (!DEMO_MODE) {
+      validateProductionSecrets();
+      await connectWithRetry();
+      await cleanupStaleJobs();
+    } else {
+      logger.info('system.demo_mode', { metadata: { message: 'Running in DEMO_MODE — MongoDB and API keys not required' } });
+    }
+
+    if (DEMO_MODE) serveFrontend(app);
 
     const server = app.listen(PORT, () => {
-      logger.info('system.startup', { metadata: { port: PORT } });
+      logger.info('system.startup', { metadata: { port: PORT, demoMode: DEMO_MODE } });
     });
 
     const shutdown = async (signal) => {
@@ -170,8 +184,10 @@ async function start() {
       server.close(async () => {
         logger.info('system.http.closed');
 
-        await mongoose.connection.close();
-        logger.info('system.mongodb.disconnected');
+        if (!DEMO_MODE) {
+          await mongoose.connection.close();
+          logger.info('system.mongodb.disconnected');
+        }
 
         process.exit(0);
       });

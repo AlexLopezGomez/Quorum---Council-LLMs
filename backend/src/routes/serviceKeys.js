@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { createHash, randomBytes } from 'crypto';
-import { nanoid } from 'nanoid';
+import mongoose from 'mongoose';
 import { ServiceKey } from '../models/ServiceKey.js';
 import { logger } from '../utils/logger.js';
 
@@ -33,11 +33,15 @@ function toPublic(key) {
 router.post('/', async (req, res) => {
   const { name, scopes = ['ingest'] } = req.body;
 
-  if (!name || typeof name !== 'string' || !name.trim()) {
+  if (!name || typeof name !== 'string' || !name.trim() || name.trim().length > 100) {
     return res.status(400).json({ error: 'name is required' });
   }
 
-  const invalidScopes = scopes.filter((s) => !VALID_SCOPES.includes(s));
+  if (!Array.isArray(scopes) || scopes.length === 0 || scopes.length > VALID_SCOPES.length) {
+    return res.status(400).json({ error: `scopes must be a non-empty array with max ${VALID_SCOPES.length} entries` });
+  }
+  const uniqueScopes = [...new Set(scopes)];
+  const invalidScopes = uniqueScopes.filter((s) => !VALID_SCOPES.includes(s));
   if (invalidScopes.length > 0) {
     return res.status(400).json({ error: `Invalid scopes: ${invalidScopes.join(', ')}. Valid: ${VALID_SCOPES.join(', ')}` });
   }
@@ -52,7 +56,7 @@ router.post('/', async (req, res) => {
       keyPrefix,
       name: name.trim(),
       userId: req.user._id,
-      scopes,
+      scopes: uniqueScopes,
     });
 
     await serviceKey.save();
@@ -83,6 +87,10 @@ router.get('/', async (req, res) => {
 
 // DELETE /api/service-keys/:keyId — revoke a key
 router.delete('/:keyId', async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.keyId)) {
+    return res.status(400).json({ error: 'Invalid service key id' });
+  }
+
   try {
     const serviceKey = await ServiceKey.findOne({ _id: req.params.keyId, userId: req.user._id });
 

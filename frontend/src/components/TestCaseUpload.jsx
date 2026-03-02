@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { Upload, Play, ChevronDown, Zap, Users, GitMerge, Cpu } from 'lucide-react';
+import { Upload, Play, ChevronDown, Zap, Users, GitMerge, Cpu, Sparkles } from 'lucide-react';
 import { STRATEGIES, STRATEGY_DESCRIPTIONS } from '../lib/constants';
 import { PageHeader } from './PageHeader';
 import { ErrorAlert } from './ui/ErrorAlert';
+import { DEMO_TEST_CASES } from '../lib/demoTestCases';
 
 const SAMPLE_DATA = [
   {
@@ -106,6 +107,10 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
     onSubmit(testCases, { strategy, name: name.trim() });
   };
 
+  const runDemo = () => {
+    onSubmit(DEMO_TEST_CASES, { strategy: 'auto', name: 'Adaptive Demo' });
+  };
+
   return (
     <div>
       <PageHeader title="Evaluate" subtitle="Run evaluation on your RAG system outputs" />
@@ -166,12 +171,20 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
                 </div>
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-2">
                 <button
                   onClick={loadSampleData}
                   className="px-4 py-2 bg-surface text-text-primary text-sm font-medium rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors"
                 >
                   Load Sample Data
+                </button>
+                <button
+                  onClick={runDemo}
+                  disabled={isLoading}
+                  className="px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                >
+                  <Sparkles size={14} />
+                  Run Demo
                 </button>
               </div>
             </div>

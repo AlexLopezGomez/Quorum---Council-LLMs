@@ -1,12 +1,39 @@
 import { Router } from 'express';
+import mongoose from 'mongoose';
 import { z } from 'zod';
 import { Webhook } from '../models/Webhook.js';
 import { createValidationMiddleware } from '../utils/validation.js';
+import { encrypt } from '../utils/encryption.js';
 import { logger } from '../utils/logger.js';
 
 const router = Router();
 
 const VALID_EVENTS = ['verdict_fail', 'score_below_threshold', 'high_risk_fail', 'cost_spike', 'evaluation_complete'];
+
+function toPublicWebhook(webhookDoc) {
+  const webhook = typeof webhookDoc.toObject === 'function'
+    ? webhookDoc.toObject()
+    : webhookDoc;
+  const { secret, ...safeWebhook } = webhook;
+  return {
+    ...safeWebhook,
+    hasSecret: Boolean(secret),
+  };
+}
+
+function ensureValidObjectId(id) {
+  return typeof id === 'string' && mongoose.Types.ObjectId.isValid(id);
+}
+
+function normalizeSecret(secretValue) {
+  if (secretValue === undefined) return undefined;
+  if (secretValue === null) return null;
+
+  const trimmed = secretValue.trim();
+  if (!trimmed) return null;
+
+  return encrypt(trimmed);
+}
 
 const createWebhookSchema = z.object({
   name: z.string().min(1).max(100),
@@ -51,7 +78,14 @@ const updateWebhookSchema = z.object({
  */
 router.post('/', createValidationMiddleware(createWebhookSchema), async (req, res) => {
   try {
-    const webhook = new Webhook({ ...req.validatedBody, userId: req.user._id });
+    const payload = {
+      ...req.validatedBody,
+      userId: req.user._id,
+    };
+    const normalizedSecret = normalizeSecret(req.validatedBody.secret);
+    if (normalizedSecret !== undefined) payload.secret = normalizedSecret;
+
+    const webhook = new Webhook(payload);
     await webhook.save();
     logger.audit(
       'webhook.created',
@@ -62,7 +96,7 @@ router.post('/', createValidationMiddleware(createWebhookSchema), async (req, re
         metadata: { webhookId: webhook._id, name: webhook.name, events: webhook.events },
       })
     );
-    res.status(201).json(webhook);
+    res.status(201).json(toPublicWebhook(webhook));
   } catch (err) {
     logger.error(
       'webhook.create_failed',
@@ -72,7 +106,7 @@ router.post('/', createValidationMiddleware(createWebhookSchema), async (req, re
         metadata: { message: err.message },
       })
     );
-    res.status(500).json({ error: 'Failed to create webhook', message: err.message });
+    res.status(500).json({ error: 'Failed to create webhook' });
   }
 });
 
@@ -97,7 +131,7 @@ router.get('/', async (req, res) => {
         metadata: { count: webhooks.length },
       })
     );
-    res.json({ webhooks });
+    res.json({ webhooks: webhooks.map(toPublicWebhook) });
   } catch (err) {
     logger.error(
       'webhook.list_failed',
@@ -134,10 +168,20 @@ router.get('/', async (req, res) => {
  *         description: Webhook not found
  */
 router.patch('/:id', createValidationMiddleware(updateWebhookSchema), async (req, res) => {
+  if (!ensureValidObjectId(req.params.id)) {
+    return res.status(400).json({ error: 'Invalid webhook id' });
+  }
+
   try {
+    const updates = { ...req.validatedBody };
+    const normalizedSecret = normalizeSecret(req.validatedBody.secret);
+    if (normalizedSecret !== undefined) {
+      updates.secret = normalizedSecret;
+    }
+
     const webhook = await Webhook.findOneAndUpdate(
       { _id: req.params.id, userId: req.user._id },
-      { $set: req.validatedBody },
+      { $set: updates },
       { new: true, runValidators: true }
     );
     if (!webhook) return res.status(404).json({ error: 'Webhook not found' });
@@ -150,7 +194,7 @@ router.patch('/:id', createValidationMiddleware(updateWebhookSchema), async (req
         metadata: { webhookId: webhook._id },
       })
     );
-    res.json(webhook);
+    res.json(toPublicWebhook(webhook));
   } catch (err) {
     logger.error(
       'webhook.update_failed',
@@ -160,7 +204,7 @@ router.patch('/:id', createValidationMiddleware(updateWebhookSchema), async (req
         metadata: { message: err.message },
       })
     );
-    res.status(500).json({ error: 'Failed to update webhook', message: err.message });
+    res.status(500).json({ error: 'Failed to update webhook' });
   }
 });
 
@@ -182,6 +226,10 @@ router.patch('/:id', createValidationMiddleware(updateWebhookSchema), async (req
  *         description: Webhook not found
  */
 router.delete('/:id', async (req, res) => {
+  if (!ensureValidObjectId(req.params.id)) {
+    return res.status(400).json({ error: 'Invalid webhook id' });
+  }
+
   try {
     const webhook = await Webhook.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
     if (!webhook) return res.status(404).json({ error: 'Webhook not found' });
@@ -226,6 +274,10 @@ router.delete('/:id', async (req, res) => {
  *         description: Webhook not found
  */
 router.post('/:id/test', async (req, res) => {
+  if (!ensureValidObjectId(req.params.id)) {
+    return res.status(400).json({ error: 'Invalid webhook id' });
+  }
+
   try {
     const webhook = await Webhook.findOne({ _id: req.params.id, userId: req.user._id });
     if (!webhook) return res.status(404).json({ error: 'Webhook not found' });
@@ -241,9 +293,10 @@ router.post('/:id/test', async (req, res) => {
     };
 
     const headers = { 'Content-Type': 'application/json' };
-    if (webhook.secret) {
+    const secret = webhook.getDecryptedSecret();
+    if (secret) {
       const crypto = await import('crypto');
-      headers['X-Quorum-Signature'] = crypto.createHmac('sha256', webhook.secret)
+      headers['X-Quorum-Signature'] = crypto.createHmac('sha256', secret)
         .update(JSON.stringify(samplePayload)).digest('hex');
     }
 
@@ -278,7 +331,7 @@ router.post('/:id/test', async (req, res) => {
           metadata: { webhookId: webhook._id, message: fetchErr.message },
         })
       );
-      res.json({ success: false, error: fetchErr.message });
+      res.json({ success: false, error: 'Webhook test request failed' });
     }
   } catch (err) {
     logger.error(

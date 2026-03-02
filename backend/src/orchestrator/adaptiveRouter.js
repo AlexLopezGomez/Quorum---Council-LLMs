@@ -1,7 +1,6 @@
 import { scoreRisk } from './riskScorer.js';
 import { runDeterministicChecks } from '../evaluators/deterministicChecks.js';
-import { evaluateFaithfulness } from '../services/judges/openai.js';
-import { evaluateContextRelevancy } from '../services/judges/gemini.js';
+import { evaluateFaithfulness, evaluateContextRelevancy } from '../services/judges/index.js';
 import { evaluateTestCase } from '../services/orchestrator.js';
 import { executeWithProviderResilience } from '../services/providerResilience.js';
 import { logger } from '../utils/logger.js';

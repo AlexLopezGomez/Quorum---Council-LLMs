@@ -13,6 +13,11 @@ function extractBearer(req) {
   return header.slice(7);
 }
 
+function hasAnyScope(serviceKey, requiredScopes) {
+  const scopes = Array.isArray(serviceKey?.scopes) ? serviceKey.scopes : [];
+  return requiredScopes.some((scope) => scopes.includes(scope));
+}
+
 export async function requireServiceAuth(req, res, next) {
   const rawKey = extractBearer(req);
 
@@ -46,4 +51,31 @@ export async function requireServiceAuth(req, res, next) {
     logger.audit('auth.service_key.error', logger.withReq(req, { actor: 'unknown', statusCode: 401, metadata: { message: error.message } }));
     return res.status(401).json({ error: 'Authentication required' });
   }
+}
+
+export function requireServiceScope(scopes) {
+  const requiredScopes = Array.isArray(scopes) ? scopes : [scopes];
+
+  return (req, res, next) => {
+    if (!req.serviceKey) return next();
+
+    if (!hasAnyScope(req.serviceKey, requiredScopes)) {
+      logger.audit(
+        'auth.service_key.scope_denied',
+        logger.withReq(req, {
+          actor: 'service',
+          statusCode: 403,
+          userId: req.user?._id,
+          metadata: {
+            keyPrefix: req.serviceKey.keyPrefix,
+            requiredScopes,
+            grantedScopes: req.serviceKey.scopes || [],
+          },
+        })
+      );
+      return res.status(403).json({ error: 'Insufficient service key scope' });
+    }
+
+    return next();
+  };
 }

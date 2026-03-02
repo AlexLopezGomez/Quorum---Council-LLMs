@@ -1,7 +1,4 @@
-import { evaluateFaithfulness } from './judges/openai.js';
-import { evaluateGroundedness } from './judges/anthropic.js';
-import { evaluateContextRelevancy } from './judges/gemini.js';
-import { aggregateResults } from './aggregator.js';
+import { evaluateFaithfulness, evaluateGroundedness, evaluateContextRelevancy, aggregateResults } from './judges/index.js';
 import { routeTestCase } from '../orchestrator/adaptiveRouter.js';
 import { CostTracker } from './costTracker.js';
 import { fireWebhooks } from './webhookService.js';

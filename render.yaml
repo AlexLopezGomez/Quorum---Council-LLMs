@@ -3,9 +3,11 @@ services:
     name: quorum
     runtime: node
     plan: free
-    buildCommand: cd frontend && npm ci && npm run build && cd ../backend && npm ci
+    buildCommand: cd frontend && npm install && npm run build && cd ../backend && npm install --omit=dev
     startCommand: cd backend && node src/index.js
     envVars:
+      - key: NODE_VERSION
+        value: "20"
       - key: DEMO_MODE
         value: "true"
       - key: NODE_ENV

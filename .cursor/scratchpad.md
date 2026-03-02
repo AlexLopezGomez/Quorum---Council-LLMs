@@ -1,61 +1,42 @@
 # Background and Motivation
 
-User requested starting the first commit from `IMPLEMENTATION_PLAN.md` and to create end-to-end tests for edge cases before committing. The first commit scope is schema contracts and backwards-compatible request/model extensions (`id`, `metadata`) for test cases.
+(Previous: Commit 1/2 schema+threshold, observability audit, WP1.1/1.2 provider resilience — all completed.)
 
-User now requested proceeding with **Commit 2** from `IMPLEMENTATION_PLAN.md`: implement threshold evaluation logic and comprehensive tests, and create the commit. Scratchpad should be updated before implementation.
+**Current task: Render deployment preparation.** User wants to deploy the full app (frontend+backend as single service in DEMO_MODE) to Render, connect custom domain `testquorum.*`, and make the project production-ready for push to GitHub.
 
-User requested implementation of the approved **Plan De Auditoria Y Logging End-To-End**. Scope includes backend structured logging + audit persistence, request correlation propagation, instrumentation across critical routes/services, frontend and SDK correlation propagation, tests, and documentation.
+Architecture decision: Render (not Vercel) is the correct platform because the backend requires a long-running server for SSE streaming, in-memory event state, and background async evaluation processing — none of which work in Vercel's serverless model.
 
 # Key Challenges and Analysis
 
-- Commit 1 touches API validation and persistence shape, so we need contract tests plus route-level edge-case tests to prevent regressions.
-- Existing backend tests are sparse and there is no dedicated e2e folder yet, so we add API-level tests focused on the evaluate endpoint path with mocked orchestration/persistence boundaries.
-- Changes must remain backward compatible for existing payloads without `id` and `metadata`.
+- `package-lock.json` is gitignored → `npm ci` in render.yaml will FAIL. Fix: switch to `npm install`.
+- No `.node-version` or root `engines` field → Render may pick wrong Node version. Fix: add `.node-version` file.
+- Backend is a long-running Express server (SSE, in-memory state) → cannot use Vercel serverless.
+- DEMO_MODE bundles frontend+backend as single service → perfect for Render single-service deploy.
+- Custom domain requires DNS CNAME configuration + Render dashboard setting.
 
 # High-level Task Breakdown
 
-1. Implement Commit 1 schema and model changes.
-   - Success criteria: new files exist and validation/model support `id` and `metadata`.
-2. Add unit tests for new schema contracts and updated validation.
-   - Success criteria: tests cover valid/invalid and defaults for config/result contracts.
-3. Add e2e edge-case tests for `/api/evaluate`.
-   - Success criteria: endpoint accepts/rejects boundary payloads as designed.
-4. Run backend test suite and verify green.
-   - Success criteria: all tests pass locally.
-5. Create first commit.
-   - Success criteria: one commit containing commit-1 scope + e2e tests.
-6. Implement Commit 2 threshold evaluator module.
-   - Success criteria: `backend/src/evaluators/thresholdEvaluator.js` evaluates metric and run verdicts according to configured thresholds and edge-case rules.
-7. Add Commit 2 evaluator unit tests.
-   - Success criteria: `backend/tests/evaluators/thresholdEvaluator.test.js` covers boundary cases, strategy-specific skips, summary/pass-rate behavior, and finalScore.
-8. Run backend tests and create Commit 2.
-   - Success criteria: backend tests pass and commit created with commit-2 scope.
-9. Define observability contract and backend logging foundation.
-   - Success criteria: centralized logger schema, request correlation middleware, and Mongo models for logs/audit with TTL env config.
-10. Instrument critical backend flows with structured events.
-   - Success criteria: auth/evaluate/orchestrator/adaptive/webhooks/results/history/stream/SSE emit consistent events with context.
-11. Propagate correlation ID and contextual logging to frontend and SDK.
-   - Success criteria: API/SSE/ErrorBoundary and SDK transport/collector carry correlation metadata.
-12. Add tests and docs for audit/logging system.
-   - Success criteria: tests validate redaction/correlation/audit behavior and docs include runbook/retention.
+## Render Deployment Prep
+
+1. Fix render.yaml: `npm ci` → `npm install`, add `NODE_VERSION` env var.
+   - Success: render.yaml deploys without lockfile errors on correct Node version.
+2. Add `.node-version` file at repo root.
+   - Success: Render picks up Node 20.
+3. Verify frontend build succeeds.
+   - Success: `npm run build` in frontend/ exits 0. ✅ (already verified)
+4. Update DEMO_DEPLOY.md with custom domain instructions.
+   - Success: Clear steps for DNS + Render domain setup.
+5. Update scratchpad with env var reference and final status.
+   - Success: All env vars documented.
 
 # Project Status Board
 
-- [x] Implement Commit 1 schema/model changes
-- [x] Add unit tests for schema contracts
-- [x] Add e2e edge-case tests for evaluate endpoint
-- [x] Run backend tests and verify pass
-- [x] Create commit
-- [x] Implement Commit 2 threshold evaluator
-- [x] Add Commit 2 evaluator tests
-- [x] Run backend tests and verify pass
-- [x] Create Commit 2
-- [x] Define observability contract and backend foundation
-- [x] Instrument critical backend flows
-- [x] Propagate correlation to frontend + SDK
-- [x] Add tests and documentation for observability
-- [x] WP1.1 Provider concurrency control
-- [x] WP1.2 Retry/backoff + throttling visibility events
+- [x] ~~Commit 1/2, Observability, WP1.1/1.2~~ (completed in previous sessions)
+- [x] Fix render.yaml build command and env vars
+- [x] Add .node-version file
+- [x] Verify frontend build
+- [x] Update DEMO_DEPLOY.md with custom domain steps
+- [x] Final audit and documentation
 
 # Current Status / Progress Tracking
 
@@ -127,9 +108,16 @@ Planning status sync completed:
 - Marked Commit 5 / WP0.1 as completed in commit/phase gates where applicable.
 - Marked WP1.1 and WP1.2 as implemented with validation pending under WP1.3.
 
+Render deployment prep completed:
+- Fixed `render.yaml`: `npm ci` → `npm install` (lockfile is gitignored), added `NODE_VERSION=20`, added `--omit=dev` for backend prod install.
+- Added `.node-version` at repo root (Node 20).
+- Frontend build verified clean (Vite 6, 0 errors, 455 kB JS + 34 kB CSS gzipped).
+- All backend routes audited for DEMO_MODE compatibility (evaluate, stream, results, history, auth — all handle demoStore fallback).
+- Updated `DEMO_DEPLOY.md` with custom domain DNS instructions, Render dashboard steps, and full env var reference for both demo and production modes.
+
 # Executor's Feedback or Assistance Requests
 
-No blockers.
+No blockers. Render deployment is ready to push.
 
 # Lessons
 
@@ -142,3 +130,6 @@ No blockers.
 - Distinguish CI wiring failures from runtime evaluation failures: if config/health pass but report shows `429`, prioritize Phase 1 resilience work over workflow rewrites.
 - Keep Cursor session memory aligned with available MCP servers: `exa`, `context7`, and `playwright`.
 - For provider throttling resilience, centralize retries in a shared wrapper (not per-judge ad hoc logic) so event visibility and retry policy remain consistent across council and adaptive paths.
+- `package-lock.json` is gitignored in this repo — always use `npm install` (not `npm ci`) in deploy scripts.
+- Backend architecture (SSE streaming, in-memory state, background async processing) is incompatible with Vercel serverless. Use a long-running server platform (Render, Railway, Fly.io) instead.
+- Render uses `NODE_VERSION` env var to set the Node.js runtime; always pin it explicitly when no root package.json exists.

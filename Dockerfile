@@ -18,7 +18,6 @@ COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 
 ENV NODE_ENV=production
 ENV PORT=3000
-ENV DEMO_MODE=true
 
 EXPOSE 3000
 

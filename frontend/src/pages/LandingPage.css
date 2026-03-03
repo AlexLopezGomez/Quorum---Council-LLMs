@@ -1,19 +1,21 @@
 /* ─── Landing Page — Warm Palette ───────────────────────────── */
 
-html { scroll-behavior: smooth; }
+html {
+    scroll-behavior: smooth;
+}
 
 /* ─── Tokens ────────────────────────────────────────────────── */
 :root {
-    --bg:            #F5F3EF;
-    --bg-surface:    #FFFFFF;
-    --card-bg:       #FFFFFF;
-    --card-border:   #DDD9D1;
-    --text-primary:  #3b3c36;
-    --text-sec:      #6e6e66;
-    --text-ter:      #9e9d97;
-    --accent:        #d99058;
-    --accent-hover:  #c47d45;
-    --accent-glow:   rgba(217, 144, 88, 0.25);
+    --bg: #F5F3EF;
+    --bg-surface: #FFFFFF;
+    --card-bg: #FFFFFF;
+    --card-border: #DDD9D1;
+    --text-primary: #3b3c36;
+    --text-sec: #6e6e66;
+    --text-ter: #9e9d97;
+    --accent: #d99058;
+    --accent-hover: #c47d45;
+    --accent-glow: rgba(217, 144, 88, 0.25);
 }
 
 /* ─── Root ──────────────────────────────────────────────────── */
@@ -22,6 +24,19 @@ html { scroll-behavior: smooth; }
     background: var(--bg);
     color: var(--text-primary);
     font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Shared section wrapper — replaces Tailwind max-w-6xl mx-auto px-6 */
+.section-container {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+@media (max-width: 767px) {
+    .section-container {
+        padding: 0 1rem;
+    }
 }
 
 /* ─── Announcement Bar ──────────────────────────────────────── */
@@ -52,68 +67,158 @@ html { scroll-behavior: smooth; }
 /* ─── Navigation ────────────────────────────────────────────── */
 .landing-nav {
     position: fixed;
-    top: 36px;
-    left: 0;
-    right: 0;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 48px);
+    max-width: 1100px;
     z-index: 50;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    background: rgba(245, 243, 239, 0.9);
-    border-bottom: 1px solid rgba(221, 217, 209, 0.7);
-    transition: border-color 0.3s, box-shadow 0.3s;
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(245, 243, 239, 0.6);
+    border: 1px solid rgba(221, 217, 209, 0.5);
+    transition: background 0.3s, box-shadow 0.3s, border-color 0.3s;
 }
 
 .landing-nav.scrolled {
-    box-shadow: 0 1px 20px rgba(59, 60, 54, 0.08);
-    border-color: var(--card-border);
+    background: rgba(245, 243, 239, 0.9);
+    box-shadow: 0 4px 24px rgba(59, 60, 54, 0.08);
+    border-color: rgba(221, 217, 209, 0.7);
+}
+
+/* Three-column flex row */
+.nav-inner {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+/* ── Logo — bare, no background container ─────────────────── */
+.nav-logo-area {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
 }
 
 .landing-logo {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
     color: var(--text-primary);
 }
 
 .landing-logo-badge {
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
     padding: 2px 7px;
     border-radius: 999px;
-    background: rgba(217, 144, 88, 0.12);
-    border: 1px solid rgba(217, 144, 88, 0.28);
+    background: rgba(217, 144, 88, 0.1);
+    border: 1px solid rgba(217, 144, 88, 0.25);
     color: var(--accent);
     text-transform: uppercase;
 }
 
+/* ── Center pill island ───────────────────────────────────── */
+.nav-links-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(59, 60, 54, 0.05);
+    border: 1px solid rgba(59, 60, 54, 0.1);
+    backdrop-filter: blur(8px);
+}
+
 .nav-link {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
     color: var(--text-sec);
-    transition: color 0.15s;
     text-decoration: none;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
     display: inline-flex;
     align-items: center;
     position: relative;
+    transition: color 0.15s, background 0.15s;
+    white-space: nowrap;
 }
-.nav-link:hover { color: var(--text-primary); }
 
-/* Active indicator dot below nav link */
+.nav-link:hover {
+    color: var(--text-primary);
+    background: rgba(59, 60, 54, 0.06);
+}
+
+.nav-link.active {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Active dot */
 .nav-active-dot {
     position: absolute;
-    bottom: -6px;
+    bottom: 3px;
     left: 50%;
     transform: translateX(-50%);
-    width: 4px;
-    height: 4px;
+    width: 3px;
+    height: 3px;
     border-radius: 50%;
     background: var(--accent);
     opacity: 0;
     transition: opacity 0.2s;
 }
-.nav-link.active .nav-active-dot { opacity: 1; }
 
-/* Pill CTA button — mirrors reactbits.dev "Star on GitHub" */
+.nav-link.active .nav-active-dot {
+    opacity: 1;
+}
+
+/* ── Split CTA pill (ReactBits style) ────────────────────── */
+.nav-cta-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 2px 14px rgba(217, 144, 88, 0.3);
+    transition: box-shadow 0.2s, transform 0.15s;
+    flex-shrink: 0;
+}
+
+.nav-cta-pill:hover {
+    box-shadow: 0 4px 22px rgba(217, 144, 88, 0.45);
+    transform: translateY(-1px);
+}
+
+.nav-cta-label {
+    padding: 0.45rem 1.1rem;
+    background: linear-gradient(135deg, #d99058, #c47d45);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.nav-cta-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 0.65rem;
+    background: #3b3c36;
+    color: rgba(255, 255, 255, 0.88);
+    line-height: 1;
+}
+
+/* ── Legacy pill (mobile menu only) ─────────────────────── */
 .nav-pill-btn {
     display: inline-flex;
     align-items: center;
@@ -126,38 +231,72 @@ html { scroll-behavior: smooth; }
     border-radius: 999px;
     border: none;
     cursor: pointer;
-    transition: box-shadow 0.2s, transform 0.15s, opacity 0.2s;
+    transition: box-shadow 0.2s, transform 0.15s;
     box-shadow: 0 2px 12px rgba(217, 144, 88, 0.3);
     white-space: nowrap;
 }
+
 .nav-pill-btn:hover {
     box-shadow: 0 4px 20px rgba(217, 144, 88, 0.45);
-    transform: translateY(-1px);
-    opacity: 0.95;
-}
-
-/* Legacy CTA (keep for mobile menu) */
-.landing-cta-btn {
-    padding: 8px 20px;
-    background: var(--accent);
-    color: #fff;
-    font-size: 0.875rem;
-    font-weight: 500;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
-}
-.landing-cta-btn:hover {
-    background: var(--accent-hover);
-    box-shadow: 0 0 24px var(--accent-glow);
     transform: translateY(-1px);
 }
 
 .mobile-menu {
-    border-top: 1px solid var(--card-border);
+    border-top: 1px solid rgba(221, 217, 209, 0.5);
     background: rgba(245, 243, 239, 0.97);
+    backdrop-filter: blur(16px);
+    padding: 1rem 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    border-radius: 0 0 16px 16px;
+    /* match nav pill bottom corners */
 }
+
+/* Mobile nav link — full-width, more tap target */
+.nav-link--mobile {
+    display: block;
+    padding: 0.6rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+}
+
+/* Full-width Join Waitlist button for mobile menu */
+.nav-pill-btn--full {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+/* Responsive visibility */
+.nav-links-pill,
+.nav-cta-wrap {
+    display: flex;
+}
+
+.nav-mobile-btn {
+    display: none;
+}
+
+@media (max-width: 767px) {
+
+    .nav-links-pill,
+    .nav-cta-wrap {
+        display: none;
+    }
+
+    .nav-mobile-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-sec);
+    }
+}
+
 
 /* ─── Hero ──────────────────────────────────────────────────── */
 .hero-section {
@@ -169,14 +308,17 @@ html { scroll-behavior: smooth; }
     justify-content: center;
     overflow: hidden;
     background: var(--bg);
-    padding-top: 36px; /* account for announcement bar */
+    padding-top: 36px;
+    /* account for announcement bar */
 }
 
 .threads-bg {
     position: absolute;
     inset: 0;
-    opacity: 0.12;
+    opacity: 0.45;
+    mix-blend-mode: multiply;
 }
+
 .threads-bg canvas {
     width: 100% !important;
     height: 100% !important;
@@ -217,8 +359,18 @@ html { scroll-behavior: smooth; }
     color: var(--text-primary);
     text-align: center;
 }
-@media (min-width: 768px) { .hero-title { font-size: 4.5rem; } }
-@media (min-width: 1024px) { .hero-title { font-size: 5rem; } }
+
+@media (min-width: 768px) {
+    .hero-title {
+        font-size: 4.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-title {
+        font-size: 5rem;
+    }
+}
 
 .rotating-wrapper {
     display: inline-flex;
@@ -246,16 +398,27 @@ html { scroll-behavior: smooth; }
     flex-direction: column;
     align-items: center;
 }
+
 .scroll-dot {
     width: 4px;
     height: 24px;
     border-radius: 2px;
-    background: linear-gradient(to bottom, rgba(217,144,88,0.8), transparent);
+    background: linear-gradient(to bottom, rgba(217, 144, 88, 0.8), transparent);
     animation: scrollPulse 2s ease-in-out infinite;
 }
+
 @keyframes scrollPulse {
-    0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
-    50% { opacity: 1; transform: scaleY(1); }
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: scaleY(0.6);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
 }
 
 /* ─── Terminal Demo ─────────────────────────────────────────── */
@@ -294,9 +457,18 @@ html { scroll-behavior: smooth; }
     height: 12px;
     border-radius: 50%;
 }
-.terminal-dot-red    { background: #ff5f57; }
-.terminal-dot-yellow { background: #febc2e; }
-.terminal-dot-green  { background: #28c840; }
+
+.terminal-dot-red {
+    background: #ff5f57;
+}
+
+.terminal-dot-yellow {
+    background: #febc2e;
+}
+
+.terminal-dot-green {
+    background: #28c840;
+}
 
 .terminal-title {
     font-size: 0.75rem;
@@ -310,6 +482,8 @@ html { scroll-behavior: smooth; }
     font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
     font-size: 0.8125rem;
     line-height: 1.8;
+    overflow-x: auto;
+    /* let long lines scroll horizontally */
 }
 
 .terminal-line {
@@ -321,6 +495,34 @@ html { scroll-behavior: smooth; }
     color: #d99058;
     animation: none;
     font-weight: 400;
+}
+
+/* ─── Terminal Demo — Mobile ─────────────────────────────────── */
+@media (max-width: 767px) {
+    .terminal-section {
+        padding: 52px 0;
+    }
+
+    .terminal-window {
+        border-radius: 10px;
+    }
+
+    .terminal-titlebar {
+        padding: 10px 12px;
+    }
+
+    .terminal-dot {
+        width: 10px;
+        height: 10px;
+    }
+
+    .terminal-body {
+        padding: 14px 16px 18px;
+        min-height: 200px;
+        font-size: 0.6875rem;
+        /* 11px — fits terminal lines on 375px screen */
+        line-height: 1.7;
+    }
 }
 
 /* ─── How It Works ──────────────────────────────────────────── */
@@ -420,7 +622,10 @@ html { scroll-behavior: smooth; }
     text-align: center;
     transition: border-color 0.3s;
 }
-.pillar-card:hover { border-color: rgba(217, 144, 88, 0.3); }
+
+.pillar-card:hover {
+    border-color: rgba(217, 144, 88, 0.3);
+}
 
 .pillar-icon {
     width: 52px;
@@ -497,6 +702,7 @@ html { scroll-behavior: smooth; }
     transition: opacity 0.2s, box-shadow 0.2s, transform 0.15s;
     box-shadow: 0 4px 20px rgba(217, 144, 88, 0.3);
 }
+
 .cta-waitlist-btn:hover {
     opacity: 0.92;
     box-shadow: 0 8px 32px rgba(217, 144, 88, 0.45);
@@ -522,7 +728,10 @@ html { scroll-behavior: smooth; }
     display: flex;
     align-items: center;
 }
-.footer-icon-link:hover { color: var(--text-sec); }
+
+.footer-icon-link:hover {
+    color: var(--text-sec);
+}
 
 /* ─── Waitlist input (light) ────────────────────────────────── */
 .waitlist-input {
@@ -536,7 +745,11 @@ html { scroll-behavior: smooth; }
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
-.waitlist-input::placeholder { color: var(--text-ter); }
+
+.waitlist-input::placeholder {
+    color: var(--text-ter);
+}
+
 .waitlist-input:focus {
     border-color: rgba(217, 144, 88, 0.5);
     box-shadow: 0 0 0 3px rgba(217, 144, 88, 0.1);
@@ -555,6 +768,7 @@ html { scroll-behavior: smooth; }
     -webkit-backdrop-filter: blur(6px);
     animation: fadeIn 0.2s ease both;
 }
+
 .waitlist-modal-card {
     position: relative;
     background: #fff;
@@ -568,20 +782,63 @@ html { scroll-behavior: smooth; }
     animation: scaleIn 0.2s ease both;
 }
 
-@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-@keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-.animate-scaleIn   { animation: scaleIn 0.2s ease both; }
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-scaleIn {
+    animation: scaleIn 0.2s ease both;
+}
 
 /* ─── Responsive ────────────────────────────────────────────── */
 @media (max-width: 1024px) {
-    .reflective-cards-row { gap: 16px; }
+    .reflective-cards-row {
+        gap: 16px;
+    }
 }
 
 @media (max-width: 768px) {
-    .hero-content { padding-top: 100px; padding-bottom: 60px; }
-    .hero-title { font-size: 2.5rem !important; }
-    .pillars-grid { grid-template-columns: 1fr; }
-    .section-heading { font-size: 1.75rem; }
-    .cta-heading { font-size: 2rem; }
-    .reflective-cards-row { flex-direction: column; align-items: center; }
+    .hero-content {
+        padding-top: 100px;
+        padding-bottom: 60px;
+    }
+
+    .hero-title {
+        font-size: 2.5rem !important;
+    }
+
+    .pillars-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-heading {
+        font-size: 1.75rem;
+    }
+
+    .cta-heading {
+        font-size: 2rem;
+    }
+
+    .reflective-cards-row {
+        flex-direction: column;
+        align-items: center;
+    }
 }

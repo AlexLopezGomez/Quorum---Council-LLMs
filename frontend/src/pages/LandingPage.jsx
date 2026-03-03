@@ -5,13 +5,14 @@ import {
     ArrowUpRight,
 } from 'lucide-react';
 import Threads from '../components/landing/Threads';
+import Prism from '../components/landing/Prism';
 import BlurText from '../components/landing/BlurText';
 import SpotlightCard from '../components/landing/SpotlightCard';
 import WaitlistForm from '../components/landing/WaitlistForm';
 import WaitlistModal from '../components/landing/WaitlistModal';
 import RotatingText from '../components/landing/RotatingText';
 import ReflectiveCard from '../components/landing/ReflectiveCard';
-import ScrollStack, { ScrollStackItem } from '../components/landing/ScrollStack';
+import MagicBento from '../components/landing/MagicBento';
 import TerminalDemo from '../components/landing/TerminalDemo';
 import './LandingPage.css';
 
@@ -21,6 +22,7 @@ const FEATURES = [
         color: '#8B5CF6',
         colorBg: 'rgba(139,92,246,0.08)',
         colorBorder: 'rgba(139,92,246,0.18)',
+        label: 'Multi-Judge',
         title: 'Council of LLMs',
         desc: 'Three AI judges — OpenAI, Anthropic, and Gemini — evaluate independently. Claude Sonnet synthesizes a final verdict. Multi-model consensus eliminates single-model blind spots.',
     },
@@ -29,6 +31,7 @@ const FEATURES = [
         color: '#d99058',
         colorBg: 'rgba(217,144,88,0.08)',
         colorBorder: 'rgba(217,144,88,0.2)',
+        label: 'Smart Router',
         title: 'Adaptive Routing',
         desc: 'Risk-scores each test case and routes to the optimal strategy — saving up to 70% on evaluation costs without sacrificing verdict quality.',
     },
@@ -37,6 +40,7 @@ const FEATURES = [
         color: '#10A37F',
         colorBg: 'rgba(16,163,127,0.08)',
         colorBorder: 'rgba(16,163,127,0.18)',
+        label: 'Analytics',
         title: 'Cost Intelligence',
         desc: 'Real-time cost tracking, per-strategy breakdowns, and savings estimates versus brute-force evaluation. Know exactly what every verdict costs.',
     },
@@ -45,6 +49,7 @@ const FEATURES = [
         color: '#4285F4',
         colorBg: 'rgba(66,133,244,0.08)',
         colorBorder: 'rgba(66,133,244,0.18)',
+        label: 'Real-Time',
         title: 'Live Streaming',
         desc: 'SSE streaming shows every judge decision as it happens. Full transparency into the evaluation process — no black boxes.',
     },
@@ -53,6 +58,7 @@ const FEATURES = [
         color: '#F59E0B',
         colorBg: 'rgba(245,158,11,0.08)',
         colorBorder: 'rgba(245,158,11,0.18)',
+        label: 'DevOps',
         title: 'CI/CD Integration',
         desc: 'Trigger evaluations from your pipeline. Get pass/fail verdicts with detailed breakdowns on every deployment.',
     },
@@ -61,6 +67,7 @@ const FEATURES = [
         color: '#EC4899',
         colorBg: 'rgba(236,72,153,0.08)',
         colorBorder: 'rgba(236,72,153,0.18)',
+        label: 'Batch Testing',
         title: 'Structured Test Cases',
         desc: 'Upload JSON test suites with question, context, and answer triples. Batch-evaluate hundreds of cases in one run.',
     },
@@ -100,8 +107,8 @@ export default function LandingPage() {
     }, []);
 
     useEffect(() => {
-        const sections = ['features', 'how-it-works'];
-        const observers = sections.map(id => {
+        const ids = ['demo', 'features', 'how-it-works'];
+        const observers = ids.map(id => {
             const el = document.getElementById(id);
             if (!el) return null;
             const obs = new IntersectionObserver(
@@ -117,62 +124,50 @@ export default function LandingPage() {
     return (
         <div className="landing-root">
 
-            {/* ─── Announcement Bar ──────────────────────────────── */}
-            <div className="nav-announcement">
-                Open Source
-                <span>·</span>
-                MIT Licensed
-                <span>·</span>
-                RAG Evaluation Platform
-            </div>
 
             {/* ─── Navigation ────────────────────────────────────── */}
             <nav className={`landing-nav ${scrolled ? 'scrolled' : ''}`}>
-                <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                <div className="nav-inner">
+
+                    {/* Logo — clicks scroll to top */}
+                    <button
+                        className="nav-logo-area"
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                    >
                         <span className="landing-logo">Quorum</span>
                         <span className="landing-logo-badge">Beta</span>
-                    </div>
+                    </button>
 
-                    <div className="hidden md:flex items-center gap-8">
-                        <a
-                            href="#features"
-                            className={`nav-link ${activeSection === 'features' ? 'active' : ''}`}
-                        >
-                            Features
+                    {/* Center pill island */}
+                    <div className="nav-links-pill">
+                        <a href="#demo" className={`nav-link ${activeSection === 'demo' ? 'active' : ''}`}>
+                            Demo
                             <span className="nav-active-dot" />
                         </a>
-                        <a
-                            href="#how-it-works"
-                            className={`nav-link ${activeSection === 'how-it-works' ? 'active' : ''}`}
-                        >
+                        <a href="#how-it-works" className={`nav-link ${activeSection === 'how-it-works' ? 'active' : ''}`}>
                             How it works
                             <span className="nav-active-dot" />
                         </a>
-                        <a
-                            href="https://github.com/alexlpz/quorum"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="nav-link"
-                            aria-label="GitHub"
-                        >
-                            <GitHubIcon size={18} />
+                        <a href="#features" className={`nav-link ${activeSection === 'features' ? 'active' : ''}`}>
+                            Features
+                            <span className="nav-active-dot" />
                         </a>
                     </div>
 
-                    <div className="hidden md:flex items-center">
-                        <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="nav-pill-btn"
-                        >
-                            <ArrowUpRight size={14} />
-                            Join Waitlist
+                    {/* CTA — split pill */}
+                    <div className="nav-cta-wrap">
+                        <button onClick={() => setIsModalOpen(true)} className="nav-cta-pill">
+                            <span className="nav-cta-label">Join Waitlist</span>
+                            <span className="nav-cta-badge">
+                                <ArrowUpRight size={13} />
+                            </span>
                         </button>
                     </div>
 
+                    {/* Mobile hamburger */}
                     <button
-                        className="md:hidden p-2"
-                        style={{ color: 'var(--text-sec)' }}
+                        className="nav-mobile-btn"
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                     >
                         {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -180,12 +175,13 @@ export default function LandingPage() {
                 </div>
 
                 {mobileMenuOpen && (
-                    <div className="md:hidden mobile-menu px-6 py-4 space-y-3">
-                        <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block text-sm nav-link py-1">Features</a>
-                        <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block text-sm nav-link py-1">How it works</a>
+                    <div className="mobile-menu">
+                        <a href="#demo" onClick={() => setMobileMenuOpen(false)} className="nav-link nav-link--mobile">Demo</a>
+                        <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="nav-link nav-link--mobile">How it works</a>
+                        <a href="#features" onClick={() => setMobileMenuOpen(false)} className="nav-link nav-link--mobile">Features</a>
                         <button
                             onClick={() => { setMobileMenuOpen(false); setIsModalOpen(true); }}
-                            className="block w-full mt-2 nav-pill-btn text-center justify-center"
+                            className="nav-pill-btn nav-pill-btn--full"
                         >
                             <ArrowUpRight size={14} />
                             Join Waitlist
@@ -197,11 +193,18 @@ export default function LandingPage() {
             {/* ─── Hero ──────────────────────────────────────────── */}
             <section id="waitlist" className="hero-section">
                 <div className="threads-bg">
-                    <Threads
-                        color={[0.85, 0.57, 0.35]}
-                        amplitude={1.4}
-                        distance={0.3}
-                        enableMouseInteraction
+                    {/* Prism WebGL background — hueShift ≈ -0.5 rad pulls spectrum toward warm amber/copper */}
+                    <Prism
+                        animationType="rotate"
+                        hueShift={-0.4}
+                        colorFrequency={0.55}
+                        glow={1.8}
+                        bloom={1.4}
+                        noise={0.06}
+                        scale={4.0}
+                        transparent={false}
+                        timeScale={0.25}
+                        suspendWhenOffscreen={true}
                     />
                 </div>
                 <div className="hero-radial" />
@@ -218,7 +221,7 @@ export default function LandingPage() {
                                 texts={[
                                     'evaluate your RAG',
                                     'score faithfulness',
-                                    'reduce costs 70%',
+                                    'reduce costs',
                                     'trust your AI outputs',
                                 ]}
                                 rotationInterval={2500}
@@ -248,12 +251,17 @@ export default function LandingPage() {
             </section>
 
             {/* ─── Terminal Demo ─────────────────────────────────── */}
-            <section className="terminal-section">
-                <div className="max-w-6xl mx-auto px-6">
+            <section id="demo" className="terminal-section">
+                <div className="section-container">
                     <SectionLabel>Live Demo</SectionLabel>
-                    <h2 className="section-heading mt-3 mb-12">
-                        Watch evaluations stream in real time
-                    </h2>
+                    <BlurText
+                        text="Watch evaluations stream in real time"
+                        animateBy="words"
+                        direction="bottom"
+                        delay={80}
+                        threshold={0.8}
+                        className="section-heading mt-3 mb-12 justify-center"
+                    />
                     <TerminalDemo />
                 </div>
             </section>
@@ -265,7 +273,7 @@ export default function LandingPage() {
                     <h2 className="section-heading mt-3">Three steps to reliable evaluation</h2>
 
                     <div className="reflective-cards-row">
-                        {HOW_IT_WORKS.map(step => (
+                        {HOW_IT_WORKS.map((step, i) => (
                             <ReflectiveCard key={step.number}>
                                 <span className="reflective-step-number">{step.number}</span>
                                 <div className="reflective-icon">{step.icon}</div>
@@ -277,45 +285,37 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* ─── Features (ScrollStack) ────────────────────────── */}
+            {/* ─── Features (MagicBento) ─────────────────────────── */}
             <section id="features" className="features-section">
-                <div className="max-w-4xl mx-auto px-6">
+                <div className="max-w-4xl mx-auto px-6 text-center mb-10">
                     <SectionLabel>Features</SectionLabel>
-                    <h2 className="section-heading mt-3 mb-4">Built for teams shipping RAG to production</h2>
+                    <h2 className="section-heading mt-3">Built for teams shipping RAG to production</h2>
                 </div>
 
-                <ScrollStack
-                    useWindowScroll={true}
-                    itemDistance={80}
-                    baseScale={0.88}
-                    itemStackDistance={25}
-                    stackPosition="15%"
-                    className="max-w-3xl mx-auto px-6"
-                >
-                    {FEATURES.map(f => (
-                        <ScrollStackItem
-                            key={f.title}
-                            itemClassName="scroll-stack-feature-card"
-                        >
-                            <div className="feature-card-inner">
-                                <div
-                                    className="feature-icon-wrap"
-                                    style={{
-                                        background: f.colorBg,
-                                        borderColor: f.colorBorder,
-                                        color: f.color,
-                                    }}
-                                >
-                                    {f.icon}
-                                </div>
-                                <div>
-                                    <div className="feature-title">{f.title}</div>
-                                    <div className="feature-desc">{f.desc}</div>
-                                </div>
-                            </div>
-                        </ScrollStackItem>
-                    ))}
-                </ScrollStack>
+                <div className="max-w-5xl mx-auto px-6">
+                    <MagicBento
+                        cardData={FEATURES.map(f => ({
+                            title: f.title,
+                            description: f.desc,
+                            label: f.label,
+                            icon: f.icon,
+                            accentColor: f.color,
+                            colorBg: f.colorBg,
+                            colorBorder: f.colorBorder,
+                            color: 'var(--card-bg)',
+                        }))}
+                        textAutoHide
+                        enableStars
+                        enableSpotlight
+                        enableBorderGlow
+                        enableTilt={false}
+                        enableMagnetism={false}
+                        clickEffect
+                        spotlightRadius={400}
+                        particleCount={10}
+                        glowColor="217, 144, 88"
+                    />
+                </div>
             </section>
 
             {/* ─── Why Quorum ────────────────────────────────────── */}

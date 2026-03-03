@@ -1,30 +1,97 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
 import {
-    Brain,
-    BarChart3,
-    Zap,
-    ArrowRight,
-    CheckCircle2,
-    Upload,
-    Eye,
-    TrendingDown,
-    Menu,
-    X,
+    Brain, BarChart3, Zap, Menu, X, Upload, Users, TrendingDown,
+    Shield, DollarSign, Activity, GitBranch, FileJson, ArrowRight,
+    ArrowUpRight,
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import Threads from '../components/landing/Threads';
+import BlurText from '../components/landing/BlurText';
+import SpotlightCard from '../components/landing/SpotlightCard';
+import WaitlistForm from '../components/landing/WaitlistForm';
+import WaitlistModal from '../components/landing/WaitlistModal';
+import RotatingText from '../components/landing/RotatingText';
+import ReflectiveCard from '../components/landing/ReflectiveCard';
+import ScrollStack, { ScrollStackItem } from '../components/landing/ScrollStack';
+import TerminalDemo from '../components/landing/TerminalDemo';
 import './LandingPage.css';
 
-/* ═══════════════════════════════════════════════════════════════
-   Quorum — B2B SaaS Landing Page
-   Design: DESIGN_SYSTEM.md palette (light) + dark auth section
-   ═══════════════════════════════════════════════════════════════ */
+const FEATURES = [
+    {
+        icon: <Brain size={22} />,
+        color: '#8B5CF6',
+        colorBg: 'rgba(139,92,246,0.08)',
+        colorBorder: 'rgba(139,92,246,0.18)',
+        title: 'Council of LLMs',
+        desc: 'Three AI judges — OpenAI, Anthropic, and Gemini — evaluate independently. Claude Sonnet synthesizes a final verdict. Multi-model consensus eliminates single-model blind spots.',
+    },
+    {
+        icon: <Zap size={22} />,
+        color: '#d99058',
+        colorBg: 'rgba(217,144,88,0.08)',
+        colorBorder: 'rgba(217,144,88,0.2)',
+        title: 'Adaptive Routing',
+        desc: 'Risk-scores each test case and routes to the optimal strategy — saving up to 70% on evaluation costs without sacrificing verdict quality.',
+    },
+    {
+        icon: <BarChart3 size={22} />,
+        color: '#10A37F',
+        colorBg: 'rgba(16,163,127,0.08)',
+        colorBorder: 'rgba(16,163,127,0.18)',
+        title: 'Cost Intelligence',
+        desc: 'Real-time cost tracking, per-strategy breakdowns, and savings estimates versus brute-force evaluation. Know exactly what every verdict costs.',
+    },
+    {
+        icon: <Activity size={22} />,
+        color: '#4285F4',
+        colorBg: 'rgba(66,133,244,0.08)',
+        colorBorder: 'rgba(66,133,244,0.18)',
+        title: 'Live Streaming',
+        desc: 'SSE streaming shows every judge decision as it happens. Full transparency into the evaluation process — no black boxes.',
+    },
+    {
+        icon: <GitBranch size={22} />,
+        color: '#F59E0B',
+        colorBg: 'rgba(245,158,11,0.08)',
+        colorBorder: 'rgba(245,158,11,0.18)',
+        title: 'CI/CD Integration',
+        desc: 'Trigger evaluations from your pipeline. Get pass/fail verdicts with detailed breakdowns on every deployment.',
+    },
+    {
+        icon: <FileJson size={22} />,
+        color: '#EC4899',
+        colorBg: 'rgba(236,72,153,0.08)',
+        colorBorder: 'rgba(236,72,153,0.18)',
+        title: 'Structured Test Cases',
+        desc: 'Upload JSON test suites with question, context, and answer triples. Batch-evaluate hundreds of cases in one run.',
+    },
+];
+
+const HOW_IT_WORKS = [
+    {
+        number: '01',
+        icon: <Upload size={20} />,
+        title: 'Upload test cases',
+        desc: 'Provide your RAG outputs as JSON — question, context, and answer triples. Batch hundreds of cases in a single run.',
+    },
+    {
+        number: '02',
+        icon: <Users size={20} />,
+        title: 'Council evaluates',
+        desc: 'Multiple AI judges score each case independently. The adaptive router selects the optimal strategy per test case.',
+    },
+    {
+        number: '03',
+        icon: <TrendingDown size={20} />,
+        title: 'Get verdicts & savings',
+        desc: 'Aggregated verdicts with per-judge breakdowns, cost analytics, and savings vs. brute-force evaluation.',
+    },
+];
 
 export default function LandingPage() {
-    const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState('');
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 10);
@@ -32,461 +99,335 @@ export default function LandingPage() {
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
+    useEffect(() => {
+        const sections = ['features', 'how-it-works'];
+        const observers = sections.map(id => {
+            const el = document.getElementById(id);
+            if (!el) return null;
+            const obs = new IntersectionObserver(
+                ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
+                { rootMargin: '-40% 0px -55% 0px' }
+            );
+            obs.observe(el);
+            return obs;
+        });
+        return () => observers.forEach(obs => obs?.disconnect());
+    }, []);
+
     return (
-        <div className="min-h-screen bg-surface-secondary" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+        <div className="landing-root">
 
-            {/* ─── Navigation ─────────────────────────────────────── */}
+            {/* ─── Announcement Bar ──────────────────────────────── */}
+            <div className="nav-announcement">
+                Open Source
+                <span>·</span>
+                MIT Licensed
+                <span>·</span>
+                RAG Evaluation Platform
+            </div>
+
+            {/* ─── Navigation ────────────────────────────────────── */}
             <nav className={`landing-nav ${scrolled ? 'scrolled' : ''}`}>
-                <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <span className="text-lg font-semibold text-text-primary tracking-tight">Quorum</span>
+                <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <span className="landing-logo">Quorum</span>
+                        <span className="landing-logo-badge">Beta</span>
+                    </div>
 
-                    {/* Desktop nav */}
                     <div className="hidden md:flex items-center gap-8">
-                        <a href="#features" className="text-sm text-text-secondary hover:text-text-primary transition-colors">Features</a>
-                        <a href="#how-it-works" className="text-sm text-text-secondary hover:text-text-primary transition-colors">How it works</a>
-                        <a href="#pricing" className="text-sm text-text-secondary hover:text-text-primary transition-colors">Pricing</a>
+                        <a
+                            href="#features"
+                            className={`nav-link ${activeSection === 'features' ? 'active' : ''}`}
+                        >
+                            Features
+                            <span className="nav-active-dot" />
+                        </a>
+                        <a
+                            href="#how-it-works"
+                            className={`nav-link ${activeSection === 'how-it-works' ? 'active' : ''}`}
+                        >
+                            How it works
+                            <span className="nav-active-dot" />
+                        </a>
+                        <a
+                            href="https://github.com/alexlpz/quorum"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="nav-link"
+                            aria-label="GitHub"
+                        >
+                            <GitHubIcon size={18} />
+                        </a>
                     </div>
 
-                    <div className="hidden md:flex items-center gap-3">
-                        {isAuthenticated ? (
-                            <button
-                                onClick={() => navigate('/app')}
-                                className="px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors"
-                            >
-                                Go to Dashboard
-                            </button>
-                        ) : (
-                            <>
-                                <button
-                                    onClick={() => navigate('/auth')}
-                                    className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"
-                                >
-                                    Sign in
-                                </button>
-                                <button
-                                    onClick={() => navigate('/auth')}
-                                    className="px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors"
-                                >
-                                    Get Started
-                                </button>
-                            </>
-                        )}
+                    <div className="hidden md:flex items-center">
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="nav-pill-btn"
+                        >
+                            <ArrowUpRight size={14} />
+                            Join Waitlist
+                        </button>
                     </div>
 
-                    {/* Mobile menu toggle */}
                     <button
-                        className="md:hidden p-2 text-text-secondary"
+                        className="md:hidden p-2"
+                        style={{ color: 'var(--text-sec)' }}
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                     >
                         {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                     </button>
                 </div>
 
-                {/* Mobile menu */}
                 {mobileMenuOpen && (
-                    <div className="md:hidden border-t border-surface-border bg-surface px-6 py-4 space-y-3">
-                        <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-text-secondary py-1">Features</a>
-                        <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-text-secondary py-1">How it works</a>
-                        <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block text-sm text-text-secondary py-1">Pricing</a>
+                    <div className="md:hidden mobile-menu px-6 py-4 space-y-3">
+                        <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block text-sm nav-link py-1">Features</a>
+                        <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block text-sm nav-link py-1">How it works</a>
                         <button
-                            onClick={() => navigate(isAuthenticated ? '/app' : '/auth')}
-                            className="w-full mt-2 px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors"
+                            onClick={() => { setMobileMenuOpen(false); setIsModalOpen(true); }}
+                            className="block w-full mt-2 nav-pill-btn text-center justify-center"
                         >
-                            {isAuthenticated ? 'Go to Dashboard' : 'Get Started'}
+                            <ArrowUpRight size={14} />
+                            Join Waitlist
                         </button>
                     </div>
                 )}
             </nav>
 
-            {/* ─── Hero Section ───────────────────────────────────── */}
-            <section className="hero-section">
-                <div className="max-w-6xl mx-auto px-6 text-center">
-                    <div className="hero-badge">
-                        <span className="dot" />
-                        Now with Adaptive Routing
+            {/* ─── Hero ──────────────────────────────────────────── */}
+            <section id="waitlist" className="hero-section">
+                <div className="threads-bg">
+                    <Threads
+                        color={[0.85, 0.57, 0.35]}
+                        amplitude={1.4}
+                        distance={0.3}
+                        enableMouseInteraction
+                    />
+                </div>
+                <div className="hero-radial" />
+
+                <div className="hero-content max-w-5xl mx-auto px-6 text-center relative z-10">
+                    <div className="hero-badge mb-8">
+                        Open Source · RAG Evaluation Platform
                     </div>
 
-                    <h1 className="text-4xl md:text-5xl font-bold text-text-primary tracking-tight leading-tight max-w-3xl mx-auto">
-                        Evaluate your RAG pipeline with a&nbsp;
-                        <span style={{ color: '#10B981' }}>Council of LLMs</span>
+                    <h1 className="hero-title mb-4">
+                        The open-source way to{' '}
+                        <span className="rotating-wrapper">
+                            <RotatingText
+                                texts={[
+                                    'evaluate your RAG',
+                                    'score faithfulness',
+                                    'reduce costs 70%',
+                                    'trust your AI outputs',
+                                ]}
+                                rotationInterval={2500}
+                                splitBy="words"
+                                staggerDuration={0.04}
+                            />
+                        </span>
                     </h1>
 
-                    <p className="text-lg text-text-secondary mt-5 max-w-2xl mx-auto leading-relaxed">
-                        Quorum orchestrates multiple AI judges to score faithfulness, groundedness, and relevance — then adaptively routes each test case to minimize cost without sacrificing accuracy.
+                    <p className="hero-sub mt-6">
+                        Orchestrate multiple AI judges to score faithfulness, groundedness, and relevance —
+                        then adaptively route each test case to cut evaluation costs by up to 70%.
                     </p>
 
-                    <div className="flex items-center justify-center gap-4 mt-8">
-                        <button
-                            onClick={() => navigate('/auth')}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors"
+                    <div className="mt-10">
+                        <WaitlistForm />
+                    </div>
+
+                    <p className="mt-5 text-xs" style={{ color: 'var(--text-ter)' }}>
+                        No credit card required · Deploy in minutes · MIT licensed
+                    </p>
+                </div>
+
+                <div className="hero-scroll-hint">
+                    <div className="scroll-dot" />
+                </div>
+            </section>
+
+            {/* ─── Terminal Demo ─────────────────────────────────── */}
+            <section className="terminal-section">
+                <div className="max-w-6xl mx-auto px-6">
+                    <SectionLabel>Live Demo</SectionLabel>
+                    <h2 className="section-heading mt-3 mb-12">
+                        Watch evaluations stream in real time
+                    </h2>
+                    <TerminalDemo />
+                </div>
+            </section>
+
+            {/* ─── How It Works ──────────────────────────────────── */}
+            <section id="how-it-works" className="steps-section">
+                <div className="max-w-6xl mx-auto px-6">
+                    <SectionLabel>How It Works</SectionLabel>
+                    <h2 className="section-heading mt-3">Three steps to reliable evaluation</h2>
+
+                    <div className="reflective-cards-row">
+                        {HOW_IT_WORKS.map(step => (
+                            <ReflectiveCard key={step.number}>
+                                <span className="reflective-step-number">{step.number}</span>
+                                <div className="reflective-icon">{step.icon}</div>
+                                <div className="reflective-title">{step.title}</div>
+                                <div className="reflective-desc">{step.desc}</div>
+                            </ReflectiveCard>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ─── Features (ScrollStack) ────────────────────────── */}
+            <section id="features" className="features-section">
+                <div className="max-w-4xl mx-auto px-6">
+                    <SectionLabel>Features</SectionLabel>
+                    <h2 className="section-heading mt-3 mb-4">Built for teams shipping RAG to production</h2>
+                </div>
+
+                <ScrollStack
+                    useWindowScroll={true}
+                    itemDistance={80}
+                    baseScale={0.88}
+                    itemStackDistance={25}
+                    stackPosition="15%"
+                    className="max-w-3xl mx-auto px-6"
+                >
+                    {FEATURES.map(f => (
+                        <ScrollStackItem
+                            key={f.title}
+                            itemClassName="scroll-stack-feature-card"
                         >
-                            Get Started Free
-                            <ArrowRight size={16} />
-                        </button>
-                        <a
-                            href="#how-it-works"
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-surface text-text-primary text-sm font-medium rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors"
+                            <div className="feature-card-inner">
+                                <div
+                                    className="feature-icon-wrap"
+                                    style={{
+                                        background: f.colorBg,
+                                        borderColor: f.colorBorder,
+                                        color: f.color,
+                                    }}
+                                >
+                                    {f.icon}
+                                </div>
+                                <div>
+                                    <div className="feature-title">{f.title}</div>
+                                    <div className="feature-desc">{f.desc}</div>
+                                </div>
+                            </div>
+                        </ScrollStackItem>
+                    ))}
+                </ScrollStack>
+            </section>
+
+            {/* ─── Why Quorum ────────────────────────────────────── */}
+            <section className="pillars-section">
+                <div className="max-w-6xl mx-auto px-6">
+                    <SectionLabel>Why Quorum</SectionLabel>
+                    <h2 className="section-heading mt-3">The foundation for trustworthy evaluation</h2>
+
+                    <div className="pillars-grid mt-14">
+                        <SpotlightCard
+                            className="pillar-card"
+                            spotlightColor="rgba(217, 144, 88, 0.1)"
                         >
-                            See How it Works
-                        </a>
-                    </div>
-
-                    {/* Dashboard Preview */}
-                    <div className="dashboard-preview mt-16">
-                        <div className="dashboard-preview-bar">
-                            <div className="dot red" />
-                            <div className="dot yellow" />
-                            <div className="dot green" />
-                            <span className="ml-4 text-xs text-text-tertiary">Quorum — Evaluation Dashboard</span>
-                        </div>
-                        <div className="dashboard-preview-content">
-                            <DashboardMockup />
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ─── Features Section ───────────────────────────────── */}
-            <section id="features" className="py-20 bg-surface">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="text-center mb-14">
-                        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide mb-3">Core Capabilities</p>
-                        <h2 className="text-3xl font-semibold text-text-primary tracking-tight">Everything you need to evaluate RAG outputs</h2>
-                        <p className="text-text-secondary mt-3 max-w-xl mx-auto text-sm">
-                            Three powerful capabilities working together to give you confident, cost-efficient evaluation at scale.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <FeatureCard
-                            icon={<Brain size={22} />}
-                            color="green"
-                            title="Council of LLMs"
-                            description="Three AI judges (OpenAI, Anthropic, Gemini) evaluate independently, then Claude synthesizes a final verdict. Eliminates single-model bias."
-                        />
-                        <FeatureCard
-                            icon={<Zap size={22} />}
-                            color="purple"
-                            title="Adaptive Routing"
-                            description="Each test case is risk-scored and routed to the optimal strategy — council, hybrid, or single judge — saving up to 70% on evaluation costs."
-                        />
-                        <FeatureCard
-                            icon={<BarChart3 size={22} />}
-                            color="amber"
-                            title="Cost Intelligence"
-                            description="Real-time cost tracking, per-strategy breakdowns, and savings estimates versus brute-force evaluation. Know exactly what you spend."
-                        />
+                            <div className="pillar-icon"><Shield size={22} /></div>
+                            <h3 className="pillar-title mt-5">Reliability</h3>
+                            <p className="pillar-desc mt-2">Multi-judge consensus reduces hallucination risk. No single model decides your evaluation outcome.</p>
+                        </SpotlightCard>
+                        <SpotlightCard
+                            className="pillar-card"
+                            spotlightColor="rgba(217, 144, 88, 0.1)"
+                        >
+                            <div className="pillar-icon"><DollarSign size={22} /></div>
+                            <h3 className="pillar-title mt-5">Cost Efficiency</h3>
+                            <p className="pillar-desc mt-2">Adaptive routing sends simple cases to lightweight judges, reserving the full council for high-risk evaluations.</p>
+                        </SpotlightCard>
+                        <SpotlightCard
+                            className="pillar-card"
+                            spotlightColor="rgba(217, 144, 88, 0.1)"
+                        >
+                            <div className="pillar-icon"><Activity size={22} /></div>
+                            <h3 className="pillar-title mt-5">Observability</h3>
+                            <p className="pillar-desc mt-2">SSE live streaming shows every judge decision as it happens. Full transparency into the evaluation process.</p>
+                        </SpotlightCard>
                     </div>
                 </div>
             </section>
 
-            {/* ─── How It Works ───────────────────────────────────── */}
-            <section id="how-it-works" className="py-20 bg-surface-secondary">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="text-center mb-14">
-                        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide mb-3">Workflow</p>
-                        <h2 className="text-3xl font-semibold text-text-primary tracking-tight">Three steps to confident RAG evaluation</h2>
-                    </div>
-
-                    <div className="max-w-2xl mx-auto space-y-0">
-                        <StepItem
-                            number="1"
-                            icon={<Upload size={20} />}
-                            title="Upload test cases"
-                            description="Submit your RAG outputs with questions, contexts, and expected answers as JSON. Each case is analyzed for risk level."
-                            showConnector
-                        />
-                        <StepItem
-                            number="2"
-                            icon={<Eye size={20} />}
-                            title="Watch the council evaluate"
-                            description="Stream live SSE events as judges score each test case. See risk assessments, strategy selections, and individual judge reasoning in real-time."
-                            showConnector
-                        />
-                        <StepItem
-                            number="3"
-                            icon={<TrendingDown size={20} />}
-                            title="Review results & cost savings"
-                            description="Get aggregated verdicts (PASS / WARN / FAIL), cost breakdowns by strategy, and savings estimates versus running every case through the full council."
-                        />
-                    </div>
-                </div>
-            </section>
-
-            {/* ─── Stats Section ──────────────────────────────────── */}
-            <section className="stats-section">
-                <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-0 divide-x divide-gray-700">
-                    <StatItem value="10,000" accent="+" label="Evaluations run" />
-                    <StatItem value="67" accent="%" label="Average cost saved" />
-                    <StatItem value="3" label="AI judge providers" />
-                    <StatItem value="17" label="Real-time SSE events" />
-                </div>
-            </section>
-
-            {/* ─── Pricing Section ────────────────────────────────── */}
-            <section id="pricing" className="py-20 bg-surface-secondary">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="text-center mb-14">
-                        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide mb-3">Pricing</p>
-                        <h2 className="text-3xl font-semibold text-text-primary tracking-tight">Simple, transparent pricing</h2>
-                        <p className="text-text-secondary mt-3 text-sm">Start free. Scale as you grow. Pay only for what you use.</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                        <PricingCard
-                            tier="Starter"
-                            price="Free"
-                            period=""
-                            description="For individuals exploring RAG evaluation"
-                            features={[
-                                '100 evaluations / month',
-                                'Single judge strategy',
-                                'Basic cost tracking',
-                                'JSON upload',
-                                'Community support',
-                            ]}
-                            cta="Get Started"
-                            onCta={() => navigate('/auth')}
-                        />
-                        <PricingCard
-                            tier="Pro"
-                            price="$49"
-                            period="/mo"
-                            description="For teams shipping production RAG systems"
-                            features={[
-                                'Unlimited evaluations',
-                                'All strategies (council, hybrid, single)',
-                                'Adaptive routing',
-                                'Webhook integrations',
-                                'Cost analytics & savings reports',
-                                'Priority support',
-                            ]}
-                            cta="Start Free Trial"
-                            featured
-                            onCta={() => navigate('/auth')}
-                        />
-                        <PricingCard
-                            tier="Enterprise"
-                            price="Custom"
-                            period=""
-                            description="For organizations with compliance needs"
-                            features={[
-                                'Everything in Pro',
-                                'Custom judge models',
-                                'SSO & RBAC',
-                                'Dedicated infrastructure',
-                                'SLA guarantees',
-                                '24/7 support',
-                            ]}
-                            cta="Contact Sales"
-                            onCta={() => navigate('/auth')}
-                        />
-                    </div>
-                </div>
-            </section>
-
-            {/* ─── CTA Section ──────────────────────────────────── */}
-            <section className="py-20 bg-surface">
-                <div className="max-w-3xl mx-auto px-6 text-center">
-                    <h2 className="text-3xl font-semibold text-text-primary tracking-tight">Ready to evaluate your RAG pipeline?</h2>
-                    <p className="text-text-secondary mt-3 text-sm">Create your free account and start running evaluations in under a minute.</p>
+            {/* ─── CTA ───────────────────────────────────────────── */}
+            <section className="cta-section">
+                <div className="cta-glow" />
+                <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
+                    <h2 className="cta-heading">
+                        Start evaluating your RAG pipeline today
+                    </h2>
+                    <p className="cta-sub mt-4">
+                        Join the waitlist and be among the first to ship reliable, cost-efficient RAG evaluations.
+                    </p>
                     <button
-                        onClick={() => navigate('/auth')}
-                        className="inline-flex items-center gap-2 mt-8 px-8 py-3 bg-accent text-white text-sm font-semibold rounded-lg hover:bg-accent-hover transition-colors"
+                        onClick={() => setIsModalOpen(true)}
+                        className="cta-waitlist-btn mt-10"
                     >
-                        Get Started Free
-                        <ArrowRight size={16} />
+                        Join Waitlist <ArrowRight size={16} className="inline ml-1.5" />
                     </button>
                 </div>
             </section>
 
-            {/* ─── Footer ─────────────────────────────────────────── */}
-            <LandingFooter />
-        </div>
-    );
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   Footer
-   ═══════════════════════════════════════════════════════════════ */
-
-const FOOTER_LINK_CLASS = 'text-text-tertiary hover:text-text-secondary transition-colors cursor-pointer text-sm';
-
-function LandingFooter() {
-    return (
-        <footer className="landing-footer">
-            <div className="max-w-6xl mx-auto px-6">
-                <div className="footer-grid">
-                    <div>
-                        <span className="text-lg font-semibold text-text-primary">Quorum</span>
-                        <p className="text-sm text-text-secondary mt-3 leading-relaxed max-w-xs">
-                            The intelligent RAG evaluation platform powered by a council of AI judges and adaptive cost routing.
-                        </p>
-                    </div>
-
-                    <div className="footer-section">
-                        <h4>Product</h4>
-                        <a href="#features">Features</a>
-                        <a href="#pricing">Pricing</a>
-                        <a href="#how-it-works">How it works</a>
-                        <a href="/auth">Get started</a>
-                    </div>
-
-                    <div className="footer-section">
-                        <h4>Resources</h4>
-                        <span className={FOOTER_LINK_CLASS}>Documentation</span>
-                        <span className={FOOTER_LINK_CLASS}>API Reference</span>
-                        <span className={FOOTER_LINK_CLASS}>SDK</span>
-                        <span className={FOOTER_LINK_CLASS}>Changelog</span>
-                    </div>
-
-                    <div className="footer-section">
-                        <h4>Company</h4>
-                        <span className={FOOTER_LINK_CLASS}>About</span>
-                        <span className={FOOTER_LINK_CLASS}>Blog</span>
-                        <span className={FOOTER_LINK_CLASS}>Careers</span>
-                        <span className={FOOTER_LINK_CLASS}>Contact</span>
-                    </div>
-                </div>
-
-                <div className="footer-bottom">
-                    <span>&copy; 2026 Quorum. All rights reserved.</span>
-                    <div className="flex items-center gap-6">
-                        <span className={FOOTER_LINK_CLASS}>Privacy</span>
-                        <span className={FOOTER_LINK_CLASS}>Terms</span>
-                    </div>
-                </div>
-            </div>
-        </footer>
-    );
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   Sub-components (co-located for simplicity)
-   ═══════════════════════════════════════════════════════════════ */
-
-function FeatureCard({ icon, color, title, description }) {
-    return (
-        <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-6 hover:border-surface-border-strong transition-colors">
-            <div className={`feature-icon-wrapper ${color}`}>
-                {icon}
-            </div>
-            <h3 className="text-sm font-semibold text-text-primary mb-2">{title}</h3>
-            <p className="text-sm text-text-secondary leading-relaxed">{description}</p>
-        </div>
-    );
-}
-
-function StepItem({ number, icon, title, description, showConnector }) {
-    return (
-        <>
-            <div className="flex items-start gap-5 py-4">
-                <div className="flex flex-col items-center">
-                    <div className="step-number">{number}</div>
-                </div>
-                <div className="pt-1">
-                    <div className="flex items-center gap-2 mb-1">
-                        <span className="text-text-tertiary">{icon}</span>
-                        <h3 className="text-sm font-semibold text-text-primary">{title}</h3>
-                    </div>
-                    <p className="text-sm text-text-secondary leading-relaxed">{description}</p>
-                </div>
-            </div>
-            {showConnector && (
-                <div className="flex">
-                    <div className="step-connector" style={{ marginLeft: '17px' }} />
-                </div>
-            )}
-        </>
-    );
-}
-
-function StatItem({ value, accent, label }) {
-    return (
-        <div className="stat-item">
-            <div className="stat-value">
-                {value}<span className="accent">{accent}</span>
-            </div>
-            <div className="stat-label">{label}</div>
-        </div>
-    );
-}
-
-function PricingCard({ tier, price, period, description, features, cta, featured, onCta }) {
-    return (
-        <div className={`pricing-card ${featured ? 'featured' : ''}`}>
-            {featured && <div className="popular-badge">Most popular</div>}
-            <p className="text-xs text-text-secondary font-medium uppercase tracking-wide mb-3">{tier}</p>
-            <div className="pricing-price mb-1">
-                {price}<span className="period">{period}</span>
-            </div>
-            <p className="text-sm text-text-secondary mb-6">{description}</p>
-
-            <ul className="pricing-feature-list mb-8 flex-1">
-                {features.map((f) => (
-                    <li key={f}>
-                        <CheckCircle2 className="check" size={16} />
-                        {f}
-                    </li>
-                ))}
-            </ul>
-
-            <button
-                onClick={onCta}
-                className={`w-full py-2.5 text-sm font-medium rounded-lg transition-colors ${featured
-                    ? 'bg-accent text-white hover:bg-accent-hover'
-                    : 'bg-surface border border-surface-border text-text-primary hover:bg-surface-secondary'
-                    }`}
-            >
-                {cta}
-            </button>
-        </div>
-    );
-}
-
-/* ─── Dashboard Mockup (SVG-like representation) ──────────────── */
-function DashboardMockup() {
-    return (
-        <div className="grid grid-cols-4 gap-3">
-            {/* Stat cards row */}
-            {[
-                { label: 'Total Evaluations', value: '158', change: '+3.2%' },
-                { label: 'Avg. Score', value: '0.84', change: '+1.1%' },
-                { label: 'Total Cost', value: '$2.34', change: '-12%' },
-                { label: 'Pass Rate', value: '93%', change: '+2.4%' },
-            ].map((stat) => (
-                <div key={stat.label} className="bg-surface rounded-lg border border-surface-border p-4">
-                    <p className="text-[10px] text-text-tertiary font-medium uppercase tracking-wide">{stat.label}</p>
-                    <div className="flex items-baseline gap-1.5 mt-1.5">
-                        <span className="text-lg font-semibold text-text-primary">{stat.value}</span>
-                        <span className="text-[10px] font-medium text-emerald-600">{stat.change}</span>
-                    </div>
-                </div>
-            ))}
-
-            {/* Judge cards row */}
-            <div className="col-span-4 grid grid-cols-3 gap-3 mt-1">
-                {[
-                    { judge: 'OpenAI', model: 'gpt-4o-mini', score: '0.87', color: '#10A37F', width: '87%' },
-                    { judge: 'Anthropic', model: 'claude-3-haiku', score: '0.91', color: '#D97706', width: '91%' },
-                    { judge: 'Gemini', model: 'gemini-1.5-flash', score: '0.79', color: '#4285F4', width: '79%' },
-                ].map((j) => (
-                    <div key={j.judge} className="bg-surface rounded-lg border border-surface-border overflow-hidden">
-                        <div className="h-0.5" style={{ background: j.color }} />
-                        <div className="p-3">
-                            <div className="flex items-center gap-1.5 mb-2">
-                                <div className="w-1.5 h-1.5 rounded-full" style={{ background: j.color }} />
-                                <span className="text-xs font-semibold text-text-primary">{j.judge}</span>
-                                <span className="text-[10px] text-text-tertiary ml-auto">{j.model}</span>
-                            </div>
-                            <span className="text-xl font-semibold text-text-primary">{j.score}</span>
-                            <div className="w-full h-1 bg-surface-tertiary rounded-full mt-2">
-                                <div className="h-full rounded-full" style={{ background: j.color, width: j.width }} />
-                            </div>
+            {/* ─── Footer ────────────────────────────────────────── */}
+            <footer className="landing-footer">
+                <div className="max-w-6xl mx-auto px-6">
+                    <div className="footer-row">
+                        <div className="flex items-center gap-3">
+                            <span className="landing-logo">Quorum</span>
+                            <span className="text-sm" style={{ color: 'var(--text-ter)' }}>&copy; 2026 Quorum</span>
+                        </div>
+                        <div className="flex items-center gap-5">
+                            <a href="https://github.com/alexlpz/quorum" target="_blank" rel="noopener noreferrer" className="footer-icon-link" aria-label="GitHub">
+                                <GitHubIcon size={18} />
+                            </a>
+                            <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="footer-icon-link" aria-label="X">
+                                <XIcon size={18} />
+                            </a>
+                            <a href="https://discord.gg" target="_blank" rel="noopener noreferrer" className="footer-icon-link" aria-label="Discord">
+                                <DiscordIcon size={18} />
+                            </a>
                         </div>
                     </div>
-                ))}
-            </div>
+                </div>
+            </footer>
+
+            <WaitlistModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </div>
+    );
+}
+
+/* ─── Sub-components ──────────────────────────────────────── */
+
+function SectionLabel({ children }) {
+    return <p className="section-label">{children}</p>;
+}
+
+/* ─── Brand SVGs ──────────────────────────────────────────── */
+
+function GitHubIcon({ size = 20 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+        </svg>
+    );
+}
+
+function XIcon({ size = 20 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        </svg>
+    );
+}
+
+function DiscordIcon({ size = 20 }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z" />
+        </svg>
     );
 }

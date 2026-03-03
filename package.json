@@ -5,6 +5,7 @@
     "record-demo": "node scripts/record-demo.js"
   },
   "devDependencies": {
-    "playwright": "^1.58.2"
+    "playwright": "^1.58.2",
+    "shadcn": "^3.8.5"
   }
 }

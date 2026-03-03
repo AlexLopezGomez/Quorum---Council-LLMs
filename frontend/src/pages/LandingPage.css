@@ -1,572 +1,587 @@
-/* ─── Landing Page Scoped Styles ─────────────────────────────── */
+/* ─── Landing Page — Warm Palette ───────────────────────────── */
 
-/* Smooth scroll for anchor links */
-html {
-    scroll-behavior: smooth;
+html { scroll-behavior: smooth; }
+
+/* ─── Tokens ────────────────────────────────────────────────── */
+:root {
+    --bg:            #F5F3EF;
+    --bg-surface:    #FFFFFF;
+    --card-bg:       #FFFFFF;
+    --card-border:   #DDD9D1;
+    --text-primary:  #3b3c36;
+    --text-sec:      #6e6e66;
+    --text-ter:      #9e9d97;
+    --accent:        #d99058;
+    --accent-hover:  #c47d45;
+    --accent-glow:   rgba(217, 144, 88, 0.25);
 }
 
-/* ─── Landing Navbar ─────────────────────────────────────────── */
-.landing-nav {
+/* ─── Root ──────────────────────────────────────────────────── */
+.landing-root {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ─── Announcement Bar ──────────────────────────────────────── */
+.nav-announcement {
+    background: #3b3c36;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-align: center;
+    padding: 8px 16px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
+    z-index: 60;
+}
+
+.nav-announcement span {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* ─── Navigation ────────────────────────────────────────────── */
+.landing-nav {
+    position: fixed;
+    top: 36px;
+    left: 0;
+    right: 0;
     z-index: 50;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    background: rgba(255, 255, 255, 0.85);
-    border-bottom: 1px solid #E5E7EB;
-    transition: box-shadow 0.3s ease;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    background: rgba(245, 243, 239, 0.9);
+    border-bottom: 1px solid rgba(221, 217, 209, 0.7);
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .landing-nav.scrolled {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 20px rgba(59, 60, 54, 0.08);
+    border-color: var(--card-border);
 }
 
-/* ─── Hero Section ───────────────────────────────────────────── */
-.hero-section {
-    padding-top: 120px;
-    padding-bottom: 80px;
-    background: linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 100%);
+.landing-logo {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+}
+
+.landing-logo-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(217, 144, 88, 0.12);
+    border: 1px solid rgba(217, 144, 88, 0.28);
+    color: var(--accent);
+    text-transform: uppercase;
+}
+
+.nav-link {
+    font-size: 0.875rem;
+    color: var(--text-sec);
+    transition: color 0.15s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
     position: relative;
-    overflow: hidden;
 }
+.nav-link:hover { color: var(--text-primary); }
 
-.hero-section::before {
-    content: '';
+/* Active indicator dot below nav link */
+.nav-active-dot {
     position: absolute;
-    top: 60px;
+    bottom: -6px;
     left: 50%;
     transform: translateX(-50%);
-    width: 800px;
-    height: 800px;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.04) 0%, transparent 70%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.nav-link.active .nav-active-dot { opacity: 1; }
+
+/* Pill CTA button — mirrors reactbits.dev "Star on GitHub" */
+.nav-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    background: linear-gradient(135deg, #d99058, #c47d45);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.15s, opacity 0.2s;
+    box-shadow: 0 2px 12px rgba(217, 144, 88, 0.3);
+    white-space: nowrap;
+}
+.nav-pill-btn:hover {
+    box-shadow: 0 4px 20px rgba(217, 144, 88, 0.45);
+    transform: translateY(-1px);
+    opacity: 0.95;
+}
+
+/* Legacy CTA (keep for mobile menu) */
+.landing-cta-btn {
+    padding: 8px 20px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.landing-cta-btn:hover {
+    background: var(--accent-hover);
+    box-shadow: 0 0 24px var(--accent-glow);
+    transform: translateY(-1px);
+}
+
+.mobile-menu {
+    border-top: 1px solid var(--card-border);
+    background: rgba(245, 243, 239, 0.97);
+}
+
+/* ─── Hero ──────────────────────────────────────────────────── */
+.hero-section {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--bg);
+    padding-top: 36px; /* account for announcement bar */
+}
+
+.threads-bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0.12;
+}
+.threads-bg canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.hero-radial {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 60%, transparent 0%, var(--bg) 75%);
     pointer-events: none;
+}
+
+.hero-content {
+    padding-top: 120px;
+    padding-bottom: 80px;
 }
 
 .hero-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-radius: 9999px;
-    background: #ECFDF5;
-    border: 1px solid #A7F3D0;
-    color: #059669;
-    font-size: 13px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: rgba(217, 144, 88, 0.08);
+    border: 1px solid rgba(217, 144, 88, 0.2);
+    backdrop-filter: blur(8px);
+    font-size: 0.75rem;
     font-weight: 500;
-    margin-bottom: 24px;
+    color: var(--accent);
+    letter-spacing: 0.03em;
 }
 
-.hero-badge .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #10B981;
-}
-
-/* ─── Dashboard Preview Mock ─────────────────────────────────── */
-.dashboard-preview {
-    max-width: 960px;
-    margin: 0 auto;
-    border-radius: 12px;
-    border: 1px solid #E5E7EB;
-    box-shadow:
-        0 4px 6px -1px rgba(0, 0, 0, 0.05),
-        0 20px 40px -8px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
-    background: #FFFFFF;
-}
-
-.dashboard-preview-bar {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 12px 16px;
-    background: #F9FAFB;
-    border-bottom: 1px solid #E5E7EB;
-}
-
-.dashboard-preview-bar .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-}
-
-.dashboard-preview-bar .dot.red {
-    background: #EF4444;
-}
-
-.dashboard-preview-bar .dot.yellow {
-    background: #F59E0B;
-}
-
-.dashboard-preview-bar .dot.green {
-    background: #10B981;
-}
-
-.dashboard-preview-content {
-    padding: 32px;
-    background: #F9FAFB;
-}
-
-/* ─── Feature Cards ──────────────────────────────────────────── */
-.feature-icon-wrapper {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-}
-
-.feature-icon-wrapper.green {
-    background: #ECFDF5;
-    color: #10B981;
-}
-
-.feature-icon-wrapper.purple {
-    background: #F5F3FF;
-    color: #8B5CF6;
-}
-
-.feature-icon-wrapper.amber {
-    background: #FFFBEB;
-    color: #F59E0B;
-}
-
-/* ─── How It Works Step ──────────────────────────────────────── */
-.step-number {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 600;
-    background: #111827;
-    color: #FFFFFF;
-    flex-shrink: 0;
-}
-
-.step-connector {
-    width: 2px;
-    height: 40px;
-    background: linear-gradient(180deg, #111827 0%, #E5E7EB 100%);
-    margin: 0 auto;
-}
-
-/* ─── Stats Section ──────────────────────────────────────────── */
-.stats-section {
-    background: #111827;
-    color: #FFFFFF;
-}
-
-.stat-item {
+/* Hero headline + rotating text */
+.hero-title {
+    font-size: 3.75rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--text-primary);
     text-align: center;
-    padding: 32px 16px;
+}
+@media (min-width: 768px) { .hero-title { font-size: 4.5rem; } }
+@media (min-width: 1024px) { .hero-title { font-size: 5rem; } }
+
+.rotating-wrapper {
+    display: inline-flex;
+    overflow: hidden;
+    vertical-align: bottom;
+    color: var(--accent);
 }
 
-.stat-value {
-    font-size: 42px;
-    font-weight: 700;
-    letter-spacing: -1px;
-    line-height: 1;
-    margin-bottom: 8px;
+.hero-sub {
+    font-size: 1.0625rem;
+    color: var(--text-sec);
+    line-height: 1.7;
+    max-width: 580px;
+    margin: 0 auto;
+    text-align: center;
 }
 
-.stat-value .accent {
-    color: #10B981;
-}
-
-.stat-label {
-    font-size: 14px;
-    color: #9CA3AF;
-    font-weight: 400;
-}
-
-/* ─── Pricing Cards ──────────────────────────────────────────── */
-.pricing-card {
-    border-radius: 12px;
-    border: 1px solid #E5E7EB;
-    background: #FFFFFF;
-    padding: 32px;
-    display: flex;
-    flex-direction: column;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.pricing-card:hover {
-    border-color: #D1D5DB;
-}
-
-.pricing-card.featured {
-    border: 2px solid #111827;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-    position: relative;
-}
-
-.pricing-card.featured .popular-badge {
+/* ─── Scroll hint ───────────────────────────────────────────── */
+.hero-scroll-hint {
     position: absolute;
-    top: -12px;
+    bottom: 36px;
     left: 50%;
     transform: translateX(-50%);
-    background: #111827;
-    color: #FFFFFF;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 4px 16px;
-    border-radius: 9999px;
-}
-
-.pricing-price {
-    font-size: 36px;
-    font-weight: 700;
-    color: #111827;
-    letter-spacing: -1px;
-}
-
-.pricing-price .period {
-    font-size: 14px;
-    font-weight: 400;
-    color: #6B7280;
-    letter-spacing: 0;
-}
-
-.pricing-feature-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.pricing-feature-list li {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding: 8px 0;
-    font-size: 14px;
-    color: #374151;
+}
+.scroll-dot {
+    width: 4px;
+    height: 24px;
+    border-radius: 2px;
+    background: linear-gradient(to bottom, rgba(217,144,88,0.8), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
+    50% { opacity: 1; transform: scaleY(1); }
 }
 
-.pricing-feature-list li .check {
-    width: 18px;
-    height: 18px;
-    color: #10B981;
-    flex-shrink: 0;
-}
-
-/* ─── Dark Sign-In / Sign-Up Section ─────────────────────────── */
-.auth-section {
-    background: #0A0A0A;
+/* ─── Terminal Demo ─────────────────────────────────────────── */
+.terminal-section {
     padding: 80px 0;
-    overflow: hidden;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
 }
 
-.auth-container {
-    max-width: 960px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    min-height: 520px;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
-}
-
-/* Left panel — form */
-.auth-form-panel {
-    background: #0F0F0F;
-    padding: 48px 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.auth-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    margin-bottom: 28px;
-}
-
-.auth-logo svg {
-    width: 28px;
-    height: 28px;
-    color: #FFFFFF;
-}
-
-.auth-title {
-    font-size: 24px;
-    font-weight: 600;
-    color: #FFFFFF;
-    margin-bottom: 8px;
-}
-
-.auth-subtitle {
-    font-size: 14px;
-    color: #6B7280;
-    margin-bottom: 28px;
-}
-
-/* Green progress bar */
-.auth-progress {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 28px;
-}
-
-.auth-progress .bar {
-    flex: 1;
-    height: 3px;
-    border-radius: 2px;
-    background: #1F1F1F;
-}
-
-.auth-progress .bar.active {
-    background: #10B981;
-}
-
-.auth-progress .bar.completed {
-    background: #10B981;
-}
-
-/* Dark inputs */
-.auth-input {
-    width: 100%;
-    padding: 12px 16px;
-    background: #1A1A1A;
-    border: 1px solid #2A2A2A;
-    border-radius: 10px;
-    color: #FFFFFF;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s ease;
-    margin-bottom: 16px;
-}
-
-.auth-input:focus {
-    border-color: #10B981;
-}
-
-.auth-input::placeholder {
-    color: #4B5563;
-}
-
-/* CTA buttons in auth */
-.auth-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 8px;
-}
-
-.auth-btn-back {
-    width: 44px;
-    height: 44px;
-    border-radius: 9999px;
-    border: 1px solid #2A2A2A;
-    background: #1A1A1A;
-    color: #9CA3AF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: border-color 0.2s ease, color 0.2s ease;
-}
-
-.auth-btn-back:hover {
-    border-color: #3A3A3A;
-    color: #FFFFFF;
-}
-
-.auth-btn-continue {
-    flex: 1;
-    padding: 12px 24px;
-    background: #FFFFFF;
-    color: #111827;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 9999px;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s ease;
-}
-
-.auth-btn-continue:hover {
-    background: #F3F4F6;
-}
-
-/* Right panel — profile preview */
-.auth-preview-panel {
-    background: #141414;
-    padding: 48px 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.auth-preview-hint {
-    text-align: center;
-    font-size: 13px;
-    color: #9CA3AF;
-    margin-bottom: 20px;
-    line-height: 1.5;
-}
-
-/* Profile card glassmorphism */
-.auth-profile-card {
-    width: 240px;
-    padding: 28px 20px;
+.terminal-window {
+    background: #1e1e2e;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    text-align: center;
-}
-
-.auth-profile-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
-    background: #1F1F1F;
-    border: 1px solid #2A2A2A;
-    margin: 0 auto 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #4B5563;
-}
-
-.auth-profile-name {
-    font-size: 16px;
-    font-weight: 600;
-    color: #FFFFFF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin-bottom: 4px;
-}
-
-.auth-profile-name .verified {
-    width: 16px;
-    height: 16px;
-    color: #10B981;
-}
-
-.auth-profile-handle {
-    font-size: 13px;
-    color: #6B7280;
-    margin-bottom: 12px;
-}
-
-.auth-profile-bar {
+    overflow: hidden;
+    max-width: 700px;
     width: 100%;
-    height: 3px;
-    border-radius: 2px;
-    background: #1F1F1F;
-    margin-bottom: 4px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
-.auth-profile-bar-short {
-    width: 60%;
-    height: 3px;
-    border-radius: 2px;
-    background: #1F1F1F;
-    margin: 0 auto 16px;
-}
-
-.auth-profile-location {
-    font-size: 13px;
-    color: #9CA3AF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
-
-.auth-footer-text {
-    position: absolute;
-    bottom: 28px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    font-size: 12px;
-    color: #4B5563;
-    line-height: 1.6;
-    padding: 0 32px;
-}
-
-/* ─── Footer ─────────────────────────────────────────────────── */
-.landing-footer {
-    background: #FFFFFF;
-    border-top: 1px solid #E5E7EB;
-    padding: 48px 0 24px;
-}
-
-.footer-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 48px;
-    margin-bottom: 40px;
-}
-
-.footer-section h4 {
-    font-size: 13px;
-    font-weight: 600;
-    color: #111827;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 16px;
-}
-
-.footer-section a {
-    display: block;
-    font-size: 14px;
-    color: #6B7280;
-    text-decoration: none;
-    padding: 4px 0;
-    transition: color 0.15s ease;
-}
-
-.footer-section a:hover {
-    color: #111827;
-}
-
-.footer-bottom {
-    border-top: 1px solid #E5E7EB;
-    padding-top: 24px;
+.terminal-titlebar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 13px;
-    color: #9CA3AF;
+    padding: 12px 16px;
+    background: #2a2a3e;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* ─── Responsive ─────────────────────────────────────────────── */
+.terminal-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+.terminal-dot-red    { background: #ff5f57; }
+.terminal-dot-yellow { background: #febc2e; }
+.terminal-dot-green  { background: #28c840; }
+
+.terminal-title {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.terminal-body {
+    padding: 20px 24px 24px;
+    min-height: 260px;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.8125rem;
+    line-height: 1.8;
+}
+
+.terminal-line {
+    display: block;
+    white-space: pre;
+}
+
+.terminal-cursor {
+    color: #d99058;
+    animation: none;
+    font-weight: 400;
+}
+
+/* ─── How It Works ──────────────────────────────────────────── */
+.steps-section {
+    padding: 100px 0;
+    background: var(--bg);
+}
+
+.reflective-cards-row {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 56px;
+}
+
+/* ─── Features (ScrollStack) ────────────────────────────────── */
+.features-section {
+    padding: 100px 0;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
+}
+
+.scroll-stack-feature-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+}
+
+.feature-card-inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.feature-icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid;
+}
+
+.feature-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+}
+
+.feature-desc {
+    font-size: 0.9375rem;
+    color: var(--text-sec);
+    line-height: 1.7;
+}
+
+/* ─── Section labels & headings ─────────────────────────────── */
+.section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    text-align: center;
+}
+
+.section-heading {
+    font-size: 2.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    text-align: center;
+    line-height: 1.15;
+}
+
+/* ─── Pillars (Why Quorum) ──────────────────────────────────── */
+.pillars-section {
+    padding: 100px 0;
+    background: var(--bg);
+}
+
+.pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.pillar-card {
+    padding: 36px 28px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    text-align: center;
+    transition: border-color 0.3s;
+}
+.pillar-card:hover { border-color: rgba(217, 144, 88, 0.3); }
+
+.pillar-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(217, 144, 88, 0.08);
+    border: 1px solid rgba(217, 144, 88, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    margin: 0 auto;
+}
+
+.pillar-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.pillar-desc {
+    font-size: 0.875rem;
+    color: var(--text-sec);
+    line-height: 1.65;
+}
+
+/* ─── CTA Section ───────────────────────────────────────────── */
+.cta-section {
+    position: relative;
+    padding: 120px 0;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--card-border);
+    overflow: hidden;
+}
+
+.cta-glow {
+    position: absolute;
+    width: 600px;
+    height: 400px;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(ellipse, rgba(217, 144, 88, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.cta-heading {
+    font-size: 2.75rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
+    line-height: 1.12;
+}
+
+.cta-sub {
+    font-size: 1.0625rem;
+    color: var(--text-sec);
+    line-height: 1.65;
+}
+
+.cta-waitlist-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 36px;
+    background: linear-gradient(135deg, #d99058, #c47d45);
+    color: #fff;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, box-shadow 0.2s, transform 0.15s;
+    box-shadow: 0 4px 20px rgba(217, 144, 88, 0.3);
+}
+.cta-waitlist-btn:hover {
+    opacity: 0.92;
+    box-shadow: 0 8px 32px rgba(217, 144, 88, 0.45);
+    transform: translateY(-2px);
+}
+
+/* ─── Footer ────────────────────────────────────────────────── */
+.landing-footer {
+    background: var(--bg);
+    border-top: 1px solid var(--card-border);
+    padding: 28px 0;
+}
+
+.footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.footer-icon-link {
+    color: var(--text-ter);
+    transition: color 0.15s;
+    display: flex;
+    align-items: center;
+}
+.footer-icon-link:hover { color: var(--text-sec); }
+
+/* ─── Waitlist input (light) ────────────────────────────────── */
+.waitlist-input {
+    flex: 1;
+    padding: 11px 16px;
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.waitlist-input::placeholder { color: var(--text-ter); }
+.waitlist-input:focus {
+    border-color: rgba(217, 144, 88, 0.5);
+    box-shadow: 0 0 0 3px rgba(217, 144, 88, 0.1);
+}
+
+/* ─── Waitlist Modal (light) ────────────────────────────────── */
+.waitlist-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(59, 60, 54, 0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    animation: fadeIn 0.2s ease both;
+}
+.waitlist-modal-card {
+    position: relative;
+    background: #fff;
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+    padding: 36px;
+    width: 100%;
+    max-width: 440px;
+    margin: 16px;
+    animation: scaleIn 0.2s ease both;
+}
+
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.animate-scaleIn   { animation: scaleIn 0.2s ease both; }
+
+/* ─── Responsive ────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .reflective-cards-row { gap: 16px; }
+}
+
 @media (max-width: 768px) {
-    .auth-container {
-        grid-template-columns: 1fr;
-    }
-
-    .auth-preview-panel {
-        display: none;
-    }
-
-    .footer-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 32px;
-    }
-
-    .stat-value {
-        font-size: 32px;
-    }
+    .hero-content { padding-top: 100px; padding-bottom: 60px; }
+    .hero-title { font-size: 2.5rem !important; }
+    .pillars-grid { grid-template-columns: 1fr; }
+    .section-heading { font-size: 1.75rem; }
+    .cta-heading { font-size: 2rem; }
+    .reflective-cards-row { flex-direction: column; align-items: center; }
 }

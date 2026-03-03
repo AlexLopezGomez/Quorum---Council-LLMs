@@ -30,6 +30,7 @@ import { DEMO_MODE, DEMO_USER } from './demo/demoConfig.js';
 import { serveFrontend } from './demo/staticServe.js';
 
 const app = express();
+app.set('trust proxy', 1);
 app.set('query parser', 'simple');
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/quorum';

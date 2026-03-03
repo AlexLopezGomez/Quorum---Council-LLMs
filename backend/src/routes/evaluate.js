@@ -6,8 +6,6 @@ import { User } from '../models/User.js';
 import { runEvaluation } from '../services/orchestrator.js';
 import { sseManager } from '../utils/sse.js';
 import { logger } from '../utils/logger.js';
-import { DEMO_MODE } from '../demo/demoConfig.js';
-import { demoStore } from '../demo/demoStore.js';
 
 const router = Router();
 
@@ -79,30 +77,17 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
       })
     );
 
-    if (DEMO_MODE) {
-      demoStore.save({
-        jobId,
-        name: name || '',
-        userId: req.user._id,
-        status: 'processing',
-        testCases,
-        results: [],
-        events: [],
-        config: { strategy: options?.strategy || 'auto' },
-      });
-    } else {
-      const evaluation = new Evaluation({
-        jobId,
-        name: name || '',
-        userId: req.user._id,
-        status: 'processing',
-        testCases,
-        results: [],
-        events: [],
-        config: { strategy: options?.strategy || 'auto' },
-      });
-      await evaluation.save();
-    }
+    const evaluation = new Evaluation({
+      jobId,
+      name: name || '',
+      userId: req.user._id,
+      status: 'processing',
+      testCases,
+      results: [],
+      events: [],
+      config: { strategy: options?.strategy || 'auto' },
+    });
+    await evaluation.save();
     logger.audit(
       'evaluation.created',
       logger.withReq(req, {
@@ -127,14 +112,10 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
 
     const saveEvent = async (type, data) => {
       try {
-        if (DEMO_MODE) {
-          demoStore.pushEvent(jobId, { type, data, timestamp: new Date() });
-        } else {
-          await Evaluation.updateOne(
-            { jobId },
-            { $push: { events: { type, data, timestamp: new Date() } } }
-          );
-        }
+        await Evaluation.updateOne(
+          { jobId },
+          { $push: { events: { type, data, timestamp: new Date() } } }
+        );
       } catch (err) {
         logger.error(
           'evaluation.event.save_failed',
@@ -148,11 +129,7 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
 
     const updateDocument = async (updates) => {
       try {
-        if (DEMO_MODE) {
-          demoStore.update(jobId, updates);
-        } else {
-          await Evaluation.updateOne({ jobId }, { $set: updates });
-        }
+        await Evaluation.updateOne({ jobId }, { $set: updates });
       } catch (err) {
         logger.error(
           'evaluation.update_failed',
@@ -165,13 +142,11 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
     };
 
     let userKeys = { openai: null, anthropic: null, google: null };
-    if (!DEMO_MODE) {
-      try {
-        const userWithKeys = await User.findById(req.user._id).select('apiKeys');
-        userKeys = userWithKeys.getDecryptedApiKeys();
-      } catch (err) {
-        logger.warn('keys.decrypt.failed', logger.withReq(req, { metadata: { message: err.message } }));
-      }
+    try {
+      const userWithKeys = await User.findById(req.user._id).select('apiKeys');
+      userKeys = userWithKeys.getDecryptedApiKeys();
+    } catch (err) {
+      logger.warn('keys.decrypt.failed', logger.withReq(req, { metadata: { message: err.message } }));
     }
 
     runEvaluation(testCases, jobId, emitEvent, saveEvent, updateDocument, options || {}, userKeys).catch(async (error) => {
@@ -192,14 +167,10 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
           metadata: { status: 'failed', reason: error.message },
         })
       );
-      if (DEMO_MODE) {
-        demoStore.update(jobId, { status: 'failed', completedAt: new Date() });
-      } else {
-        await Evaluation.updateOne(
-          { jobId },
-          { $set: { status: 'failed', completedAt: new Date() } }
-        );
-      }
+      await Evaluation.updateOne(
+        { jobId },
+        { $set: { status: 'failed', completedAt: new Date() } }
+      );
       emitEvent('evaluation_error', {
         jobId,
         error: error.message,

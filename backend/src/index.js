@@ -26,8 +26,7 @@ import { requireServiceScope } from './middleware/requireServiceAuth.js';
 import { requestContext } from './middleware/requestContext.js';
 import { logger } from './utils/logger.js';
 import { validateProductionSecrets } from './utils/validateSecrets.js';
-import { DEMO_MODE, DEMO_USER } from './demo/demoConfig.js';
-import { serveFrontend } from './demo/staticServe.js';
+import { serveFrontend } from './utils/staticServe.js';
 
 const app = express();
 app.set('trust proxy', 1);
@@ -46,7 +45,7 @@ const limiter = rateLimit({
 
 app.use(
   cors({
-    origin: DEMO_MODE ? true : (process.env.FRONTEND_URL || 'http://localhost:5173'),
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     credentials: true,
   })
 );
@@ -92,29 +91,25 @@ app.use((req, res, next) => {
   next();
 });
 
-const demoAuth = (req, _res, next) => { req.user = DEMO_USER; next(); };
-const authMw = DEMO_MODE ? demoAuth : requireAuth;
-const anyAuthMw = DEMO_MODE ? demoAuth : requireAnyAuth;
-
 app.use('/api/auth', authRouter);
 app.use('/api/waitlist', waitlistRouter);
-app.use('/api/stream', anyAuthMw, requireServiceScope(['ingest', 'evaluate']), streamRouter);
-app.use('/api/ingest', anyAuthMw, requireServiceScope('ingest'), ingestRouter);
-app.use('/api/results', anyAuthMw, requireServiceScope(['ingest', 'evaluate']), resultsRouter);
+app.use('/api/stream', requireAnyAuth, requireServiceScope(['ingest', 'evaluate']), streamRouter);
+app.use('/api/ingest', requireAnyAuth, requireServiceScope('ingest'), ingestRouter);
+app.use('/api/results', requireAnyAuth, requireServiceScope(['ingest', 'evaluate']), resultsRouter);
 
-app.use('/api/evaluate', authMw, evaluateRouter);
-app.use('/api/history', authMw, historyRouter);
-app.use('/api/webhooks', authMw, webhooksRouter);
-app.use('/api/keys', authMw, keysRouter);
-app.use('/api/service-keys', authMw, serviceKeysRouter);
-app.use('/api/observability', authMw, observabilityRouter);
+app.use('/api/evaluate', requireAuth, evaluateRouter);
+app.use('/api/history', requireAuth, historyRouter);
+app.use('/api/webhooks', requireAuth, webhooksRouter);
+app.use('/api/keys', requireAuth, keysRouter);
+app.use('/api/service-keys', requireAuth, serviceKeysRouter);
+app.use('/api/observability', requireAuth, observabilityRouter);
 
 app.get('/health', (req, res) => {
   logger.info('system.health.check', logger.withReq(req, { statusCode: 200 }));
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    mongodb: DEMO_MODE ? 'demo_mode' : (mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'),
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
   });
 });
 
@@ -186,18 +181,14 @@ async function cleanupStaleJobs() {
 
 async function start() {
   try {
-    if (!DEMO_MODE) {
-      validateProductionSecrets();
-      await connectWithRetry();
-      await cleanupStaleJobs();
-    } else {
-      logger.info('system.demo_mode', { metadata: { message: 'Running in DEMO_MODE — MongoDB and API keys not required' } });
-    }
+    validateProductionSecrets();
+    await connectWithRetry();
+    await cleanupStaleJobs();
 
-    if (DEMO_MODE) serveFrontend(app);
+    serveFrontend(app);
 
     const server = app.listen(PORT, () => {
-      logger.info('system.startup', { metadata: { port: PORT, demoMode: DEMO_MODE } });
+      logger.info('system.startup', { metadata: { port: PORT } });
     });
 
     const shutdown = async (signal) => {
@@ -208,12 +199,8 @@ async function start() {
 
       server.close(async () => {
         logger.info('system.http.closed');
-
-        if (!DEMO_MODE) {
-          await mongoose.connection.close();
-          logger.info('system.mongodb.disconnected');
-        }
-
+        await mongoose.connection.close();
+        logger.info('system.mongodb.disconnected');
         process.exit(0);
       });
 

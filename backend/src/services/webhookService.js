@@ -2,7 +2,6 @@ import crypto from 'crypto';
 import { Webhook } from '../models/Webhook.js';
 import { Evaluation } from '../models/Evaluation.js';
 import { logger } from '../utils/logger.js';
-import { DEMO_MODE } from '../demo/demoConfig.js';
 import { decrypt } from '../utils/encryption.js';
 
 const WEBHOOK_TIMEOUT = 3000;
@@ -188,7 +187,6 @@ async function sendWebhook(webhook, payload) {
 }
 
 export async function fireWebhooks(evaluation) {
-  if (DEMO_MODE) return;
   const webhooks = await Webhook.find({ active: true, userId: evaluation.userId }).lean();
   if (webhooks.length === 0) return;
 

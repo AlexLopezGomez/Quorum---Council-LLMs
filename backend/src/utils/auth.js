@@ -1,8 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { DEMO_MODE } from '../demo/demoConfig.js';
 
 const _rawSecret = process.env.JWT_SECRET;
-if (!_rawSecret && process.env.NODE_ENV === 'production' && !DEMO_MODE) {
+if (!_rawSecret && process.env.NODE_ENV === 'production') {
   throw new Error('JWT_SECRET environment variable is required in production');
 }
 const JWT_SECRET = _rawSecret || 'dev-secret-change-in-production';

@@ -1,8 +1,6 @@
 import { Router } from 'express';
 import { Evaluation } from '../models/Evaluation.js';
 import { logger } from '../utils/logger.js';
-import { DEMO_MODE } from '../demo/demoConfig.js';
-import { demoStore } from '../demo/demoStore.js';
 
 const router = Router();
 
@@ -30,9 +28,7 @@ router.get('/:jobId', async (req, res) => {
   const { jobId } = req.params;
 
   try {
-    const evaluation = DEMO_MODE
-      ? demoStore.get(jobId)
-      : await Evaluation.findOne({ jobId, userId: req.user._id });
+    const evaluation = await Evaluation.findOne({ jobId, userId: req.user._id });
 
     if (!evaluation) {
       logger.warn(

@@ -2,8 +2,6 @@ import { Router } from 'express';
 import mongoose from 'mongoose';
 import { Evaluation } from '../models/Evaluation.js';
 import { logger } from '../utils/logger.js';
-import { DEMO_MODE } from '../demo/demoConfig.js';
-import { demoStore } from '../demo/demoStore.js';
 
 const router = Router();
 const MAX_SEARCH_LENGTH = 100;
@@ -54,43 +52,27 @@ router.get('/', async (req, res) => {
     const { cursor, strategy, verdict, status, search } = req.query;
     const searchTerm = normalizeSearchTerm(search);
 
-    let results, hasMore, nextCursor;
-
-    if (DEMO_MODE) {
-      let items = demoStore.list();
-      if (status) items = items.filter(e => e.status === status);
-      if (strategy) items = items.filter(e => e.config?.strategy === strategy);
-      if (verdict) items = items.filter(e => e.results?.some(r => r.aggregator?.verdict === verdict));
-      if (searchTerm) {
-        const re = new RegExp(escapeRegex(searchTerm), 'i');
-        items = items.filter(e => re.test(e.name || ''));
+    const filter = { userId: req.user._id };
+    if (cursor) {
+      if (typeof cursor !== 'string' || !mongoose.Types.ObjectId.isValid(cursor)) {
+        return res.status(400).json({ error: 'Invalid cursor' });
       }
-      hasMore = items.length > limit;
-      results = items.slice(0, limit);
-      nextCursor = null;
-    } else {
-      const filter = { userId: req.user._id };
-      if (cursor) {
-        if (typeof cursor !== 'string' || !mongoose.Types.ObjectId.isValid(cursor)) {
-          return res.status(400).json({ error: 'Invalid cursor' });
-        }
-        filter._id = { $lt: cursor };
-      }
-      if (status) filter.status = status;
-      if (strategy) filter['config.strategy'] = strategy;
-      if (verdict) filter['results.aggregator.verdict'] = verdict;
-      if (searchTerm) filter.name = { $regex: escapeRegex(searchTerm), $options: 'i' };
-
-      const evaluations = await Evaluation.find(filter)
-        .sort({ _id: -1 })
-        .limit(limit + 1)
-        .select('jobId userId name status testCases summary config createdAt completedAt')
-        .lean();
-
-      hasMore = evaluations.length > limit;
-      results = hasMore ? evaluations.slice(0, limit) : evaluations;
-      nextCursor = hasMore ? results[results.length - 1]._id : null;
+      filter._id = { $lt: cursor };
     }
+    if (status) filter.status = status;
+    if (strategy) filter['config.strategy'] = strategy;
+    if (verdict) filter['results.aggregator.verdict'] = verdict;
+    if (searchTerm) filter.name = { $regex: escapeRegex(searchTerm), $options: 'i' };
+
+    const evaluations = await Evaluation.find(filter)
+      .sort({ _id: -1 })
+      .limit(limit + 1)
+      .select('jobId userId name status testCases summary config createdAt completedAt')
+      .lean();
+
+    const hasMore = evaluations.length > limit;
+    const results = hasMore ? evaluations.slice(0, limit) : evaluations;
+    const nextCursor = hasMore ? results[results.length - 1]._id : null;
 
     res.json({
       evaluations: results.map(e => ({
@@ -136,15 +118,6 @@ router.patch('/:jobId', async (req, res) => {
     }
 
     const trimmedName = name.trim().slice(0, 100);
-
-    if (DEMO_MODE) {
-      const doc = demoStore.get(req.params.jobId);
-      if (!doc) {
-        return res.status(404).json({ error: 'Evaluation not found' });
-      }
-      demoStore.update(req.params.jobId, { name: trimmedName });
-      return res.json({ jobId: req.params.jobId, name: trimmedName });
-    }
 
     const evaluation = await Evaluation.findOne({ jobId: req.params.jobId, userId: req.user._id }).select('jobId userId name');
 
@@ -200,11 +173,9 @@ router.patch('/:jobId', async (req, res) => {
  */
 router.get('/:jobId/cost', async (req, res) => {
   try {
-    const evaluation = DEMO_MODE
-      ? demoStore.get(req.params.jobId)
-      : await Evaluation.findOne({ jobId: req.params.jobId, userId: req.user._id })
-          .select('results summary config')
-          .lean();
+    const evaluation = await Evaluation.findOne({ jobId: req.params.jobId, userId: req.user._id })
+      .select('results summary config')
+      .lean();
 
     if (!evaluation) {
       logger.warn(
@@ -276,21 +247,14 @@ router.get('/:jobId/cost', async (req, res) => {
  */
 router.get('/stats', async (req, res) => {
   try {
-    let totalEvals, recentEvals;
-    if (DEMO_MODE) {
-      const all = demoStore.list();
-      totalEvals = demoStore.count();
-      recentEvals = all.filter(e => e.status === 'complete').slice(0, 100);
-    } else {
-      [totalEvals, recentEvals] = await Promise.all([
-        Evaluation.countDocuments({ userId: req.user._id }),
-        Evaluation.find({ status: 'complete', userId: req.user._id })
-          .sort({ _id: -1 })
-          .limit(100)
-          .select('summary config results')
-          .lean(),
-      ]);
-    }
+    const [totalEvals, recentEvals] = await Promise.all([
+      Evaluation.countDocuments({ userId: req.user._id }),
+      Evaluation.find({ status: 'complete', userId: req.user._id })
+        .sort({ _id: -1 })
+        .limit(100)
+        .select('summary config results')
+        .lean(),
+    ]);
 
     const strategyCounts = {};
     const costByStrategy = {};

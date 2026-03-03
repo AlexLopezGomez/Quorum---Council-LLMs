@@ -6,7 +6,6 @@ import { signToken, setTokenCookie, clearTokenCookie } from '../utils/auth.js';
 import { createValidationMiddleware } from '../utils/validation.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { logger } from '../utils/logger.js';
-import { DEMO_MODE, DEMO_USER } from '../demo/demoConfig.js';
 
 const router = Router();
 const authRateLimitWindowMs = 15 * 60 * 1000;
@@ -48,7 +47,6 @@ const loginSchema = z.object({
 });
 
 router.post('/register', registerLimiter, createValidationMiddleware(registerSchema), async (req, res) => {
-  if (DEMO_MODE) return res.status(201).json({ user: DEMO_USER.toPublicJSON() });
   try {
     const { email, username, password } = req.validatedBody;
     logger.info('auth.register.attempt', logger.withReq(req, { metadata: { email, username } }));
@@ -108,7 +106,6 @@ router.post('/register', registerLimiter, createValidationMiddleware(registerSch
 });
 
 router.post('/login', loginLimiter, createValidationMiddleware(loginSchema), async (req, res) => {
-  if (DEMO_MODE) return res.json({ user: DEMO_USER.toPublicJSON() });
   try {
     const { email, password } = req.validatedBody;
     logger.info('auth.login.attempt', logger.withReq(req, { metadata: { email } }));
@@ -152,7 +149,6 @@ router.post('/login', loginLimiter, createValidationMiddleware(loginSchema), asy
 });
 
 router.post('/logout', (req, res) => {
-  if (DEMO_MODE) return res.json({ message: 'Logged out' });
   clearTokenCookie(res);
   logger.audit(
     'auth.logout.success',
@@ -165,8 +161,7 @@ router.post('/logout', (req, res) => {
   res.json({ message: 'Logged out' });
 });
 
-router.get('/me', DEMO_MODE ? (req, _res, next) => { req.user = DEMO_USER; next(); } : requireAuth, (req, res) => {
-  if (DEMO_MODE) return res.json({ user: DEMO_USER.toPublicJSON() });
+router.get('/me', requireAuth, (req, res) => {
   logger.info('auth.me.fetched', logger.withReq(req, { userId: req.user._id, statusCode: 200 }));
   res.json({ user: req.user.toPublicJSON() });
 });

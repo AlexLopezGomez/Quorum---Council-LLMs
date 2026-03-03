@@ -4,10 +4,10 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function WaitlistForm() {
     const [email, setEmail] = useState('');
-    const [status, setStatus] = useState('idle');
+    const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
     const [errorMessage, setErrorMessage] = useState('');
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
 
         if (!email.trim()) {
@@ -22,7 +22,32 @@ export default function WaitlistForm() {
             return;
         }
 
-        setStatus('success');
+        setStatus('loading');
+
+        try {
+            const res = await fetch('/api/waitlist', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email.trim() }),
+            });
+
+            if (res.ok) {
+                setStatus('success');
+                return;
+            }
+
+            if (res.status === 409) {
+                setStatus('error');
+                setErrorMessage("You're already on the list.");
+                return;
+            }
+
+            setStatus('error');
+            setErrorMessage('Something went wrong. Please try again.');
+        } catch {
+            setStatus('error');
+            setErrorMessage('Network error. Please check your connection.');
+        }
     }
 
     if (status === 'success') {
@@ -38,6 +63,8 @@ export default function WaitlistForm() {
         );
     }
 
+    const isLoading = status === 'loading';
+
     return (
         <form onSubmit={handleSubmit} className="max-w-md mx-auto">
             <div className="flex flex-col sm:flex-row gap-3">
@@ -50,15 +77,17 @@ export default function WaitlistForm() {
                     }}
                     placeholder="you@company.com"
                     className="waitlist-input flex-1"
+                    disabled={isLoading}
                 />
                 <button
                     type="submit"
-                    className="px-6 py-2.5 text-white text-sm font-medium rounded-lg whitespace-nowrap transition-colors"
+                    disabled={isLoading}
+                    className="px-6 py-2.5 text-white text-sm font-medium rounded-lg whitespace-nowrap transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                     style={{ background: 'var(--accent)' }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'var(--accent-hover)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'var(--accent)'}
+                    onMouseEnter={e => { if (!isLoading) e.currentTarget.style.background = 'var(--accent-hover)'; }}
+                    onMouseLeave={e => { if (!isLoading) e.currentTarget.style.background = 'var(--accent)'; }}
                 >
-                    Join Waitlist
+                    {isLoading ? 'Joining...' : 'Join Waitlist'}
                 </button>
             </div>
             {status === 'error' && (

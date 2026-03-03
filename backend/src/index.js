@@ -3,6 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
 import mongoose from 'mongoose';
 import evaluateRouter from './routes/evaluate.js';
 import streamRouter from './routes/stream.js';
@@ -14,6 +16,7 @@ import authRouter from './routes/auth.js';
 import keysRouter from './routes/keys.js';
 import serviceKeysRouter from './routes/serviceKeys.js';
 import observabilityRouter from './routes/observability.js';
+import waitlistRouter from './routes/waitlist.js';
 import swaggerUi from 'swagger-ui-express';
 import { sseManager } from './utils/sse.js';
 import { Evaluation } from './models/Evaluation.js';
@@ -47,7 +50,27 @@ app.use(
   })
 );
 
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "blob:"],
+        connectSrc: ["'self'"],
+        workerSrc: ["'self'", "blob:"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+      },
+    },
+  })
+);
+
 app.use(express.json({ limit: '5mb' }));
+app.use(mongoSanitize());
 app.use(cookieParser());
 app.use(requestContext);
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(spec, { customSiteTitle: 'Quorum API' }));
@@ -73,6 +96,7 @@ const authMw = DEMO_MODE ? demoAuth : requireAuth;
 const anyAuthMw = DEMO_MODE ? demoAuth : requireAnyAuth;
 
 app.use('/api/auth', authRouter);
+app.use('/api/waitlist', waitlistRouter);
 app.use('/api/stream', anyAuthMw, requireServiceScope(['ingest', 'evaluate']), streamRouter);
 app.use('/api/ingest', anyAuthMw, requireServiceScope('ingest'), ingestRouter);
 app.use('/api/results', anyAuthMw, requireServiceScope(['ingest', 'evaluate']), resultsRouter);

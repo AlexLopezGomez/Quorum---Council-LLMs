@@ -6,6 +6,7 @@ import { safeFixed } from '../lib/utils';
 import { STATUS_BADGE_STYLES } from '../lib/constants';
 import { formatDate } from '../lib/utils';
 import { useApiQuery } from '../hooks/useApiQuery';
+import { useEvaluation } from '../context/EvaluationContext';
 import { sileo } from 'sileo';
 import { PageHeader } from './PageHeader';
 import { SkeletonRow } from './Skeleton';
@@ -126,6 +127,7 @@ NameCell.propTypes = {
 
 export function EvaluationHistory() {
   const navigate = useNavigate();
+  const { jobId: activeJobId, isEvaluating } = useEvaluation();
   const [filters, setFilters] = useState({ strategy: '', status: '', search: '' });
   const [searchInput, setSearchInput] = useState('');
   const [allEvaluations, setAllEvaluations] = useState([]);
@@ -259,7 +261,13 @@ export function EvaluationHistory() {
               {evaluations.map((eval_) => (
                 <tr
                   key={eval_.jobId}
-                  onClick={() => navigate(`/app/history/${eval_.jobId}`)}
+                  onClick={() => {
+                    if (eval_.status === 'processing' && isEvaluating && eval_.jobId === activeJobId) {
+                      navigate(`/app/evaluate/${eval_.jobId}`);
+                    } else {
+                      navigate(`/app/history/${eval_.jobId}`);
+                    }
+                  }}
                   className="cv-auto hover:bg-surface-secondary transition-colors cursor-pointer"
                 >
                   <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>

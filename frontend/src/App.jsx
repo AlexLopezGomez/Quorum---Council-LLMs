@@ -13,8 +13,15 @@ import { EvaluationDetail } from './components/EvaluationDetail';
 import { ErrorAlert } from './components/ui/ErrorAlert';
 
 function UploadRoute() {
-  const { submitEvaluation, isLoading } = useEvaluation();
+  const { submitEvaluation, isLoading, jobId: activeJobId, isEvaluating } = useEvaluation();
   const navigate = useNavigate();
+
+  // Auto-redirect to the active evaluation if one is running
+  useEffect(() => {
+    if (isEvaluating && activeJobId) {
+      navigate(`/app/evaluate/${activeJobId}`, { replace: true });
+    }
+  }, [isEvaluating, activeJobId, navigate]);
 
   const handleSubmit = (cases, options) => {
     const evalPromise = new Promise((resolve, reject) => {
@@ -30,7 +37,7 @@ function UploadRoute() {
       error: (err) => ({ title: 'Failed to start', description: err?.message }),
     });
 
-    evalPromise.then((jobId) => navigate(`/app/evaluate/${jobId}`)).catch(() => {});
+    evalPromise.then((jobId) => navigate(`/app/evaluate/${jobId}`)).catch(() => { });
   };
 
   return <TestCaseUpload onSubmit={handleSubmit} isLoading={isLoading} />;

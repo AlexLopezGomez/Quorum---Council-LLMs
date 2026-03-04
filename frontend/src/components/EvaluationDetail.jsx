@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getResults } from '../lib/api';
 import { useApiQuery } from '../hooks/useApiQuery';
@@ -8,6 +8,7 @@ import { CostBreakdown } from './CostBreakdown';
 import { ErrorAlert } from './ui/ErrorAlert';
 import { SummaryGrid } from './ui/SummaryGrid';
 import { SkeletonCard } from './Skeleton';
+import { useEvaluation } from '../context/EvaluationContext';
 
 function toTestCaseState(result) {
   const judges = {};
@@ -47,12 +48,22 @@ export function EvaluationDetail() {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { jobId: activeJobId, isEvaluating } = useEvaluation();
 
   const fetchFn = useCallback(
     (signal) => getResults(jobId, signal),
     [jobId],
   );
-  const { data, loading, error } = useApiQuery(fetchFn, [jobId]);
+  const { data, loading, error } = useApiQuery(fetchFn, [jobId, refreshKey]);
+
+  // Auto-poll every 10s while the evaluation is still processing
+  useEffect(() => {
+    if (data && data.status === 'processing') {
+      const timer = setInterval(() => setRefreshKey((k) => k + 1), 10000);
+      return () => clearInterval(timer);
+    }
+  }, [data]);
 
   const backAction = (
     <button
@@ -86,7 +97,21 @@ export function EvaluationDetail() {
   if (!data || data.status === 'processing') {
     return (
       <div className="space-y-6">
-        <PageHeader title="Evaluation Detail" subtitle="Evaluation still in progress" action={backAction} />
+        <PageHeader title="Evaluation Detail" subtitle="This evaluation is still running" action={backAction} />
+        <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-8 text-center">
+          <div className="w-3 h-3 rounded-full bg-verdict-pass animate-pulse mx-auto mb-4" />
+          <p className="text-sm text-text-secondary mb-4">
+            Results will appear automatically when the evaluation completes.
+          </p>
+          {isEvaluating && activeJobId === jobId && (
+            <button
+              onClick={() => navigate(`/app/evaluate/${jobId}`)}
+              className="px-4 py-2 text-sm font-medium bg-accent text-accent-foreground rounded-lg hover:bg-accent-hover transition-colors"
+            >
+              View Live Progress
+            </button>
+          )}
+        </div>
       </div>
     );
   }

@@ -25,7 +25,7 @@ export function Sidebar() {
             <div className="px-5 py-5">
                 <button
                     className="text-lg font-semibold text-text-primary cursor-pointer bg-transparent border-none p-0"
-                    onClick={() => { resetEvaluation(); navigate('/app'); }}
+                    onClick={() => navigate('/app')}
                 >
                     Quorum
                 </button>
@@ -35,10 +35,7 @@ export function Sidebar() {
                 {NAV_ITEMS.map((item) => (
                     <button
                         key={item.key}
-                        onClick={() => {
-                            if (item.key === 'upload') resetEvaluation();
-                            navigate(item.path);
-                        }}
+                        onClick={() => navigate(item.path)}
                         className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${isActive(item)
                             ? 'bg-surface-tertiary text-text-primary font-medium'
                             : 'text-text-secondary hover:bg-surface-tertiary hover:text-text-primary'
@@ -69,11 +66,10 @@ export function Sidebar() {
                 <div className="px-3 pb-4 border-t border-surface-border pt-4">
                     <button
                         onClick={() => navigate('/app/settings')}
-                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors mb-1 ${
-                            pathname.startsWith('/app/settings')
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors mb-1 ${pathname.startsWith('/app/settings')
                                 ? 'bg-surface-tertiary text-text-primary font-medium'
                                 : 'text-text-secondary hover:bg-surface-tertiary hover:text-text-primary'
-                        }`}
+                            }`}
                     >
                         <Settings size={18} />
                         Settings

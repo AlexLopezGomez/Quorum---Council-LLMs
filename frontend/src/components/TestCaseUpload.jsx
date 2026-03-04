@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
-import { Upload, Play, ChevronDown, Zap, Users, GitMerge, Cpu, Sparkles } from 'lucide-react';
+import { Upload, Play, ChevronDown, Zap, Users, GitMerge, Cpu, Sparkles, Maximize2, X } from 'lucide-react';
 import { STRATEGIES, STRATEGY_DESCRIPTIONS } from '../lib/constants';
 import { PageHeader } from './PageHeader';
 import { ErrorAlert } from './ui/ErrorAlert';
@@ -38,10 +39,10 @@ const SAMPLE_DATA = [
 ];
 
 const STRATEGY_CARD_CONFIG = {
-  auto:    { icon: Zap,      colorClass: 'text-blue-500',   activeDot: 'bg-blue-500',   description: 'Adaptive routing based on risk' },
-  council: { icon: Users,    colorClass: 'text-purple-600', activeDot: 'bg-purple-500', description: 'Full 3-judge + aggregator' },
-  hybrid:  { icon: GitMerge, colorClass: 'text-amber-600',  activeDot: 'bg-amber-500',  description: 'Deterministic + single judge' },
-  single:  { icon: Cpu,      colorClass: 'text-gray-500',   activeDot: 'bg-gray-400',   description: 'Cheapest judge only' },
+  auto: { icon: Zap, colorClass: 'text-blue-500', activeDot: 'bg-blue-500', description: 'Adaptive routing based on risk' },
+  council: { icon: Users, colorClass: 'text-purple-600', activeDot: 'bg-purple-500', description: 'Full 3-judge + aggregator' },
+  hybrid: { icon: GitMerge, colorClass: 'text-amber-600', activeDot: 'bg-amber-500', description: 'Deterministic + single judge' },
+  single: { icon: Cpu, colorClass: 'text-gray-500', activeDot: 'bg-gray-400', description: 'Cheapest judge only' },
 };
 
 function validateTestCases(data) {
@@ -60,6 +61,104 @@ function validateTestCases(data) {
   return cases;
 }
 
+function PreviewModal({ testCases, onClose }) {
+  const hasExpected = testCases.some(tc => tc.expectedOutput);
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handleKey);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKey);
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm animate-fadeIn"
+      onClick={onClose}
+      style={{ padding: '3vh 2vw' }}
+    >
+      <div
+        className="relative w-full max-w-5xl max-h-[94vh] overflow-y-auto bg-surface rounded-2xl border border-surface-border shadow-2xl animate-scaleIn"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="sticky top-0 z-10 bg-surface border-b border-surface-border px-8 py-5 flex items-center justify-between rounded-t-2xl">
+          <div>
+            <h3 className="text-base font-semibold text-text-primary">
+              Full Preview
+            </h3>
+            <p className="text-xs text-text-tertiary mt-0.5">
+              {testCases.length} test case{testCases.length > 1 ? 's' : ''}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-surface-secondary transition-all duration-200"
+            aria-label="Close"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Cards */}
+        <div className="p-6 space-y-4">
+          {testCases.map((tc, i) => (
+            <div
+              key={`modal-tc-${i}`}
+              className="bg-surface-secondary rounded-xl border border-surface-border p-5 space-y-3 animate-fadeInUp"
+              style={{ animationDelay: `${i * 60}ms` }}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-accent/10 text-accent text-xs font-semibold">
+                  {i + 1}
+                </span>
+                <span className="text-xs font-medium text-text-tertiary uppercase tracking-wide">Test Case</span>
+              </div>
+
+              {/* Input */}
+              <div>
+                <p className="text-xs font-medium text-text-tertiary uppercase tracking-wide mb-1">Input</p>
+                <p className="text-sm text-text-primary leading-relaxed bg-surface rounded-lg px-4 py-3 border border-surface-border">{tc.input}</p>
+              </div>
+
+              {/* Actual Output */}
+              <div>
+                <p className="text-xs font-medium text-text-tertiary uppercase tracking-wide mb-1">Actual Output</p>
+                <p className="text-sm text-text-secondary leading-relaxed bg-surface rounded-lg px-4 py-3 border border-surface-border">{tc.actualOutput}</p>
+              </div>
+
+              {/* Expected Output */}
+              {hasExpected && (
+                <div>
+                  <p className="text-xs font-medium text-text-tertiary uppercase tracking-wide mb-1">Expected Output</p>
+                  <p className="text-sm text-text-secondary leading-relaxed bg-surface rounded-lg px-4 py-3 border border-surface-border">{tc.expectedOutput || '—'}</p>
+                </div>
+              )}
+
+              {/* Context Passages */}
+              <div>
+                <p className="text-xs font-medium text-text-tertiary uppercase tracking-wide mb-1">Context Passages</p>
+                <div className="bg-surface rounded-lg px-4 py-3 border border-surface-border space-y-2">
+                  {tc.retrievalContext.map((p, j) => (
+                    <div key={j} className="flex gap-2">
+                      <span className="text-xs text-accent font-medium mt-0.5 shrink-0">{j + 1}.</span>
+                      <p className="text-xs text-text-secondary leading-relaxed">{p}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 export function TestCaseUpload({ onSubmit, isLoading }) {
   const [testCases, setTestCases] = useState([]);
   const [error, setError] = useState(null);
@@ -67,6 +166,7 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
   const [name, setName] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
   const [showFormat, setShowFormat] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const fileInputRef = useRef(null);
 
   const processFile = (file) => {
@@ -153,11 +253,10 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
                 onDragLeave={() => setIsDragOver(false)}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`w-full py-10 border-2 border-dashed rounded-xl cursor-pointer transition-colors flex flex-col items-center gap-3 ${
-                  isDragOver
-                    ? 'border-accent bg-surface-secondary'
-                    : 'border-surface-border-strong hover:border-accent hover:bg-surface-secondary'
-                }`}
+                className={`w-full py-10 border-2 border-dashed rounded-xl cursor-pointer transition-colors flex flex-col items-center gap-3 ${isDragOver
+                  ? 'border-accent bg-surface-secondary'
+                  : 'border-surface-border-strong hover:border-accent hover:bg-surface-secondary'
+                  }`}
               >
                 <Upload
                   size={24}
@@ -201,7 +300,16 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
                   <h4 className="text-sm font-semibold text-text-primary">
                     Preview ({testCases.length} test case{testCases.length > 1 ? 's' : ''})
                   </h4>
-                  <span className="text-xs text-text-tertiary">Scroll to see all rows and fields</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-text-tertiary">Scroll to see all rows and fields</span>
+                    <button
+                      onClick={() => setIsPreviewModalOpen(true)}
+                      className="p-1 rounded-md text-text-tertiary hover:text-text-primary hover:bg-surface-secondary transition-all duration-200"
+                      title="Expand full preview"
+                    >
+                      <Maximize2 size={14} />
+                    </button>
+                  </div>
                 </div>
                 <div className="overflow-auto max-h-80">
                   <table className="w-full min-w-[700px]">
@@ -245,6 +353,9 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
             );
           })()}
 
+          {/* Preview Modal */}
+          {isPreviewModalOpen && <PreviewModal testCases={testCases} onClose={() => setIsPreviewModalOpen(false)} />}
+
           {/* Run button */}
           {testCases.length > 0 && (
             <button
@@ -274,7 +385,7 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
             </button>
             {showFormat && (
               <pre className="bg-surface-secondary p-3 rounded-lg overflow-x-auto text-xs text-text-secondary mt-2">
-{`[
+                {`[
   {
     "input": "User query",
     "actualOutput": "RAG system response",
@@ -304,11 +415,10 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
                     <button
                       key={s.value}
                       onClick={() => setStrategy(s.value)}
-                      className={`flex flex-col items-start gap-2 p-3 rounded-xl border text-left transition-colors ${
-                        isActive
-                          ? 'border-accent bg-surface-tertiary'
-                          : 'border-surface-border hover:bg-surface-secondary'
-                      }`}
+                      className={`flex flex-col items-start gap-2 p-3 rounded-xl border text-left transition-colors ${isActive
+                        ? 'border-accent bg-surface-tertiary'
+                        : 'border-surface-border hover:bg-surface-secondary'
+                        }`}
                     >
                       <div className="flex items-center gap-1.5">
                         <span className={`w-1.5 h-1.5 rounded-full ${cfg.activeDot}`} />

@@ -475,14 +475,169 @@ Size: 18px for nav items, 16px for inline, 14px for badges/meta.
 
 ---
 
+## Display Typography Scale
+
+Extended sizes for landing/marketing views:
+
+| Use | Class | Size |
+|-----|-------|------|
+| Hero / display | `text-5xl font-extrabold tracking-tight` | ~80px |
+| Section heading | `text-4xl font-bold tracking-tight` | ~36px |
+| Sub-heading | `text-3xl font-bold tracking-tight` | ~30px |
+| Card label (ALL CAPS) | `text-[0.7rem] font-bold uppercase tracking-[0.1em]` | 11px |
+
+Large headings use letter-spacing `-0.025em` to `-0.03em` (tight).
+
+---
+
+## Focus State System
+
+Accent glow ring — apply to all interactive inputs and focusable surfaces:
+
+```jsx
+// Tailwind
+focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent
+// Resolves to: box-shadow 0 0 0 3px rgba(217,144,88,0.10); border-color: #d99058
+```
+
+---
+
+## Enhanced Button Variants
+
+**Gradient CTA Button** (hero/CTA sections):
+```jsx
+<button className="px-6 py-3.5 rounded-xl text-sm font-semibold text-white transition-all
+  bg-gradient-to-br from-accent to-accent-hover
+  shadow-[0_4px_20px_rgba(217,144,88,0.30)]
+  hover:opacity-90 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(217,144,88,0.35)]">
+  Join Waitlist
+</button>
+```
+
+**Pill Split Button** (nav / badge CTA):
+```jsx
+<div className="flex items-center rounded-full overflow-hidden text-xs font-semibold">
+  <span className="bg-gradient-to-r from-accent to-accent-hover text-white px-4 py-1.5">
+    Label
+  </span>
+  <span className="bg-text-primary text-white px-3 py-1.5">
+    Badge
+  </span>
+</div>
+```
+
+---
+
+## Interactive Surface Effects
+
+**Spotlight Card** (mouse-follow radial glow — pillar/feature cards):
+```jsx
+import SpotlightCard from '@/components/landing/SpotlightCard'
+
+<SpotlightCard spotlightColor="rgba(217,144,88,0.12)" className="...card classes...">
+  {/* card content */}
+</SpotlightCard>
+```
+The component injects a radial gradient at the cursor position on hover. Do not replicate this effect with inline CSS — always use the component.
+
+**Hover Lift** (clickable cards):
+```jsx
+className="... transition-all hover:-translate-y-1 hover:shadow-md hover:border-accent/20"
+```
+
+**Top Accent Bar** (feature cards, judge cards):
+```jsx
+<div className="h-0.5 bg-gradient-to-r from-accent to-transparent" />
+```
+
+---
+
+## Glassmorphism / Blur Overlay Pattern
+
+Used for modals, floating nav, dropdowns with backdrop context:
+
+```jsx
+// Backdrop overlay (modal)
+<div className="fixed inset-0 bg-text-primary/40 backdrop-blur-[6px] z-50" />
+
+// Floating card (modal panel)
+<div className="bg-surface rounded-2xl border border-surface-border shadow-lg p-6
+  animate-in zoom-in-95 duration-200">
+  {/* content */}
+</div>
+
+// Glassmorphism nav / sticky header
+<header className="sticky top-4 bg-surface-secondary/60 backdrop-blur-xl
+  border border-surface-border/50 rounded-2xl shadow-sm">
+  {/* nav */}
+</header>
+```
+
+---
+
+## Scroll-Triggered Animation (BlurText)
+
+For section headings and key text that animates in on scroll:
+
+```jsx
+import BlurText from '@/components/landing/BlurText'
+
+<BlurText
+  text="Section Heading"
+  delay={80}
+  direction="top"
+  className="text-4xl font-bold tracking-tight text-text-primary"
+/>
+```
+
+Props: `delay` (ms between words, default 80), `direction` (`"top"` | `"bottom"`). Fires when 80% of the element is visible.
+
+---
+
+## Marketing / Landing Section Layout
+
+Alternating section pattern:
+
+```jsx
+// Parchment section (default)
+<section className="bg-surface-secondary py-24 px-6">
+  <div className="max-w-5xl mx-auto">
+    {/* content */}
+  </div>
+</section>
+
+// White section (alternating)
+<section className="bg-surface py-24 px-6 border-t border-surface-border">
+  <div className="max-w-5xl mx-auto">
+    {/* content */}
+  </div>
+</section>
+```
+
+Section heading block:
+```jsx
+<div className="text-center mb-14">
+  <p className="text-xs font-bold uppercase tracking-[0.1em] text-text-tertiary mb-3">
+    Section Label
+  </p>
+  <BlurText text="Main Section Heading" className="text-4xl font-bold tracking-tight text-text-primary" />
+  <p className="mt-4 text-base text-text-secondary max-w-2xl mx-auto">
+    Supporting description text.
+  </p>
+</div>
+```
+
+---
+
 ## CRITICAL — What NOT to Do
 
-- No gradients anywhere
+- No gradients anywhere **except** the defined Gradient CTA Button, Pill Split Button, and Top Accent Bar patterns above
 - No rounded-full on cards (use rounded-xl)
 - No colored backgrounds on the page (keep bg-surface-secondary)
 - No heavy borders (1px border-surface-border only)
-- No drop shadows heavier than shadow-sm on cards
-- No ALL CAPS except table headers and stat labels
+- No drop shadows heavier than shadow-sm on cards (exception: Gradient CTA Button shadow is permitted)
+- No ALL CAPS except table headers, stat labels, and card labels using the defined `text-[0.7rem]` pattern
 - No emoji in the UI
 - Font is New York serif (`font-family: 'New York', ui-serif, Georgia, serif`) — do not override it
 - No dark mode (out of scope, adds complexity for no demo value)
+- No freestyle spotlight/glow effects — always use `SpotlightCard` component with `spotlightColor="rgba(217,144,88,0.12)"`

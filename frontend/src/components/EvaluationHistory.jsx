@@ -1,9 +1,9 @@
 import { useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Filter, Clock, ClipboardList, Search, X, Pencil, Check } from 'lucide-react';
+import { Filter, Clock, ClipboardList, Search, X, Pencil, Check, History as HistoryIcon, ChevronDown } from 'lucide-react';
 import { getHistory, updateEvaluationName } from '../lib/api';
-import { safeFixed } from '../lib/utils';
-import { STATUS_BADGE_STYLES } from '../lib/constants';
+import { safeFixed, getScoreTextColor } from '../lib/utils';
+import { STATUS_BADGE_STYLES, STRATEGY_STYLE } from '../lib/constants';
 import { formatDate } from '../lib/utils';
 import { useApiQuery } from '../hooks/useApiQuery';
 import { useEvaluation } from '../context/EvaluationContext';
@@ -23,6 +23,20 @@ function StatusBadge({ status }) {
 
 StatusBadge.propTypes = {
   status: PropTypes.string.isRequired,
+};
+
+function StrategyBadgeCell({ strategy }) {
+  const config = STRATEGY_STYLE[strategy] || STRATEGY_STYLE.council;
+  return (
+    <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${config.bg} ${config.text} ${config.border}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
+      {config.label || strategy}
+    </span>
+  );
+}
+
+StrategyBadgeCell.propTypes = {
+  strategy: PropTypes.string.isRequired,
 };
 
 function NameCell({ jobId, initialName, onSaved }) {
@@ -127,7 +141,7 @@ NameCell.propTypes = {
 
 export function EvaluationHistory() {
   const navigate = useNavigate();
-  const { jobId: activeJobId, isEvaluating } = useEvaluation();
+  const { activeJobId, isEvaluating, canViewLiveActiveEvaluation } = useEvaluation();
   const [filters, setFilters] = useState({ strategy: '', status: '', search: '' });
   const [searchInput, setSearchInput] = useState('');
   const [allEvaluations, setAllEvaluations] = useState([]);
@@ -182,11 +196,11 @@ export function EvaluationHistory() {
 
   return (
     <div>
-      <PageHeader title="History" subtitle="Browse past evaluation runs" />
+      <PageHeader title="History" subtitle="Browse past evaluation runs" icon={HistoryIcon} />
 
       <ErrorAlert message={error?.message} className="mb-6" />
 
-      <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden">
+      <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden animate-fadeInUp">
         <div className="px-6 py-4 border-b border-surface-border flex items-center justify-between gap-4">
           <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2 shrink-0">
             <Filter size={14} className="text-text-tertiary" />
@@ -220,7 +234,7 @@ export function EvaluationHistory() {
                 setAllEvaluations([]);
                 setFilters((f) => ({ ...f, strategy: e.target.value }));
               }}
-              className="text-xs text-text-secondary bg-surface-secondary border border-surface-border rounded-lg px-3 py-1.5"
+              className="text-xs text-text-secondary bg-surface-secondary border border-surface-border rounded-lg px-3 py-1.5 cursor-pointer"
             >
               <option value="">Strategy: All</option>
               <option value="auto">Auto</option>
@@ -234,7 +248,7 @@ export function EvaluationHistory() {
                 setAllEvaluations([]);
                 setFilters((f) => ({ ...f, status: e.target.value }));
               }}
-              className="text-xs text-text-secondary bg-surface-secondary border border-surface-border rounded-lg px-3 py-1.5"
+              className="text-xs text-text-secondary bg-surface-secondary border border-surface-border rounded-lg px-3 py-1.5 cursor-pointer"
             >
               <option value="">Status: All</option>
               <option value="complete">Complete</option>
@@ -247,7 +261,7 @@ export function EvaluationHistory() {
         {(evaluations.length > 0 || filtersActive) && (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-surface-border">
+              <tr className="border-b border-surface-border bg-surface-secondary/50">
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Name / Job ID</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Cases</th>
@@ -258,40 +272,55 @@ export function EvaluationHistory() {
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-border">
-              {evaluations.map((eval_) => (
-                <tr
-                  key={eval_.jobId}
-                  onClick={() => {
-                    if (eval_.status === 'processing' && isEvaluating && eval_.jobId === activeJobId) {
-                      navigate(`/app/evaluate/${eval_.jobId}`);
-                    } else {
-                      navigate(`/app/history/${eval_.jobId}`);
-                    }
-                  }}
-                  className="cv-auto hover:bg-surface-secondary transition-colors cursor-pointer"
-                >
-                  <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                    <NameCell
-                      jobId={eval_.jobId}
-                      initialName={nameOverrides[eval_.jobId] ?? eval_.name}
-                      onSaved={handleNameSaved}
-                    />
-                  </td>
-                  <td className="px-6 py-4"><StatusBadge status={eval_.status} /></td>
-                  <td className="px-6 py-4 text-sm text-text-secondary">{eval_.testCaseCount}</td>
-                  <td className="px-6 py-4 text-sm text-text-secondary capitalize">{eval_.config?.strategy || 'council'}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-text-primary">
-                    {safeFixed(eval_.summary?.avgFinalScore)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-text-secondary">
-                    {eval_.summary?.totalCost != null ? `$${safeFixed(eval_.summary.totalCost, 4)}` : '-'}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-text-secondary">
-                    <Clock size={12} className="inline -mt-0.5 mr-1 text-text-tertiary" />
-                    {formatDate(eval_.createdAt)}
-                  </td>
-                </tr>
-              ))}
+              {evaluations.map((eval_, idx) => {
+                const score = eval_.summary?.avgFinalScore;
+                const scoreColor = score != null ? getScoreTextColor(score) : 'text-text-primary';
+
+                return (
+                  <tr
+                    key={eval_.jobId}
+                    onClick={() => {
+                      if (
+                        eval_.status === 'processing' &&
+                        isEvaluating &&
+                        canViewLiveActiveEvaluation &&
+                        eval_.jobId === activeJobId
+                      ) {
+                        navigate(`/app/evaluate/${eval_.jobId}`);
+                      } else {
+                        navigate(`/app/history/${eval_.jobId}`);
+                      }
+                    }}
+                    className="cv-auto hover:bg-surface-secondary transition-all cursor-pointer border-l-2 border-l-transparent hover:border-l-accent animate-staggerFadeIn"
+                    style={{ '--stagger-delay': `${Math.min(idx * 40, 400)}ms` }}
+                  >
+                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                      <NameCell
+                        jobId={eval_.jobId}
+                        initialName={nameOverrides[eval_.jobId] ?? eval_.name}
+                        onSaved={handleNameSaved}
+                      />
+                    </td>
+                    <td className="px-6 py-4"><StatusBadge status={eval_.status} /></td>
+                    <td className="px-6 py-4 text-sm text-text-secondary">{eval_.testCaseCount}</td>
+                    <td className="px-6 py-4">
+                      <StrategyBadgeCell strategy={eval_.config?.strategy || 'council'} />
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`text-sm font-medium ${scoreColor}`}>
+                        {safeFixed(score)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-text-secondary">
+                      {eval_.summary?.totalCost != null ? `$${safeFixed(eval_.summary.totalCost, 4)}` : '-'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-text-secondary">
+                      <Clock size={12} className="inline -mt-0.5 mr-1 text-text-tertiary" />
+                      {formatDate(eval_.createdAt)}
+                    </td>
+                  </tr>
+                );
+              })}
               {evaluations.length === 0 && !loading && (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-sm text-text-tertiary">
@@ -305,14 +334,19 @@ export function EvaluationHistory() {
       </div>
 
       {evaluations.length === 0 && !loading && !filtersActive && (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="flex flex-col items-center justify-center py-20 text-center animate-fadeInUp">
           <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-10 max-w-sm w-full">
-            <ClipboardList size={36} className="mx-auto text-text-tertiary mb-4" />
+            <div className="w-12 h-12 rounded-xl bg-surface-secondary border border-surface-border flex items-center justify-center mx-auto mb-5">
+              <ClipboardList size={24} className="text-text-tertiary" />
+            </div>
             <h3 className="text-base font-semibold text-text-primary mb-1">No evaluations yet</h3>
             <p className="text-sm text-text-secondary mb-6">Upload test cases to run your first evaluation</p>
             <button
               onClick={() => navigate('/app')}
-              className="px-4 py-2 text-sm font-medium bg-accent text-accent-foreground rounded-lg hover:bg-accent-hover transition-colors"
+              className="px-5 py-2.5 text-sm font-semibold rounded-xl text-white transition-all
+                bg-gradient-to-br from-accent to-accent-hover
+                shadow-[0_4px_20px_rgba(217,144,88,0.30)]
+                hover:opacity-90 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(217,144,88,0.35)]"
             >
               Upload Test Cases
             </button>
@@ -321,7 +355,7 @@ export function EvaluationHistory() {
       )}
 
       {loading && evaluations.length === 0 && (
-        <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden">
+        <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden animate-fadeIn">
           <table className="w-full">
             <tbody>
               {[...Array(5)].map((_, i) => <SkeletonRow key={`skeleton-${i}`} />)}
@@ -331,11 +365,12 @@ export function EvaluationHistory() {
       )}
 
       {hasMore && !loading && (
-        <div className="text-center py-4">
+        <div className="text-center py-6">
           <button
             onClick={handleLoadMore}
-            className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-tertiary rounded-lg transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-surface text-text-primary rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors shadow-sm"
           >
+            <ChevronDown size={14} />
             Load More
           </button>
         </div>

@@ -131,5 +131,13 @@ evaluationSchema.index({ userId: 1, createdAt: -1 });
 evaluationSchema.index({ createdAt: -1 });
 evaluationSchema.index({ status: 1 });
 evaluationSchema.index({ status: 1, completedAt: -1 });
+evaluationSchema.index(
+  { userId: 1, status: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: 'processing' },
+    name: 'uniq_processing_evaluation_per_user',
+  }
+);
 
 export const Evaluation = mongoose.model('Evaluation', evaluationSchema);

@@ -8,6 +8,60 @@ import { sseManager } from '../utils/sse.js';
 import { logger } from '../utils/logger.js';
 
 const router = Router();
+const ACTIVE_CONFLICT_CODE = 'EVALUATION_ALREADY_RUNNING';
+
+function isDuplicateKeyError(error) {
+  return Number(error?.code) === 11000;
+}
+
+async function findActiveEvaluationForUser(userId) {
+  return Evaluation.findOne({ userId, status: 'processing' })
+    .sort({ createdAt: -1 })
+    .select('jobId status createdAt name');
+}
+
+router.get('/active', async (req, res) => {
+  try {
+    const activeEvaluation = await findActiveEvaluationForUser(req.user._id);
+    if (!activeEvaluation) {
+      logger.info(
+        'evaluation.active.none',
+        logger.withReq(req, {
+          statusCode: 204,
+          userId: req.user._id,
+        })
+      );
+      return res.status(204).send();
+    }
+
+    logger.info(
+      'evaluation.active.fetched',
+      logger.withReq(req, {
+        statusCode: 200,
+        userId: req.user._id,
+        jobId: activeEvaluation.jobId,
+      })
+    );
+    return res.json({
+      jobId: activeEvaluation.jobId,
+      status: activeEvaluation.status,
+      name: activeEvaluation.name || '',
+      createdAt: activeEvaluation.createdAt,
+      streamUrl: `/api/stream/${activeEvaluation.jobId}`,
+      resultsUrl: `/api/results/${activeEvaluation.jobId}`,
+    });
+  } catch (error) {
+    logger.error(
+      'evaluation.active.fetch_failed',
+      logger.withReq(req, {
+        statusCode: 500,
+        userId: req.user?._id,
+        metadata: { message: error.message },
+      })
+    );
+    return res.status(500).json({ error: 'Failed to fetch active evaluation' });
+  }
+});
 
 /**
  * @openapi
@@ -63,6 +117,24 @@ const router = Router();
 router.post('/', validateEvaluateRequest, async (req, res) => {
   try {
     const { testCases, options, name } = req.validatedBody;
+    const existingActiveEvaluation = await findActiveEvaluationForUser(req.user._id);
+    if (existingActiveEvaluation) {
+      logger.warn(
+        'evaluation.create.conflict',
+        logger.withReq(req, {
+          statusCode: 409,
+          userId: req.user._id,
+          jobId: existingActiveEvaluation.jobId,
+        })
+      );
+      return res.status(409).json({
+        error: 'An evaluation is already running. Resume the active evaluation before starting a new one.',
+        code: ACTIVE_CONFLICT_CODE,
+        status: 'processing',
+        activeJobId: existingActiveEvaluation.jobId,
+      });
+    }
+
     const jobId = nanoid(12);
     logger.audit(
       'evaluation.create.requested',
@@ -87,7 +159,28 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
       events: [],
       config: { strategy: options?.strategy || 'auto' },
     });
-    await evaluation.save();
+    try {
+      await evaluation.save();
+    } catch (saveError) {
+      if (isDuplicateKeyError(saveError)) {
+        const activeEvaluation = await findActiveEvaluationForUser(req.user._id);
+        logger.warn(
+          'evaluation.create.conflict',
+          logger.withReq(req, {
+            statusCode: 409,
+            userId: req.user._id,
+            jobId: activeEvaluation?.jobId || null,
+          })
+        );
+        return res.status(409).json({
+          error: 'An evaluation is already running. Resume the active evaluation before starting a new one.',
+          code: ACTIVE_CONFLICT_CODE,
+          status: 'processing',
+          activeJobId: activeEvaluation?.jobId || null,
+        });
+      }
+      throw saveError;
+    }
     logger.audit(
       'evaluation.created',
       logger.withReq(req, {
@@ -186,6 +279,23 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
       resultsUrl: `/api/results/${jobId}`,
     });
   } catch (error) {
+    if (isDuplicateKeyError(error)) {
+      const activeEvaluation = await findActiveEvaluationForUser(req.user._id);
+      logger.warn(
+        'evaluation.create.conflict',
+        logger.withReq(req, {
+          statusCode: 409,
+          userId: req.user._id,
+          jobId: activeEvaluation?.jobId || null,
+        })
+      );
+      return res.status(409).json({
+        error: 'An evaluation is already running. Resume the active evaluation before starting a new one.',
+        code: ACTIVE_CONFLICT_CODE,
+        status: 'processing',
+        activeJobId: activeEvaluation?.jobId || null,
+      });
+    }
     logger.error(
       'evaluation.create_failed',
       logger.withReq(req, {

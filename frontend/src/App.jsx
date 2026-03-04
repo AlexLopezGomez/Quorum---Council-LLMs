@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { Toaster, sileo } from 'sileo';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -13,46 +13,90 @@ import { EvaluationDetail } from './components/EvaluationDetail';
 import { ErrorAlert } from './components/ui/ErrorAlert';
 
 function UploadRoute() {
-  const { submitEvaluation, isLoading, jobId: activeJobId, isEvaluating } = useEvaluation();
+  const {
+    submitEvaluation,
+    isLoading,
+    activeJobId,
+    isEvaluating,
+    activeEvaluation,
+    canViewLiveActiveEvaluation,
+    syncActiveEvaluation,
+  } = useEvaluation();
   const navigate = useNavigate();
 
-  // Auto-redirect to the active evaluation if one is running
   useEffect(() => {
-    if (isEvaluating && activeJobId) {
+    syncActiveEvaluation().catch(() => { });
+  }, [syncActiveEvaluation]);
+
+  const resumeActiveEvaluation = () => {
+    if (!activeJobId) return;
+    if (canViewLiveActiveEvaluation) {
       navigate(`/app/evaluate/${activeJobId}`, { replace: true });
+      return;
     }
-  }, [isEvaluating, activeJobId, navigate]);
+    navigate(`/app/history/${activeJobId}`, { replace: true });
+  };
 
   const handleSubmit = (cases, options) => {
-    const evalPromise = new Promise((resolve, reject) => {
-      submitEvaluation(cases, options).then((jobId) => {
-        if (jobId) resolve(jobId);
-        else reject(new Error('Failed to start evaluation'));
+    if (isEvaluating && activeJobId) {
+      sileo.info({
+        title: 'Evaluation already in progress',
+        description: 'Resume the active run before starting a new one.',
       });
+      resumeActiveEvaluation();
+      return;
+    }
+
+    const evalPromise = submitEvaluation(cases, options).then((jobId) => {
+      if (jobId) return jobId;
+      throw new Error('Failed to start evaluation');
     });
 
     sileo.promise(evalPromise, {
-      loading: { title: 'Starting evaluation…' },
+      loading: { title: 'Starting evaluation...' },
       success: { title: 'Evaluation started!' },
       error: (err) => ({ title: 'Failed to start', description: err?.message }),
     });
 
-    evalPromise.then((jobId) => navigate(`/app/evaluate/${jobId}`)).catch(() => { });
+    evalPromise
+      .then((jobId) => navigate(`/app/evaluate/${jobId}`))
+      .catch((err) => {
+        if (err?.status === 409 && err?.data?.activeJobId) {
+          navigate(`/app/history/${err.data.activeJobId}`);
+        }
+      });
   };
 
-  return <TestCaseUpload onSubmit={handleSubmit} isLoading={isLoading} />;
+  return (
+    <TestCaseUpload
+      onSubmit={handleSubmit}
+      isLoading={isLoading}
+      activeEvaluation={activeEvaluation}
+      onResumeActive={resumeActiveEvaluation}
+    />
+  );
 }
 
 function EvaluateRoute() {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const { testCases, currentTestCase, setCurrentTestCase, events, jobId: ctxJobId } = useEvaluation();
+  const hasStreamingContext = Boolean(ctxJobId && ctxJobId === jobId && testCases.length > 0);
+  const wasStreaming = useRef(hasStreamingContext);
 
   useEffect(() => {
-    if (!ctxJobId || ctxJobId !== jobId) {
+    if (hasStreamingContext) {
+      wasStreaming.current = true;
+    }
+  }, [hasStreamingContext]);
+
+  useEffect(() => {
+    if (!hasStreamingContext && !wasStreaming.current) {
       navigate(`/app/history/${jobId}`, { replace: true });
     }
-  }, [ctxJobId, jobId, navigate]);
+  }, [hasStreamingContext, jobId, navigate]);
+
+  if (!hasStreamingContext) return null;
 
   return (
     <StreamingEvaluation

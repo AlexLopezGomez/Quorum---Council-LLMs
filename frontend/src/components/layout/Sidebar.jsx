@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LogOut, Settings } from 'lucide-react';
+import { sileo } from 'sileo';
 import { NAV_ITEMS } from '../../lib/constants';
 import { StatusIndicator } from '../ui/StatusIndicator';
 import { useEvaluation } from '../../context/EvaluationContext';
@@ -10,7 +11,16 @@ import { useAuth } from '../../context/AuthContext';
  * Active state is derived from the current URL path.
  */
 export function Sidebar() {
-    const { sseStatus, isEvaluating, resetEvaluation } = useEvaluation();
+    const {
+        sseStatus,
+        isEvaluating,
+        resetEvaluation,
+        activeJobId,
+        canViewLiveActiveEvaluation,
+        syncActiveEvaluation,
+        jobId: localJobId,
+        testCases,
+    } = useEvaluation();
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const { pathname } = useLocation();
@@ -18,6 +28,42 @@ export function Sidebar() {
     const isActive = (item) => {
         if (item.path === '/app') return pathname === '/app' || pathname.startsWith('/app/evaluate');
         return pathname.startsWith(item.path);
+    };
+
+    const handleNewEvaluation = async () => {
+        let latestActive = null;
+        try {
+            latestActive = await syncActiveEvaluation();
+        } catch {
+            // fall back to current local snapshot if sync fails
+        }
+
+        const latestJobId = latestActive?.jobId || activeJobId;
+        const hasProcessingEvaluation = latestActive
+            ? latestActive.status === 'processing'
+            : (isEvaluating && Boolean(activeJobId));
+        const canResumeLive = Boolean(
+            canViewLiveActiveEvaluation &&
+            latestJobId &&
+            localJobId === latestJobId &&
+            Array.isArray(testCases) &&
+            testCases.length > 0
+        );
+
+        if (hasProcessingEvaluation && latestJobId) {
+            sileo.info({
+                title: 'Evaluation already in progress',
+                description: 'Resume the active run before starting a new one.',
+            });
+            if (canResumeLive) {
+                navigate(`/app/evaluate/${latestJobId}`);
+                return;
+            }
+            navigate(`/app/history/${latestJobId}`);
+            return;
+        }
+        resetEvaluation();
+        navigate('/app');
     };
 
     return (
@@ -54,10 +100,10 @@ export function Sidebar() {
                 <div className="px-3 pb-4 border-t border-surface-border pt-4">
                     <StatusIndicator status={sseStatus} />
                     <button
-                        onClick={resetEvaluation}
+                        onClick={handleNewEvaluation}
                         className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-secondary hover:bg-surface-tertiary hover:text-text-primary transition-colors"
                     >
-                        New Evaluation
+                        {isEvaluating ? 'Evaluation Running' : 'New Evaluation'}
                     </button>
                 </div>
             )}
@@ -67,8 +113,8 @@ export function Sidebar() {
                     <button
                         onClick={() => navigate('/app/settings')}
                         className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors mb-1 ${pathname.startsWith('/app/settings')
-                                ? 'bg-surface-tertiary text-text-primary font-medium'
-                                : 'text-text-secondary hover:bg-surface-tertiary hover:text-text-primary'
+                            ? 'bg-surface-tertiary text-text-primary font-medium'
+                            : 'text-text-secondary hover:bg-surface-tertiary hover:text-text-primary'
                             }`}
                     >
                         <Settings size={18} />

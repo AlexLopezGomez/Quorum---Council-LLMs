@@ -1,6 +1,7 @@
 import { useMemo, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { sileo } from 'sileo';
+import { Activity } from 'lucide-react';
 import { TestCaseResult } from './TestCaseResult';
 import { CostBreakdown } from './CostBreakdown';
 import { PageHeader } from './PageHeader';
@@ -8,9 +9,9 @@ import { SummaryGrid } from './ui/SummaryGrid';
 import { safeFixed } from '../lib/utils';
 
 const TICKER_JUDGE_COLORS = {
-  openai:    'bg-openai-light text-openai',
+  openai: 'bg-openai-light text-openai',
   anthropic: 'bg-anthropic-light text-anthropic',
-  gemini:    'bg-gemini-light text-gemini',
+  gemini: 'bg-gemini-light text-gemini',
 };
 
 function getTickerColor(evt) {
@@ -22,18 +23,21 @@ function getTickerColor(evt) {
 
 function StrategyCountCard({ strategyCounts }) {
   return (
-    <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-      <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Strategy</p>
-      <div className="mt-2">
-        {strategyCounts && Object.keys(strategyCounts).length > 0 ? (
-          <div className="flex flex-wrap gap-x-3 gap-y-1">
-            {Object.entries(strategyCounts).map(([s, c]) => (
-              <span key={s} className="text-sm font-medium text-text-primary capitalize">{s}: {c}</span>
-            ))}
-          </div>
-        ) : (
-          <span className="text-2xl font-semibold text-text-primary">-</span>
-        )}
+    <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden">
+      <div className="h-0.5 bg-gradient-to-r from-accent to-transparent" />
+      <div className="p-5">
+        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Strategy</p>
+        <div className="mt-2">
+          {strategyCounts && Object.keys(strategyCounts).length > 0 ? (
+            <div className="flex flex-wrap gap-x-3 gap-y-1">
+              {Object.entries(strategyCounts).map(([s, c]) => (
+                <span key={s} className="text-sm font-medium text-text-primary capitalize">{s}: {c}</span>
+              ))}
+            </div>
+          ) : (
+            <span className="text-2xl font-semibold text-text-primary">-</span>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -45,34 +49,37 @@ StrategyCountCard.propTypes = {
 
 function MetricsPanel({ summary }) {
   return (
-    <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-      <p className="text-xs text-text-secondary font-medium uppercase tracking-wide mb-3">Per-Metric Averages</p>
-      <div className="grid grid-cols-3 gap-6">
-        <div>
-          <span className="text-xs text-text-tertiary">Faithfulness</span>
-          <p className="text-lg font-semibold text-text-primary mt-0.5">
-            {safeFixed(summary.avgFaithfulness)}
-          </p>
+    <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden animate-staggerFadeIn" style={{ '--stagger-delay': '200ms' }}>
+      <div className="h-0.5 bg-gradient-to-r from-accent to-transparent" />
+      <div className="p-5">
+        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide mb-3">Per-Metric Averages</p>
+        <div className="grid grid-cols-3 gap-6">
+          <div>
+            <span className="text-xs text-text-tertiary">Faithfulness</span>
+            <p className="text-lg font-semibold text-text-primary mt-0.5">
+              {safeFixed(summary.avgFaithfulness)}
+            </p>
+          </div>
+          <div>
+            <span className="text-xs text-text-tertiary">Groundedness</span>
+            <p className="text-lg font-semibold text-text-primary mt-0.5">
+              {safeFixed(summary.avgGroundedness)}
+            </p>
+          </div>
+          <div>
+            <span className="text-xs text-text-tertiary">Relevancy</span>
+            <p className="text-lg font-semibold text-text-primary mt-0.5">
+              {safeFixed(summary.avgRelevancy)}
+            </p>
+          </div>
         </div>
-        <div>
-          <span className="text-xs text-text-tertiary">Groundedness</span>
-          <p className="text-lg font-semibold text-text-primary mt-0.5">
-            {safeFixed(summary.avgGroundedness)}
-          </p>
-        </div>
-        <div>
-          <span className="text-xs text-text-tertiary">Relevancy</span>
-          <p className="text-lg font-semibold text-text-primary mt-0.5">
-            {safeFixed(summary.avgRelevancy)}
-          </p>
-        </div>
+        {summary.avgRiskScore !== null && summary.avgRiskScore !== undefined && (
+          <div className="mt-3 pt-3 border-t border-surface-border">
+            <span className="text-xs text-text-tertiary">Avg Risk Score: </span>
+            <span className="text-sm font-medium text-text-primary">{safeFixed(summary.avgRiskScore)}</span>
+          </div>
+        )}
       </div>
-      {summary.avgRiskScore !== null && summary.avgRiskScore !== undefined && (
-        <div className="mt-3 pt-3 border-t border-surface-border">
-          <span className="text-xs text-text-tertiary">Avg Risk Score: </span>
-          <span className="text-sm font-medium text-text-primary">{safeFixed(summary.avgRiskScore)}</span>
-        </div>
-      )}
     </div>
   );
 }
@@ -118,9 +125,9 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
   const testCaseState = useMemo(() => {
     const state = {
       judges: {
-        openai:    { status: 'idle', result: null, error: null },
+        openai: { status: 'idle', result: null, error: null },
         anthropic: { status: 'idle', result: null, error: null },
-        gemini:    { status: 'idle', result: null, error: null },
+        gemini: { status: 'idle', result: null, error: null },
       },
       aggregator: { status: 'idle', result: null, error: null },
       strategy: null,
@@ -178,13 +185,14 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
     return completeEvent?.data?.summary || null;
   }, [events]);
 
-  const completedCases = useMemo(
+  const rawCompletedCases = useMemo(
     () => events.filter(e => e.type === 'test_case_complete').length,
     [events]
   );
 
   const total = testCases.length;
-  const progressPct = total > 0 ? (completedCases / total) * 100 : 0;
+  const completedCases = Math.min(rawCompletedCases, total);
+  const progressPct = total > 0 ? Math.min((completedCases / total) * 100, 100) : 0;
   const currentCase = testCases[currentTestCase];
 
   return (
@@ -192,6 +200,7 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
       <PageHeader
         title="Evaluation Results"
         subtitle={`Test case ${currentTestCase + 1} of ${testCases.length}`}
+        icon={Activity}
         action={
           <div className="flex items-center gap-2">
             <button
@@ -212,12 +221,22 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
         }
       />
 
-      {/* Progress bar */}
-      <div className="h-0.5 bg-surface-tertiary rounded-full overflow-hidden -mt-4">
-        <div
-          className="h-full bg-accent transition-all duration-500 ease-out"
-          style={{ width: `${progressPct}%` }}
-        />
+      {/* Progress bar — enhanced with accent glow and percentage label */}
+      <div className="animate-fadeInUp -mt-4">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-xs text-text-tertiary">
+            {completedCases} of {total} test cases completed
+          </span>
+          <span className="text-xs font-medium text-text-secondary tabular-nums">
+            {Math.round(progressPct)}%
+          </span>
+        </div>
+        <div className="h-2 bg-surface-tertiary rounded-full overflow-hidden">
+          <div
+            className={`h-full bg-accent rounded-full transition-all duration-700 ease-out ${progressPct > 0 ? 'progress-glow' : ''}`}
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
       </div>
 
       {/* Live event ticker */}
@@ -226,8 +245,8 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
           {tickerItems.map((evt) => (
             <span
               key={evt._tickerId}
-              className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium ${getTickerColor(evt)}`}
-              style={{ animation: 'fadeOut 0.5s 3s forwards' }}
+              className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium animate-fadeInUp ${getTickerColor(evt)}`}
+              style={{ animation: 'fadeInUp 0.3s ease-out, fadeOut 0.5s 3s forwards' }}
             >
               {evt.type}
               {evt.timestamp && (
@@ -250,7 +269,9 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
         <div className="animate-slideInUp space-y-4">
           <SummaryGrid summary={summary} extraCard={<StrategyCountCard strategyCounts={summary.strategyCounts} />} />
           <MetricsPanel summary={summary} />
-          <CostBreakdown jobId={jobId} summary={summary} />
+          <div className="animate-staggerFadeIn" style={{ '--stagger-delay': '300ms' }}>
+            <CostBreakdown jobId={jobId} summary={summary} />
+          </div>
         </div>
       )}
     </div>

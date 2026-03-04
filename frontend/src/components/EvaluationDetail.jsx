@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, ArrowLeft, ClipboardCheck } from 'lucide-react';
 import { getResults } from '../lib/api';
 import { useApiQuery } from '../hooks/useApiQuery';
 import { PageHeader } from './PageHeader';
@@ -35,10 +36,16 @@ function toTestCaseState(result) {
 
 function TestCaseCountCard({ count }) {
   return (
-    <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-5">
-      <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Test Cases</p>
-      <div className="mt-2">
-        <span className="text-2xl font-semibold text-text-primary">{count ?? '-'}</span>
+    <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden">
+      <div className="h-0.5 bg-gradient-to-r from-accent to-transparent" />
+      <div className="p-5">
+        <p className="text-xs text-text-secondary font-medium uppercase tracking-wide">Test Cases</p>
+        <div className="mt-2">
+          <span className="text-2xl font-semibold text-text-primary animate-countUp"
+            style={{ '--stagger-delay': '390ms' }}>
+            {count ?? '-'}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -49,7 +56,7 @@ export function EvaluationDetail() {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
-  const { jobId: activeJobId, isEvaluating } = useEvaluation();
+  const { activeJobId, canViewLiveActiveEvaluation } = useEvaluation();
 
   const fetchFn = useCallback(
     (signal) => getResults(jobId, signal),
@@ -65,21 +72,26 @@ export function EvaluationDetail() {
     }
   }, [data]);
 
-  const backAction = (
+  const backButton = (
     <button
       onClick={() => navigate('/app/history')}
-      className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-tertiary rounded-lg transition-colors"
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-tertiary rounded-lg transition-colors"
     >
-      ← Back
+      <ArrowLeft size={14} />
+      Back to History
     </button>
   );
 
   if (loading) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Evaluation Detail" subtitle="Loading…" action={backAction} />
+        <PageHeader title="Evaluation Detail" subtitle="Loading…" action={backButton} icon={ClipboardCheck} />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => <SkeletonCard key={`skeleton-${i}`} />)}
+          {[...Array(4)].map((_, i) => (
+            <div key={`skeleton-${i}`} className="animate-staggerFadeIn" style={{ '--stagger-delay': `${i * 80}ms` }}>
+              <SkeletonCard />
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -88,7 +100,7 @@ export function EvaluationDetail() {
   if (error) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Evaluation Detail" action={backAction} />
+        <PageHeader title="Evaluation Detail" action={backButton} icon={ClipboardCheck} />
         <ErrorAlert message={error.message} />
       </div>
     );
@@ -97,16 +109,20 @@ export function EvaluationDetail() {
   if (!data || data.status === 'processing') {
     return (
       <div className="space-y-6">
-        <PageHeader title="Evaluation Detail" subtitle="This evaluation is still running" action={backAction} />
-        <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-8 text-center">
-          <div className="w-3 h-3 rounded-full bg-verdict-pass animate-pulse mx-auto mb-4" />
-          <p className="text-sm text-text-secondary mb-4">
+        <PageHeader title="Evaluation Detail" subtitle="This evaluation is still running" action={backButton} icon={ClipboardCheck} />
+        <div className="bg-surface rounded-xl border border-surface-border shadow-sm p-10 text-center animate-fadeInUp">
+          <div className="w-4 h-4 rounded-full bg-accent mx-auto mb-5 animate-subtleGlow" />
+          <h3 className="text-base font-semibold text-text-primary mb-2">Still processing</h3>
+          <p className="text-sm text-text-secondary mb-6 max-w-sm mx-auto">
             Results will appear automatically when the evaluation completes.
           </p>
-          {isEvaluating && activeJobId === jobId && (
+          {canViewLiveActiveEvaluation && activeJobId === jobId && (
             <button
               onClick={() => navigate(`/app/evaluate/${jobId}`)}
-              className="px-4 py-2 text-sm font-medium bg-accent text-accent-foreground rounded-lg hover:bg-accent-hover transition-colors"
+              className="px-5 py-2.5 text-sm font-medium rounded-xl text-white transition-all
+                bg-gradient-to-br from-accent to-accent-hover
+                shadow-[0_4px_20px_rgba(217,144,88,0.30)]
+                hover:opacity-90 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(217,144,88,0.35)]"
             >
               View Live Progress
             </button>
@@ -124,21 +140,28 @@ export function EvaluationDetail() {
 
   const navAction = (
     <div className="flex items-center gap-2">
-      {backAction}
-      <button
-        onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
-        disabled={currentIndex === 0}
-        className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-tertiary rounded-lg transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
-      >
-        Previous
-      </button>
-      <button
-        onClick={() => setCurrentIndex((i) => Math.min(total - 1, i + 1))}
-        disabled={currentIndex === total - 1}
-        className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary hover:bg-surface-tertiary rounded-lg transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
-      >
-        Next
-      </button>
+      {backButton}
+      <div className="flex items-center bg-surface border border-surface-border rounded-lg overflow-hidden shadow-sm">
+        <button
+          onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
+          disabled={currentIndex === 0}
+          className="px-3 py-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-tertiary transition-colors disabled:opacity-30 disabled:hover:bg-transparent border-r border-surface-border"
+          aria-label="Previous test case"
+        >
+          <ChevronLeft size={16} />
+        </button>
+        <span className="px-3 py-1.5 text-xs font-medium text-text-secondary tabular-nums">
+          {currentIndex + 1} / {total}
+        </span>
+        <button
+          onClick={() => setCurrentIndex((i) => Math.min(total - 1, i + 1))}
+          disabled={currentIndex === total - 1}
+          className="px-3 py-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-tertiary transition-colors disabled:opacity-30 disabled:hover:bg-transparent border-l border-surface-border"
+          aria-label="Next test case"
+        >
+          <ChevronRight size={16} />
+        </button>
+      </div>
     </div>
   );
 
@@ -156,19 +179,24 @@ export function EvaluationDetail() {
         badge={nameBadge}
         subtitle={total > 0 ? `Test case ${currentIndex + 1} of ${total}` : undefined}
         action={navAction}
+        icon={ClipboardCheck}
       />
 
       <SummaryGrid summary={summary} extraCard={<TestCaseCountCard count={total} />} />
 
       {testCaseState && (
-        <TestCaseResult
-          testCaseState={testCaseState}
-          testCase={currentTestCase}
-          testCaseIndex={currentIndex}
-        />
+        <div className="animate-fadeInUp" style={{ '--stagger-delay': '100ms' }}>
+          <TestCaseResult
+            testCaseState={testCaseState}
+            testCase={currentTestCase}
+            testCaseIndex={currentIndex}
+          />
+        </div>
       )}
 
-      <CostBreakdown jobId={jobId} summary={summary} />
+      <div className="animate-fadeInUp" style={{ '--stagger-delay': '200ms' }}>
+        <CostBreakdown jobId={jobId} summary={summary} />
+      </div>
     </div>
   );
 }

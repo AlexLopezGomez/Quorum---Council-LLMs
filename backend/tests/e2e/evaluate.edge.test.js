@@ -4,12 +4,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const saveMock = vi.hoisted(() => vi.fn());
 const updateOneMock = vi.hoisted(() => vi.fn());
+const findOneMock = vi.hoisted(() => vi.fn());
+const userFindByIdMock = vi.hoisted(() => vi.fn());
 const runEvaluationMock = vi.hoisted(() => vi.fn());
 const emitMock = vi.hoisted(() => vi.fn());
 
 vi.mock('../../src/models/Evaluation.js', () => {
   class MockEvaluation {
     static updateOne = updateOneMock;
+    static findOne = findOneMock;
 
     constructor(doc) {
       this.doc = doc;
@@ -28,11 +31,25 @@ vi.mock('../../src/services/orchestrator.js', () => ({
   runEvaluation: runEvaluationMock,
 }));
 
+vi.mock('../../src/models/User.js', () => ({
+  User: {
+    findById: userFindByIdMock,
+  },
+}));
+
 vi.mock('../../src/utils/sse.js', () => ({
   sseManager: { emit: emitMock },
 }));
 
 const { default: evaluateRouter } = await import('../../src/routes/evaluate.js');
+
+function mockFindOneChain(result) {
+  return {
+    sort: () => ({
+      select: () => Promise.resolve(result),
+    }),
+  };
+}
 
 function makeApp() {
   const app = express();
@@ -55,10 +72,18 @@ describe('POST /api/evaluate edge cases', () => {
   beforeEach(() => {
     saveMock.mockReset();
     updateOneMock.mockReset();
+    findOneMock.mockReset();
     runEvaluationMock.mockReset();
     emitMock.mockReset();
+    userFindByIdMock.mockReset();
     runEvaluationMock.mockResolvedValue(undefined);
     updateOneMock.mockResolvedValue({ acknowledged: true });
+    findOneMock.mockReturnValue(mockFindOneChain(null));
+    userFindByIdMock.mockReturnValue({
+      select: () => Promise.resolve({
+        getDecryptedApiKeys: () => ({ openai: null, anthropic: null, google: null }),
+      }),
+    });
   });
 
   it('accepts test cases with id and metadata', async () => {
@@ -135,5 +160,64 @@ describe('POST /api/evaluate edge cases', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('Validation failed');
+  });
+
+  it('returns 409 with active job when a processing evaluation already exists', async () => {
+    const app = makeApp();
+    saveMock.mockImplementation(() => {
+      const duplicate = new Error('duplicate key');
+      duplicate.code = 11000;
+      throw duplicate;
+    });
+    findOneMock
+      .mockReturnValueOnce(mockFindOneChain(null))
+      .mockReturnValueOnce(mockFindOneChain({
+        jobId: 'active-job-123',
+        status: 'processing',
+        createdAt: new Date('2026-03-04T10:00:00.000Z'),
+        name: 'Current run',
+      }));
+
+    const res = await request(app).post('/api/evaluate').send({
+      testCases: [baseTestCase],
+    });
+
+    expect(res.status).toBe(409);
+    expect(res.body.code).toBe('EVALUATION_ALREADY_RUNNING');
+    expect(res.body.activeJobId).toBe('active-job-123');
+    expect(res.body.status).toBe('processing');
+  });
+});
+
+describe('GET /api/evaluate/active', () => {
+  beforeEach(() => {
+    findOneMock.mockReset();
+  });
+
+  it('returns 204 when there is no active evaluation', async () => {
+    const app = makeApp();
+    findOneMock.mockReturnValue(mockFindOneChain(null));
+
+    const res = await request(app).get('/api/evaluate/active');
+
+    expect(res.status).toBe(204);
+  });
+
+  it('returns active evaluation metadata when processing evaluation exists', async () => {
+    const app = makeApp();
+    findOneMock.mockReturnValue(mockFindOneChain({
+      jobId: 'active-job-999',
+      status: 'processing',
+      createdAt: new Date('2026-03-04T12:00:00.000Z'),
+      name: 'Smoke test run',
+    }));
+
+    const res = await request(app).get('/api/evaluate/active');
+
+    expect(res.status).toBe(200);
+    expect(res.body.jobId).toBe('active-job-999');
+    expect(res.body.status).toBe('processing');
+    expect(res.body.streamUrl).toBe('/api/stream/active-job-999');
+    expect(res.body.resultsUrl).toBe('/api/results/active-job-999');
   });
 });

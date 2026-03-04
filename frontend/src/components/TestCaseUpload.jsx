@@ -159,7 +159,7 @@ function PreviewModal({ testCases, onClose }) {
   );
 }
 
-export function TestCaseUpload({ onSubmit, isLoading }) {
+export function TestCaseUpload({ onSubmit, isLoading, activeEvaluation, onResumeActive }) {
   const [testCases, setTestCases] = useState([]);
   const [error, setError] = useState(null);
   const [strategy, setStrategy] = useState('auto');
@@ -168,6 +168,7 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
   const [showFormat, setShowFormat] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const fileInputRef = useRef(null);
+  const hasActiveEvaluation = activeEvaluation?.status === 'processing';
 
   const processFile = (file) => {
     if (!file) return;
@@ -200,6 +201,10 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
   };
 
   const handleSubmit = () => {
+    if (hasActiveEvaluation) {
+      onResumeActive?.();
+      return;
+    }
     if (testCases.length === 0) {
       setError('Please upload test cases or load sample data first');
       return;
@@ -208,12 +213,31 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
   };
 
   const runDemo = () => {
+    if (hasActiveEvaluation) {
+      onResumeActive?.();
+      return;
+    }
     onSubmit(DEMO_TEST_CASES, { strategy: 'auto', name: 'Adaptive Demo' });
   };
 
   return (
     <div>
       <PageHeader title="Evaluate" subtitle="Run evaluation on your RAG system outputs" />
+
+      {hasActiveEvaluation && (
+        <div className="mb-6 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-amber-900">An evaluation is already running</p>
+            <p className="text-xs text-amber-800">Finish or review the active run before starting a new one.</p>
+          </div>
+          <button
+            onClick={() => onResumeActive?.()}
+            className="px-3 py-2 rounded-lg text-sm font-medium bg-amber-700 text-white hover:bg-amber-800 transition-colors"
+          >
+            Resume Active Run
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-6">
         {/* Left 2/3: upload + preview */}
@@ -279,7 +303,7 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
                 </button>
                 <button
                   onClick={runDemo}
-                  disabled={isLoading}
+                  disabled={isLoading || hasActiveEvaluation}
                   className="px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
                 >
                   <Sparkles size={14} />
@@ -360,7 +384,7 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
           {testCases.length > 0 && (
             <button
               onClick={handleSubmit}
-              disabled={isLoading}
+              disabled={isLoading || hasActiveEvaluation}
               className="w-full px-4 py-3 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
             >
               {isLoading ? (
@@ -446,4 +470,11 @@ export function TestCaseUpload({ onSubmit, isLoading }) {
 TestCaseUpload.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   isLoading: PropTypes.bool,
+  activeEvaluation: PropTypes.shape({
+    jobId: PropTypes.string,
+    status: PropTypes.string,
+    name: PropTypes.string,
+    createdAt: PropTypes.string,
+  }),
+  onResumeActive: PropTypes.func,
 };

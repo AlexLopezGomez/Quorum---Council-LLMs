@@ -41,6 +41,9 @@ async function fetchJson(url, options = {}, signal) {
     statusCode: response.status,
     correlationId,
   });
+  if (response.status === 204) {
+    return null;
+  }
   return response.json();
 }
 
@@ -57,6 +60,10 @@ export async function startEvaluation(testCases, options = {}, signal) {
     },
     signal,
   );
+}
+
+export async function getActiveEvaluation(signal) {
+  return fetchJson(`${API_BASE}/evaluate/active`, {}, signal);
 }
 
 export async function getResults(jobId, signal) {

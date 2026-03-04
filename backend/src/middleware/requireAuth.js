@@ -27,6 +27,20 @@ export async function requireAuth(req, res, next) {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
+    // Reject tokens issued before a password change or forced logout
+    // by checking the tokenVersion embedded in the JWT payload.
+    if (payload.tokenVersion !== user.tokenVersion) {
+      logger.audit(
+        'auth.token.revoked',
+        logger.withReq(req, {
+          actor: 'unknown',
+          statusCode: 401,
+          metadata: { reason: 'token_version_mismatch' },
+        })
+      );
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
     req.user = user;
     logger.info('auth.token.valid', logger.withReq(req, { userId: user._id }));
     next();

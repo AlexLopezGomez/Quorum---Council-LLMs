@@ -29,7 +29,12 @@ import { validateProductionSecrets } from './utils/validateSecrets.js';
 import { serveFrontend } from './utils/staticServe.js';
 
 const app = express();
-app.set('trust proxy', 1);
+// TRUST_PROXY should match the number of upstream proxy hops in your infrastructure.
+// Set to 0 or omit when running without a reverse proxy to prevent IP spoofing.
+const TRUST_PROXY = process.env.TRUST_PROXY !== undefined
+  ? (process.env.TRUST_PROXY === 'false' ? false : parseInt(process.env.TRUST_PROXY) || false)
+  : false;
+app.set('trust proxy', TRUST_PROXY);
 app.set('query parser', 'simple');
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/quorum';
@@ -56,7 +61,9 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: process.env.NODE_ENV === 'production'
+          ? ["'self'"]
+          : ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:", "blob:"],
         connectSrc: ["'self'"],

@@ -2,8 +2,6 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import { decrypt } from '../utils/encryption.js';
 
-const SALT_ROUNDS = 12;
-
 const encryptedKeySchema = new mongoose.Schema(
   {
     iv: { type: String, required: true, minlength: 24, maxlength: 24 },
@@ -36,6 +34,18 @@ const userSchema = new mongoose.Schema(
       required: true,
       maxlength: 255,
     },
+    tokenVersion: {
+      type: Number,
+      default: 0,
+    },
+    loginFailures: {
+      type: Number,
+      default: 0,
+    },
+    loginLockedUntil: {
+      type: Date,
+      default: null,
+    },
     apiKeys: {
       openai: { type: encryptedKeySchema, default: undefined },
       anthropic: { type: encryptedKeySchema, default: undefined },
@@ -44,12 +54,6 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('passwordHash')) return next();
-  this.passwordHash = await bcrypt.hash(this.passwordHash, SALT_ROUNDS);
-  next();
-});
 
 userSchema.methods.comparePassword = function (candidate) {
   return bcrypt.compare(candidate, this.passwordHash);

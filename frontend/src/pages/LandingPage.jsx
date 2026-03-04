@@ -157,13 +157,16 @@ export default function LandingPage() {
                     </div>
 
                     {/* CTA — split pill */}
-                    <div className="nav-cta-wrap">
-                        <button onClick={() => setIsModalOpen(true)} className="nav-cta-pill">
-                            <span className="nav-cta-label">Join Waitlist</span>
+                    <div className="nav-cta-wrap" style={{ gap: '0.75rem' }}>
+                        <Link to="/login" className="nav-link" style={{ textDecoration: 'none' }}>
+                            Sign In
+                        </Link>
+                        <Link to="/register" className="nav-cta-pill" style={{ textDecoration: 'none' }}>
+                            <span className="nav-cta-label">Register</span>
                             <span className="nav-cta-badge">
                                 <ArrowUpRight size={13} />
                             </span>
-                        </button>
+                        </Link>
                     </div>
 
                     {/* Mobile hamburger */}
@@ -180,13 +183,23 @@ export default function LandingPage() {
                         <a href="#demo" onClick={() => setMobileMenuOpen(false)} className="nav-link nav-link--mobile">Demo</a>
                         <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="nav-link nav-link--mobile">How it works</a>
                         <a href="#features" onClick={() => setMobileMenuOpen(false)} className="nav-link nav-link--mobile">Features</a>
-                        <button
-                            onClick={() => { setMobileMenuOpen(false); setIsModalOpen(true); }}
+                        <Link
+                            to="/login"
+                            className="nav-link nav-link--mobile"
+                            onClick={() => setMobileMenuOpen(false)}
+                            style={{ textDecoration: 'none' }}
+                        >
+                            Sign In
+                        </Link>
+                        <Link
+                            to="/register"
                             className="nav-pill-btn nav-pill-btn--full"
+                            onClick={() => setMobileMenuOpen(false)}
+                            style={{ textDecoration: 'none' }}
                         >
                             <ArrowUpRight size={14} />
-                            Join Waitlist
-                        </button>
+                            Register
+                        </Link>
                     </div>
                 )}
             </nav>

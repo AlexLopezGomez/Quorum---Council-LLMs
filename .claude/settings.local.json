@@ -39,7 +39,8 @@
       "mcp__exa__get_code_context_exa",
       "mcp__playwright__browser_console_messages",
       "mcp__playwright__browser_close",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(python:*)"
     ]
   }
 }

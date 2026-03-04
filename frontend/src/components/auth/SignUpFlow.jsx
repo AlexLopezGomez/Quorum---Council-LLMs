@@ -25,8 +25,8 @@ const STEPS = [
 
 function isStepValid(step, formData) {
   switch (step) {
-    case 1: return /\S+@\S+\.\S+/.test(formData.email);
-    case 2: return formData.username.length >= 3 && /^[a-zA-Z0-9_]+$/.test(formData.username);
+    case 1: return formData.email.length > 0;
+    case 2: return formData.username.length >= 3 && formData.username.length <= 30 && /^[a-zA-Z0-9_]+$/.test(formData.username);
     case 3: return formData.password.length >= 8;
     default: return false;
   }
@@ -63,6 +63,7 @@ export default function SignUpFlow({ onUsernameChange }) {
       setStep((prev) => prev + 1);
     } else {
       await register(formData.email, formData.username, formData.password);
+      setFormData((prev) => ({ ...prev, password: '' }));
     }
   }
 
@@ -79,6 +80,7 @@ export default function SignUpFlow({ onUsernameChange }) {
             type="email"
             value={formData.email}
             onChange={(e) => updateField('email', e.target.value)}
+            autoComplete="email"
             className="w-full px-4 py-3 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
             placeholder="you@example.com"
           />
@@ -91,6 +93,8 @@ export default function SignUpFlow({ onUsernameChange }) {
             type="text"
             value={formData.username}
             onChange={(e) => updateField('username', e.target.value)}
+            autoComplete="username"
+            maxLength={30}
             className="w-full px-4 py-3 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
             placeholder="john_doe"
           />
@@ -101,6 +105,7 @@ export default function SignUpFlow({ onUsernameChange }) {
             type="password"
             value={formData.password}
             onChange={(e) => updateField('password', e.target.value)}
+            autoComplete="new-password"
             className="w-full px-4 py-3 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
             placeholder="Min. 8 characters"
           />

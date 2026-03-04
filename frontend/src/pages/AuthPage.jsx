@@ -36,11 +36,11 @@ function SignInHero() {
   );
 }
 
-export default function AuthPage() {
+export default function AuthPage({ defaultTab = 'login' }) {
   const navigate = useNavigate();
   const { isAuthenticated, clearError } = useAuth();
 
-  const [tab, setTab] = useState('login');
+  const [tab, setTab] = useState(defaultTab);
   const [previewUsername, setPreviewUsername] = useState('');
 
   useEffect(() => {

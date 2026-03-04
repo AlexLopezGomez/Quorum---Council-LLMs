@@ -1,10 +1,9 @@
 import jwt from 'jsonwebtoken';
 
-const _rawSecret = process.env.JWT_SECRET;
-if (!_rawSecret && process.env.NODE_ENV === 'production') {
-  throw new Error('JWT_SECRET environment variable is required in production');
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required');
 }
-const JWT_SECRET = _rawSecret || 'dev-secret-change-in-production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const JWT_ISSUER = process.env.JWT_ISSUER || 'quorum-api';
 const JWT_AUDIENCE = process.env.JWT_AUDIENCE || 'quorum-client';
@@ -14,8 +13,8 @@ const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 const COOKIE_SAME_SITE = process.env.COOKIE_SAME_SITE
   || (process.env.NODE_ENV === 'production' ? 'strict' : 'lax');
 
-export function signToken(userId) {
-  return jwt.sign({ sub: userId }, JWT_SECRET, {
+export function signToken(userId, tokenVersion) {
+  return jwt.sign({ sub: userId, tokenVersion }, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
     issuer: JWT_ISSUER,
     audience: JWT_AUDIENCE,

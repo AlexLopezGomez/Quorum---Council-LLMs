@@ -6,7 +6,7 @@ export default function ProfilePreview({ username }) {
       <div className="relative mb-5">
         <div className="bg-surface rounded-lg border border-surface-border shadow-sm px-4 py-3">
           <p className="text-xs text-text-secondary text-center leading-relaxed">
-            Click here to add your profile image.<br />
+            Don't forget to add your profile image.<br />
             You can always do this later.
           </p>
         </div>
@@ -19,24 +19,24 @@ export default function ProfilePreview({ username }) {
         </div>
 
         <div className="flex items-center justify-center gap-1.5 mb-1">
-          <span className="text-sm font-semibold text-text-primary">John Doe</span>
+          <span className="text-sm font-semibold text-text-primary">{username || 'Your Name'}</span>
           <CheckCircle2 size={15} className="text-verdict-pass" />
         </div>
-        <p className="text-xs text-text-secondary mb-3">@{username || 'john_doe'}</p>
+        <p className="text-xs text-text-secondary mb-3">@{username || 'marc_z'}</p>
 
         <div className="w-full h-[3px] rounded-full bg-surface-tertiary mb-1" />
         <div className="w-3/5 h-[3px] rounded-full bg-surface-tertiary mx-auto mb-4" />
 
         <div className="flex items-center justify-center gap-1.5 text-xs text-text-secondary">
           <MapPin size={13} />
-          United States
+          London, UK
         </div>
       </div>
 
-      <p className="absolute bottom-6 left-0 right-0 text-center text-xs text-text-tertiary leading-relaxed px-8">
+      {/*<p className="absolute bottom-6 left-0 right-0 text-center text-xs text-text-tertiary leading-relaxed px-8">
         Your @username is how people will find and tag you on Quorum.<br />
         Make it short, memorable, and true to your brand.
-      </p>
+      </p>*/}
     </div>
   );
 }

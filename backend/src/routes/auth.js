@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
+import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { User } from '../models/User.js';
 import { signToken, setTokenCookie, clearTokenCookie } from '../utils/auth.js';
@@ -10,6 +11,10 @@ import { logger } from '../utils/logger.js';
 const router = Router();
 const authRateLimitWindowMs = 15 * 60 * 1000;
 const authRateLimitMessage = { error: 'Too many authentication attempts. Please try again later.' };
+
+const BCRYPT_ROUNDS = 12;
+const LOGIN_MAX_FAILURES = 10;
+const LOGIN_LOCKOUT_MS = 15 * 60 * 1000;
 
 const registerLimiter = rateLimit({
   windowMs: authRateLimitWindowMs,
@@ -46,41 +51,48 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
+// Lazy-initialized dummy hash used to keep login response time constant
+// when a user account does not exist (prevents timing-based enumeration).
+let _dummyHash = null;
+async function getDummyHash() {
+  if (!_dummyHash) _dummyHash = await bcrypt.hash('__dummy_timing_prevention__', BCRYPT_ROUNDS);
+  return _dummyHash;
+}
+
 router.post('/register', registerLimiter, createValidationMiddleware(registerSchema), async (req, res) => {
   try {
     const { email, username, password } = req.validatedBody;
     logger.info('auth.register.attempt', logger.withReq(req, { metadata: { email, username } }));
 
-    const existingEmail = await User.findOne({ email });
-    if (existingEmail) {
+    const [existingEmail, existingUsername] = await Promise.all([
+      User.findOne({ email }),
+      User.findOne({ username }),
+    ]);
+
+    if (existingEmail || existingUsername) {
+      // Return a single generic error regardless of which field conflicts
+      // to prevent enumeration of registered emails or usernames.
+      // TODO: For full protection, return 200 here and send a confirmation
+      // email to the address — only create the account after verification.
       logger.audit(
         'auth.register.failed',
         logger.withReq(req, {
           actor: 'unknown',
           statusCode: 409,
-          metadata: { reason: 'email_in_use', email },
+          metadata: {
+            reason: existingEmail ? 'email_in_use' : 'username_taken',
+            email,
+          },
         })
       );
-      return res.status(409).json({ error: 'Email already in use' });
+      return res.status(409).json({ error: 'An account with these details already exists.' });
     }
 
-    const existingUsername = await User.findOne({ username });
-    if (existingUsername) {
-      logger.audit(
-        'auth.register.failed',
-        logger.withReq(req, {
-          actor: 'unknown',
-          statusCode: 409,
-          metadata: { reason: 'username_taken', username },
-        })
-      );
-      return res.status(409).json({ error: 'Username already taken' });
-    }
-
-    const user = new User({ email, username, passwordHash: password });
+    const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+    const user = new User({ email, username, passwordHash });
     await user.save();
 
-    const token = signToken(user._id);
+    const token = signToken(user._id, user.tokenVersion);
     setTokenCookie(res, token);
 
     logger.audit(
@@ -111,7 +123,25 @@ router.post('/login', loginLimiter, createValidationMiddleware(loginSchema), asy
     logger.info('auth.login.attempt', logger.withReq(req, { metadata: { email } }));
 
     const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) {
+
+    // Always run bcrypt regardless of whether the user exists to prevent
+    // timing-based email enumeration.
+    const candidateHash = user ? user.passwordHash : await getDummyHash();
+    const isValid = await bcrypt.compare(password, candidateHash);
+
+    if (!user || !isValid) {
+      if (user) {
+        const now = new Date();
+        const failures = (user.loginFailures || 0) + 1;
+        const update = { loginFailures: failures };
+
+        if (failures >= LOGIN_MAX_FAILURES) {
+          update.loginLockedUntil = new Date(now.getTime() + LOGIN_LOCKOUT_MS);
+        }
+
+        await User.updateOne({ _id: user._id }, { $set: update });
+      }
+
       logger.audit(
         'auth.login.failed',
         logger.withReq(req, {
@@ -123,7 +153,23 @@ router.post('/login', loginLimiter, createValidationMiddleware(loginSchema), asy
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    const token = signToken(user._id);
+    // Check per-account lockout after confirming password is correct to avoid
+    // leaking whether an account is locked to unauthenticated callers.
+    if (user.loginLockedUntil && user.loginLockedUntil > new Date()) {
+      logger.audit(
+        'auth.login.locked',
+        logger.withReq(req, {
+          actor: 'unknown',
+          statusCode: 429,
+          metadata: { reason: 'account_locked', email },
+        })
+      );
+      return res.status(429).json({ error: 'Account temporarily locked due to too many failed attempts. Please try again later.' });
+    }
+
+    await User.updateOne({ _id: user._id }, { $set: { loginFailures: 0, loginLockedUntil: null } });
+
+    const token = signToken(user._id, user.tokenVersion);
     setTokenCookie(res, token);
 
     logger.audit(

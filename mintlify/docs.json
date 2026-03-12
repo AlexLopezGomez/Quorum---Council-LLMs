@@ -1,0 +1,146 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "Quorum",
+  "description": "Adaptive RAG evaluation with a Council-of-LLMs.",
+  "colors": {
+    "primary": "#d99058",
+    "light": "#fff7f0",
+    "dark": "#171214"
+  },
+  "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/logo.svg",
+    "dark": "/logo.svg",
+    "href": "https://testquorum.com"
+  },
+  "seo": {
+    "metatags": {
+      "canonical": "https://testquorum.com"
+    }
+  },
+  "navigation": {
+    "dropdowns": [
+      {
+        "dropdown": "Docs",
+        "icon": "book",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "index",
+              "quickstart",
+              "how-it-works"
+            ]
+          },
+          {
+            "group": "Operations",
+            "pages": [
+              "observability"
+            ]
+          }
+        ]
+      },
+      {
+        "dropdown": "SDKs",
+        "icon": "code",
+        "groups": [
+          {
+            "group": "Client Libraries",
+            "pages": [
+              "sdk/javascript",
+              "sdk/python"
+            ]
+          }
+        ]
+      },
+      {
+        "dropdown": "Community",
+        "icon": "shield",
+        "groups": [
+          {
+            "group": "Project",
+            "pages": [
+              "community/contributing",
+              "community/security",
+              "community/changelog"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Demo",
+        "href": "https://quorum.onrender.com"
+      },
+      {
+        "label": "Benchmarks",
+        "href": "https://quorum.onrender.com/benchmarks"
+      },
+      {
+        "label": "GitHub",
+        "href": "https://github.com/AlexLopezGomez/Quorum---Council-LLMs"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Open App",
+      "href": "https://quorum.onrender.com"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/AlexLopezGomez/Quorum---Council-LLMs"
+    },
+    "links": [
+      {
+        "header": "Product",
+        "items": [
+          {
+            "label": "Live Demo",
+            "href": "https://quorum.onrender.com"
+          },
+          {
+            "label": "Benchmarks",
+            "href": "https://quorum.onrender.com/benchmarks"
+          }
+        ]
+      },
+      {
+        "header": "Community",
+        "items": [
+          {
+            "label": "Contributing",
+            "href": "https://github.com/AlexLopezGomez/Quorum---Council-LLMs/blob/main/CONTRIBUTING.md"
+          },
+          {
+            "label": "Security",
+            "href": "https://github.com/AlexLopezGomez/Quorum---Council-LLMs/blob/main/SECURITY.md"
+          },
+          {
+            "label": "Discussions",
+            "href": "https://github.com/AlexLopezGomez/Quorum---Council-LLMs/discussions"
+          }
+        ]
+      }
+    ]
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
+  },
+  "errors": {
+    "404": {
+      "redirect": false,
+      "title": "Page not found",
+      "description": "The page you requested does not exist in the current docs build."
+    }
+  }
+}

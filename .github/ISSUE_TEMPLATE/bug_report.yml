@@ -1,0 +1,76 @@
+name: Bug report
+description: Report a reproducible problem in Quorum.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report. Please include enough
+        detail for someone else to reproduce the issue quickly.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened, and why is it a bug?
+      placeholder: A concise description of the issue.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the exact steps needed to reproduce the issue.
+      placeholder: |
+        1. Start the app with ...
+        2. Upload ...
+        3. Open ...
+        4. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      placeholder: What happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Share the environment details that may matter.
+      placeholder: |
+        OS:
+        Node version:
+        Browser:
+        Deployment target:
+        DEMO_MODE:
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Paste any relevant logs, stack traces, or screenshots.
+      render: shell
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add any extra context that could help debug the issue.

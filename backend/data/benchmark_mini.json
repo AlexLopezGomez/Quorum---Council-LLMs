@@ -1,0 +1,158 @@
+[
+  {
+    "id": "general-001",
+    "domain": "general",
+    "difficulty": "easy",
+    "input": "What is the capital of France?",
+    "actualOutput": "The capital of France is Paris, which has served as the country's capital since the 10th century.",
+    "retrievalContext": [
+      "Paris is the capital and most populous city of France. It has been the country's major political and cultural center since the late 10th century."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct, fully grounded in context.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-008",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "What is quantum entanglement?",
+    "actualOutput": "Quantum entanglement is a phenomenon where two or more particles become correlated so that the quantum state of each cannot be described independently. Measurement of one instantly determines the state of the other, even across unlimited distances, at speeds faster than light.",
+    "retrievalContext": [
+      "Quantum entanglement is a physical phenomenon that occurs when a group of particles are generated, interact, or share spatial proximity in such a way that the quantum state of each particle cannot be described independently. The measurement of one particle's state instantaneously influences the correlated property of the other particle, regardless of distance."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "The output claims information travels 'faster than light', which is a known misconception not stated in context. The correlation exists but no information is transmitted. Single-judge may miss this subtle physics error because the answer sounds authoritative.",
+    "failureMode": "hallucination"
+  },
+  {
+    "id": "legal-005",
+    "domain": "legal",
+    "difficulty": "medium",
+    "input": "What is the difference between a misdemeanor and a felony in the US?",
+    "actualOutput": "In the US criminal justice system, a felony is a more serious crime typically punishable by imprisonment of more than one year in a state or federal prison. A misdemeanor is less serious and usually results in less than one year in a local jail, fines, or probation.",
+    "retrievalContext": [
+      "Under US federal law and most state statutes, felonies are crimes punishable by imprisonment exceeding one year, typically served in state or federal prison. Misdemeanors carry penalties of up to one year, usually served in local or county jails. The distinction affects voting rights, professional licensing, and immigration status."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate core distinction, appropriately grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "legal-001",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "Does GDPR Article 17 grant an absolute right to erasure?",
+    "actualOutput": "Yes, under GDPR Article 17, individuals have an absolute right to have their personal data erased at any time upon request.",
+    "retrievalContext": [
+      "Article 17 GDPR grants the right to erasure ('right to be forgotten') without undue delay where certain grounds apply, including withdrawal of consent. However, the right does not apply where processing is necessary for compliance with a legal obligation, the exercise of freedom of expression, public health purposes, archiving in the public interest, or the establishment and exercise of legal claims."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "The right is explicitly NOT absolute — the context lists 5+ exceptions. This is a dangerous legal hallucination. Faithfulness judge may partially credit it since the claim about erasure rights is partially true.",
+    "failureMode": "hallucination"
+  },
+  {
+    "id": "medical-003",
+    "domain": "medical",
+    "difficulty": "medium",
+    "input": "What are the symptoms of appendicitis?",
+    "actualOutput": "Appendicitis typically presents with: sudden pain beginning around the navel then shifting to the lower right abdomen, nausea and vomiting, loss of appetite, fever (usually low-grade initially), and abdominal guarding. Rebound tenderness at McBurney's point is a classic sign.",
+    "retrievalContext": [
+      "Classic appendicitis presents with periumbilical pain that migrates to the right lower quadrant, nausea, vomiting, anorexia, and low-grade fever. Physical examination may reveal tenderness at McBurney's point, rebound tenderness (Blumberg's sign), and guarding. Presentations can vary, particularly in pregnant women, the elderly, and children."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate classic presentation, appropriately grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "medical-002",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "Can ibuprofen be taken safely with blood thinners like warfarin?",
+    "actualOutput": "Yes, ibuprofen and warfarin can generally be taken together, though patients should monitor for potential interactions. The combination is commonly used in elderly patients and is considered safe with proper monitoring.",
+    "retrievalContext": [
+      "Ibuprofen and other NSAIDs interact significantly with warfarin. NSAIDs can increase anticoagulant effect by displacing warfarin from plasma proteins, inhibit platelet aggregation, and cause GI mucosal damage — all of which substantially increase bleeding risk. This combination is generally contraindicated or requires very careful monitoring with dose adjustments. The FDA has flagged this interaction. Clinicians should consider safer alternatives like acetaminophen for pain management in patients on warfarin."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states the combination is 'generally safe' and 'commonly used' — context explicitly says it is 'generally contraindicated' and substantially increases bleeding risk. This is a dangerous medical misinformation case. Exactly the type of failure documented in Microsoft Copilot study.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "financial-002",
+    "domain": "financial",
+    "difficulty": "medium",
+    "input": "What is compound interest?",
+    "actualOutput": "Compound interest is interest calculated on both the initial principal and the accumulated interest from previous periods. Unlike simple interest, it causes balances to grow exponentially. For example, $1,000 at 5% compounded annually becomes $1,276.28 after 5 years.",
+    "retrievalContext": [
+      "Compound interest is the addition of interest to the principal sum of a loan or deposit, resulting in interest being earned on interest. The formula is A = P(1 + r/n)^(nt), where P is principal, r is annual interest rate, n is compounding periods per year, and t is time in years. Compounding frequency (daily, monthly, annually) significantly affects the effective yield."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate definition with correct example calculation.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "financial-001",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the difference between a Roth IRA and a Traditional IRA?",
+    "actualOutput": "A Traditional IRA offers tax-deductible contributions, with withdrawals taxed as ordinary income in retirement. A Roth IRA uses after-tax contributions, but withdrawals in retirement are tax-free. The 2024 contribution limit for both is $7,000 ($8,000 if age 50+).",
+    "retrievalContext": [
+      "Traditional IRA contributions may be tax-deductible depending on income and workplace retirement plan participation; withdrawals are taxed as ordinary income and subject to required minimum distributions starting at age 73. Roth IRA contributions are made with after-tax dollars; qualified withdrawals are tax-free with no RMDs during the owner's lifetime. The 2024 IRA contribution limit is $7,000 ($8,000 for those 50 and older). Roth IRA eligibility phases out at higher incomes ($146,000-$161,000 for single filers in 2024)."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output omits income limits for Roth IRA eligibility and fails to mention RMDs for Traditional IRA at 73 — both critical facts for financial planning. Incomplete answer on a personal finance question with significant tax implications.",
+    "failureMode": "incomplete"
+  },
+  {
+    "id": "technical-001",
+    "domain": "technical",
+    "difficulty": "medium",
+    "input": "What is the difference between REST and GraphQL APIs?",
+    "actualOutput": "REST APIs use fixed endpoints for each resource, returning predetermined data structures. GraphQL uses a single endpoint where clients specify exactly what data they need via queries. GraphQL eliminates over-fetching and under-fetching problems common in REST.",
+    "retrievalContext": [
+      "REST (Representational State Transfer) uses multiple fixed endpoints, each returning a fixed data structure defined by the server. GraphQL uses a single endpoint with a query language that allows clients to specify exactly the data they need, eliminating over-fetching (receiving more data than needed) and under-fetching (needing multiple requests to get sufficient data). GraphQL also enables introspection and strongly typed schemas."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate technical comparison, well grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-005",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is the CAP theorem?",
+    "actualOutput": "The CAP theorem states that a distributed system can simultaneously guarantee all three of the following: Consistency, Availability, and Partition tolerance. In practice, engineers must choose which two to prioritize.",
+    "retrievalContext": [
+      "The CAP theorem (Brewer's theorem) states that a distributed data store cannot simultaneously provide more than two of the three guarantees: Consistency (every read receives the most recent write), Availability (every request receives a response, though possibly stale), and Partition tolerance (the system continues operating despite network partitions). Since network partitions are unavoidable in practice, real systems must choose between consistency and availability during a partition — resulting in CP systems (Zookeeper, HBase) or AP systems (Cassandra, CouchDB)."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states a distributed system 'can simultaneously guarantee all three' — the entire point of CAP theorem is that it CANNOT guarantee all three simultaneously. This is the direct opposite of the theorem's claim. A factual inversion of the core statement.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "adversarial-001",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What is the recommended daily intake of vitamin D for adults?",
+    "actualOutput": "The recommended daily intake of vitamin D for adults is 600-800 IU according to the Institute of Medicine. Most healthy adults who spend reasonable time outdoors do not need supplementation as sunlight synthesis is sufficient.",
+    "retrievalContext": [
+      "The Institute of Medicine recommends 600 IU of vitamin D daily for adults 19-70 and 800 IU for those over 70. However, the Endocrine Society and many specialists recommend 1,500-2,000 IU daily for at-risk individuals, noting that vitamin D deficiency is widespread — affecting up to 40% of the US population. Indoor lifestyles, sunscreen use, dark skin tone, and geographic latitude all significantly reduce sunlight-mediated synthesis. Many clinicians now routinely screen for deficiency and supplement accordingly."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output claims 'most healthy adults do not need supplementation' — context says deficiency affects up to 40% of the US population and multiple factors limit sunlight synthesis. The claim that sunlight is 'sufficient' contradicts the context. Faithfulness judge may give this high marks because the IOM numbers are cited correctly, missing the critical omission.",
+    "failureMode": "incomplete"
+  },
+  {
+    "id": "adversarial-003",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What is the employment rate in the US as of 2023?",
+    "actualOutput": "The US unemployment rate as of late 2023 was approximately 3.7%, reflecting a strong labor market with near-full employment. This represents one of the lowest unemployment rates in decades.",
+    "retrievalContext": [
+      "According to the Bureau of Labor Statistics, the US unemployment rate averaged 3.6% in 2023, reaching 3.7% in some months. The labor force participation rate was approximately 62.5-62.8%, remaining below pre-pandemic levels of 63.3% (February 2020). The U-6 measure, which includes underemployed and marginally attached workers, was approximately 6.9-7.2%, roughly double the headline rate. Youth unemployment was significantly higher at approximately 8%."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output presents only the headline unemployment rate without noting that labor force participation remains below pre-pandemic levels, U-6 is nearly double the headline rate, and youth unemployment is significantly elevated. A comprehensive answer to 'employment rate' should contextualize the headline number — the incomplete framing creates a more positive picture than warranted by context.",
+    "failureMode": "incomplete"
+  }
+]

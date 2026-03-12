@@ -1,0 +1,48 @@
+name: 'Quorum RAG Evaluation'
+description: 'Evaluate your RAG system quality using Quorum Council of LLMs'
+author: 'Quorum AI'
+
+branding:
+  icon: 'check-circle'
+  color: 'orange'
+
+inputs:
+  api_key:
+    description: 'Quorum API key (store as a secret)'
+    required: true
+  test_cases_path:
+    description: 'Path to JSON file containing test cases'
+    required: true
+  strategy:
+    description: 'Evaluation strategy: auto, council, hybrid, single'
+    default: 'auto'
+  fail_threshold:
+    description: 'Minimum pass rate (0-1) required to pass the check'
+    default: '0.80'
+  post_comment:
+    description: 'Post evaluation summary as PR comment (requires GITHUB_TOKEN)'
+    default: 'true'
+  evaluation_name:
+    description: 'Label for this evaluation run (defaults to commit SHA)'
+    default: ''
+  base_url:
+    description: 'Quorum API base URL'
+    default: 'https://app.quorum.ai'
+
+outputs:
+  verdict:
+    description: 'Overall verdict: PASS or FAIL'
+  pass_rate:
+    description: 'Fraction of test cases that passed (0-1)'
+  avg_score:
+    description: 'Average evaluation score across all test cases (0-1)'
+  total_cost:
+    description: 'Total evaluation cost in USD'
+  job_id:
+    description: 'Quorum evaluation job ID for traceability'
+  results_url:
+    description: 'URL to view full results in Quorum dashboard'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

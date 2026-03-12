@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:-quorum}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-change-me-in-production}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:?Set MONGO_PASSWORD in your .env file (e.g. MONGO_PASSWORD=your-secure-password)}
     ports:
       - "127.0.0.1:27017:27017"
     volumes:
@@ -30,7 +30,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - MONGODB_URI=mongodb://${MONGO_USER:-quorum}:${MONGO_PASSWORD:-change-me-in-production}@mongodb:27017/quorum?authSource=admin
+      - MONGODB_URI=mongodb://${MONGO_USER:-quorum}:${MONGO_PASSWORD:?Set MONGO_PASSWORD in your .env file}@mongodb:27017/quorum?authSource=admin
       - FRONTEND_URL=http://localhost:8080
       - EVALUATION_TIMEOUT=30000
     depends_on:

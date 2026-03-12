@@ -11,13 +11,15 @@ import { sileo } from 'sileo';
 import { PageHeader } from './PageHeader';
 import { SkeletonRow } from './Skeleton';
 import { ErrorAlert } from './ui/ErrorAlert';
+import { Badge } from './ui/badge';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from './ui/table';
 import PropTypes from 'prop-types';
 
 function StatusBadge({ status }) {
   return (
-    <span className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full border ${STATUS_BADGE_STYLES[status] || 'bg-surface-tertiary text-text-secondary border-surface-border'}`}>
+    <Badge variant="outline" className={`rounded-full ${STATUS_BADGE_STYLES[status] || 'bg-surface-tertiary text-text-secondary border-surface-border'}`}>
       {status}
-    </span>
+    </Badge>
   );
 }
 
@@ -28,10 +30,10 @@ StatusBadge.propTypes = {
 function StrategyBadgeCell({ strategy }) {
   const config = STRATEGY_STYLE[strategy] || STRATEGY_STYLE.council;
   return (
-    <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${config.bg} ${config.text} ${config.border}`}>
+    <Badge variant="outline" className={`h-auto px-2.5 py-1 rounded-full gap-1.5 ${config.bg} ${config.text} ${config.border}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
       {config.label || strategy}
-    </span>
+    </Badge>
   );
 }
 
@@ -259,25 +261,25 @@ export function EvaluationHistory() {
         </div>
 
         {(evaluations.length > 0 || filtersActive) && (
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-surface-border bg-surface-secondary/50">
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Name / Job ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Cases</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Strategy</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Score</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Cost</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-surface-border">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-b border-surface-border bg-surface-secondary/50 hover:bg-surface-secondary/50">
+                <TableHead className="px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wider">Name / Job ID</TableHead>
+                <TableHead className="px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wider">Status</TableHead>
+                <TableHead className="px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wider">Cases</TableHead>
+                <TableHead className="px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wider">Strategy</TableHead>
+                <TableHead className="px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wider">Score</TableHead>
+                <TableHead className="px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wider">Cost</TableHead>
+                <TableHead className="px-6 py-3 text-xs font-medium text-text-secondary uppercase tracking-wider">Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y divide-surface-border">
               {evaluations.map((eval_, idx) => {
                 const score = eval_.summary?.avgFinalScore;
                 const scoreColor = score != null ? getScoreTextColor(score) : 'text-text-primary';
 
                 return (
-                  <tr
+                  <TableRow
                     key={eval_.jobId}
                     onClick={() => {
                       if (
@@ -291,45 +293,45 @@ export function EvaluationHistory() {
                         navigate(`/app/history/${eval_.jobId}`);
                       }
                     }}
-                    className="cv-auto hover:bg-surface-secondary transition-all cursor-pointer border-l-2 border-l-transparent hover:border-l-accent animate-staggerFadeIn"
+                    className="hover:bg-surface-secondary transition-all cursor-pointer border-l-2 border-l-transparent hover:border-l-accent animate-staggerFadeIn"
                     style={{ '--stagger-delay': `${Math.min(idx * 40, 400)}ms` }}
                   >
-                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                    <TableCell className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                       <NameCell
                         jobId={eval_.jobId}
                         initialName={nameOverrides[eval_.jobId] ?? eval_.name}
                         onSaved={handleNameSaved}
                       />
-                    </td>
-                    <td className="px-6 py-4"><StatusBadge status={eval_.status} /></td>
-                    <td className="px-6 py-4 text-sm text-text-secondary">{eval_.testCaseCount}</td>
-                    <td className="px-6 py-4">
+                    </TableCell>
+                    <TableCell className="px-6 py-4"><StatusBadge status={eval_.status} /></TableCell>
+                    <TableCell className="px-6 py-4 text-sm text-text-secondary">{eval_.testCaseCount}</TableCell>
+                    <TableCell className="px-6 py-4">
                       <StrategyBadgeCell strategy={eval_.config?.strategy || 'council'} />
-                    </td>
-                    <td className="px-6 py-4">
+                    </TableCell>
+                    <TableCell className="px-6 py-4">
                       <span className={`text-sm font-medium ${scoreColor}`}>
                         {safeFixed(score)}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-text-secondary">
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-sm text-text-secondary">
                       {eval_.summary?.totalCost != null ? `$${safeFixed(eval_.summary.totalCost, 4)}` : '-'}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-text-secondary">
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-sm text-text-secondary">
                       <Clock size={12} className="inline -mt-0.5 mr-1 text-text-tertiary" />
                       {formatDate(eval_.createdAt)}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
               {evaluations.length === 0 && !loading && (
-                <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-sm text-text-tertiary">
+                <TableRow>
+                  <TableCell colSpan={7} className="px-6 py-12 text-center text-sm text-text-tertiary">
                     No evaluations match your filters
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         )}
       </div>
 
@@ -356,11 +358,11 @@ export function EvaluationHistory() {
 
       {loading && evaluations.length === 0 && (
         <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden animate-fadeIn">
-          <table className="w-full">
-            <tbody>
+          <Table>
+            <TableBody>
               {[...Array(5)].map((_, i) => <SkeletonRow key={`skeleton-${i}`} />)}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       )}
 

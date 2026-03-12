@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import bcrypt from 'bcrypt';
+import { randomBytes, createHash } from 'crypto';
 import { z } from 'zod';
 import { User } from '../models/User.js';
 import { signToken, setTokenCookie, clearTokenCookie } from '../utils/auth.js';
 import { createValidationMiddleware } from '../utils/validation.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { logger } from '../utils/logger.js';
+import { sendPasswordResetEmail, sendVerificationEmail } from '../utils/email.js';
 
 const router = Router();
 const authRateLimitWindowMs = 15 * 60 * 1000;
@@ -15,6 +17,8 @@ const authRateLimitMessage = { error: 'Too many authentication attempts. Please 
 const BCRYPT_ROUNDS = 12;
 const LOGIN_MAX_FAILURES = 10;
 const LOGIN_LOCKOUT_MS = 15 * 60 * 1000;
+const RESET_TOKEN_EXPIRES_MS = 60 * 60 * 1000; // 1 hour
+const VERIFICATION_TOKEN_EXPIRES_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 const registerLimiter = rateLimit({
   windowMs: authRateLimitWindowMs,
@@ -28,6 +32,22 @@ const loginLimiter = rateLimit({
   windowMs: authRateLimitWindowMs,
   max: 8,
   skipSuccessfulRequests: true,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: authRateLimitMessage,
+});
+
+const forgotPasswordLimiter = rateLimit({
+  windowMs: authRateLimitWindowMs,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: authRateLimitMessage,
+});
+
+const resetPasswordLimiter = rateLimit({
+  windowMs: authRateLimitWindowMs,
+  max: 10,
   standardHeaders: true,
   legacyHeaders: false,
   message: authRateLimitMessage,
@@ -51,12 +71,27 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
+const forgotPasswordSchema = z.object({
+  email: z.string().email().max(255),
+});
+
+const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Token is required'),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(128),
+});
+
 // Lazy-initialized dummy hash used to keep login response time constant
 // when a user account does not exist (prevents timing-based enumeration).
 let _dummyHash = null;
 async function getDummyHash() {
   if (!_dummyHash) _dummyHash = await bcrypt.hash('__dummy_timing_prevention__', BCRYPT_ROUNDS);
   return _dummyHash;
+}
+
+function generateToken() {
+  const raw = randomBytes(32).toString('hex');
+  const hashed = createHash('sha256').update(raw).digest('hex');
+  return { raw, hashed };
 }
 
 router.post('/register', registerLimiter, createValidationMiddleware(registerSchema), async (req, res) => {
@@ -72,25 +107,34 @@ router.post('/register', registerLimiter, createValidationMiddleware(registerSch
     if (existingEmail || existingUsername) {
       // Return a single generic error regardless of which field conflicts
       // to prevent enumeration of registered emails or usernames.
-      // TODO: For full protection, return 200 here and send a confirmation
-      // email to the address — only create the account after verification.
       logger.audit(
         'auth.register.failed',
         logger.withReq(req, {
           actor: 'unknown',
-          statusCode: 409,
+          statusCode: 400,
           metadata: {
             reason: existingEmail ? 'email_in_use' : 'username_taken',
             email,
           },
         })
       );
-      return res.status(409).json({ error: 'An account with these details already exists.' });
+      return res.status(400).json({ error: 'An account with these details already exists.' });
     }
 
     const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
-    const user = new User({ email, username, passwordHash });
+    const { raw: verificationRaw, hashed: verificationHashed } = generateToken();
+
+    const user = new User({
+      email,
+      username,
+      passwordHash,
+      emailVerificationToken: verificationHashed,
+      emailVerificationExpires: new Date(Date.now() + VERIFICATION_TOKEN_EXPIRES_MS),
+    });
     await user.save();
+
+    // Send verification email — non-blocking, registration succeeds regardless
+    sendVerificationEmail(email, verificationRaw).catch(() => {});
 
     const token = signToken(user._id, user.tokenVersion);
     setTokenCookie(res, token);
@@ -210,6 +254,170 @@ router.post('/logout', (req, res) => {
 router.get('/me', requireAuth, (req, res) => {
   logger.info('auth.me.fetched', logger.withReq(req, { userId: req.user._id, statusCode: 200 }));
   res.json({ user: req.user.toPublicJSON() });
+});
+
+router.post(
+  '/forgot-password',
+  forgotPasswordLimiter,
+  createValidationMiddleware(forgotPasswordSchema),
+  async (req, res) => {
+    try {
+      const { email } = req.validatedBody;
+      logger.info('auth.forgot_password.attempt', logger.withReq(req, { metadata: { email } }));
+
+      const user = await User.findOne({ email });
+
+      // Always return 200 to prevent email enumeration
+      if (!user) {
+        return res.json({ message: 'If an account with that email exists, a reset link has been sent.' });
+      }
+
+      const { raw, hashed } = generateToken();
+      await User.updateOne(
+        { _id: user._id },
+        {
+          $set: {
+            resetPasswordToken: hashed,
+            resetPasswordExpires: new Date(Date.now() + RESET_TOKEN_EXPIRES_MS),
+          },
+        }
+      );
+
+      await sendPasswordResetEmail(email, raw);
+
+      logger.audit('auth.forgot_password.sent', logger.withReq(req, {
+        actor: 'user',
+        userId: user._id,
+        statusCode: 200,
+      }));
+      res.json({ message: 'If an account with that email exists, a reset link has been sent.' });
+    } catch (err) {
+      logger.error('auth.forgot_password.error', logger.withReq(req, {
+        statusCode: 500,
+        metadata: { message: err.message },
+      }));
+      res.status(500).json({ error: 'Failed to send reset email' });
+    }
+  }
+);
+
+router.post(
+  '/reset-password',
+  resetPasswordLimiter,
+  createValidationMiddleware(resetPasswordSchema),
+  async (req, res) => {
+    try {
+      const { token, password } = req.validatedBody;
+      const hashed = createHash('sha256').update(token).digest('hex');
+
+      // select:false only affects output projections, not query predicates — can query by hashed token directly
+      const targetUser = await User.findOne({
+        resetPasswordToken: hashed,
+        resetPasswordExpires: { $gt: new Date() },
+      });
+
+      if (!targetUser) {
+        return res.status(400).json({ error: 'Invalid or expired reset token' });
+      }
+
+      const newPasswordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+      await User.updateOne(
+        { _id: targetUser._id },
+        {
+          $set: { passwordHash: newPasswordHash },
+          $inc: { tokenVersion: 1 },
+          $unset: { resetPasswordToken: '', resetPasswordExpires: '' },
+        }
+      );
+
+      logger.audit('auth.reset_password.success', logger.withReq(req, {
+        actor: 'user',
+        userId: targetUser._id,
+        statusCode: 200,
+      }));
+      res.json({ message: 'Password reset successfully' });
+    } catch (err) {
+      logger.error('auth.reset_password.error', logger.withReq(req, {
+        statusCode: 500,
+        metadata: { message: err.message },
+      }));
+      res.status(500).json({ error: 'Password reset failed' });
+    }
+  }
+);
+
+router.get('/verify-email', async (req, res) => {
+  try {
+    const { token } = req.query;
+    if (!token || typeof token !== 'string') {
+      return res.status(400).json({ error: 'Token is required' });
+    }
+
+    const hashed = createHash('sha256').update(token).digest('hex');
+    const user = await User.findOne({
+      emailVerificationToken: hashed,
+      emailVerificationExpires: { $gt: new Date() },
+    }).select('+emailVerificationToken +emailVerificationExpires');
+
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid or expired verification token' });
+    }
+
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: { emailVerified: true },
+        $unset: { emailVerificationToken: '', emailVerificationExpires: '' },
+      }
+    );
+
+    logger.audit('auth.email_verified', logger.withReq(req, {
+      actor: 'user',
+      userId: user._id,
+      statusCode: 200,
+    }));
+    res.json({ message: 'Email verified successfully' });
+  } catch (err) {
+    logger.error('auth.verify_email.error', logger.withReq(req, {
+      statusCode: 500,
+      metadata: { message: err.message },
+    }));
+    res.status(500).json({ error: 'Email verification failed' });
+  }
+});
+
+router.post('/resend-verification', requireAuth, forgotPasswordLimiter, async (req, res) => {
+  try {
+    if (req.user.emailVerified) {
+      return res.status(400).json({ error: 'Email is already verified' });
+    }
+
+    const { raw, hashed } = generateToken();
+    await User.updateOne(
+      { _id: req.user._id },
+      {
+        $set: {
+          emailVerificationToken: hashed,
+          emailVerificationExpires: new Date(Date.now() + VERIFICATION_TOKEN_EXPIRES_MS),
+        },
+      }
+    );
+
+    await sendVerificationEmail(req.user.email, raw);
+
+    logger.audit('auth.verification_resent', logger.withReq(req, {
+      actor: 'user',
+      userId: req.user._id,
+      statusCode: 200,
+    }));
+    res.json({ message: 'Verification email sent' });
+  } catch (err) {
+    logger.error('auth.resend_verification.error', logger.withReq(req, {
+      statusCode: 500,
+      metadata: { message: err.message },
+    }));
+    res.status(500).json({ error: 'Failed to send verification email' });
+  }
 });
 
 export default router;

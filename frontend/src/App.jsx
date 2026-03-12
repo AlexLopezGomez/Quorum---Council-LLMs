@@ -11,6 +11,8 @@ import { WebhookManager } from './components/webhooks/WebhookManager';
 import { ApiKeysManager } from './components/ApiKeysManager';
 import { EvaluationDetail } from './components/EvaluationDetail';
 import { ErrorAlert } from './components/ui/ErrorAlert';
+import { BenchmarkDashboard } from './components/BenchmarkDashboard';
+import { VerifyEmailBanner } from './components/VerifyEmailBanner';
 
 function UploadRoute() {
   const {
@@ -116,6 +118,7 @@ function AppContent() {
       <Sidebar />
       <main className="ml-60 flex-1 min-h-screen">
         <div className="max-w-6xl mx-auto px-8 py-8">
+          <VerifyEmailBanner />
           <ErrorAlert message={error} className="mb-6" />
           <Routes>
             <Route index element={<UploadRoute />} />
@@ -124,6 +127,7 @@ function AppContent() {
             <Route path="history/:jobId" element={<EvaluationDetail />} />
             <Route path="webhooks" element={<WebhookManager />} />
             <Route path="settings" element={<ApiKeysManager />} />
+            <Route path="benchmark" element={<BenchmarkDashboard />} />
           </Routes>
         </div>
       </main>

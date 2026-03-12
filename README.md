@@ -1,5 +1,9 @@
 # Quorum
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
+[![Node 20+](https://img.shields.io/badge/Node-20%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+
 **Adaptive RAG evaluation with a Council-of-LLMs — route each test case to the optimal strategy based on risk.**
 
 > **[Live Demo](https://quorum.onrender.com)** — zero setup, no API keys needed. Click "Run Demo" and watch adaptive orchestration in real time.
@@ -166,6 +170,18 @@ Interactive docs at `/api/docs` (Swagger UI).
 - [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) — Frontend component patterns
 - [sdk/README.md](./sdk/README.md) — SDK integration guide
 
+## Research & Benchmarks
+
+- Public benchmark results: [`/benchmarks`](https://quorum.onrender.com/benchmarks)
+- Research assets: [paper/README.md](./paper/README.md)
+- Preprint source: [paper/main_publish.tex](./paper/main_publish.tex)
+- Blog post draft: [paper/blog_post.md](./paper/blog_post.md)
+
+## Contributing
+
+Community contributions are welcome. Start with [CONTRIBUTING.md](./CONTRIBUTING.md)
+for local setup, architecture notes, and pull request expectations.
+
 ## License
 
-MIT
+[MIT](./LICENSE)

@@ -103,6 +103,30 @@ Follow DESIGN_SYSTEM.md for all frontend components. Every component must use th
 * Backend `.env` contains live API keys — it is gitignored. Use `.env.example` as template.
 * `ADAPTIVE_MODE=false` env var bypasses the adaptive router entirely (safe rollback).
 
+## Implementation Guidelines
+
+When implementing features, always deliver both backend AND frontend changes together. Never submit a backend-only implementation when the task implies a user-facing feature.
+
+## UI/Styling
+
+Always use the existing design system palette and color variables. Never default to dark theme or introduce new color schemes unless explicitly asked.
+
+## General Workflow
+
+Bias toward action over planning. If exploration/planning exceeds 2-3 minutes without producing code changes, pause and ask the user if they want implementation to begin.
+
+## Writing & Content
+
+For content generation (emails, pitches, copy), lead with 'why it matters' not 'what it is'. Focus on impact and value proposition first.
+
+## Code Quality
+
+When editing YAML files, validate syntax carefully — check for duplicate keys, correct nesting, and proper list formatting before committing.
+
+## Debugging
+
+After implementing UI changes, verify the running app serves the latest code. Stale builds/servers are a common source of 'it doesn't work' bugs.
+
 ---
 
 ## Plan Mode

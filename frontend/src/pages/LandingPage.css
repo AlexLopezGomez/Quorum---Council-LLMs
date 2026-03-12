@@ -727,13 +727,34 @@ html {
 .landing-footer {
     background: var(--bg);
     border-top: 1px solid var(--card-border);
-    padding: 28px 0;
+    padding: 32px 0 0;
+    overflow: hidden;
 }
 
-.footer-row {
+.footer-nav-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.footer-tagline {
+    font-size: 0.8125rem;
+    color: var(--text-ter);
+}
+
+.footer-wordmark {
+    font-size: clamp(6rem, 14vw, 12rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    color: var(--text-primary);
+    opacity: 0.07;
+    text-align: center;
+    line-height: 0.85;
+    display: block;
+    mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+    user-select: none;
 }
 
 .footer-icon-link {
@@ -741,6 +762,7 @@ html {
     transition: color 0.15s;
     display: flex;
     align-items: center;
+    text-decoration: none;
 }
 
 .footer-icon-link:hover {
@@ -822,6 +844,85 @@ html {
     animation: scaleIn 0.2s ease both;
 }
 
+/* ─── Hero CTA row ──────────────────────────────────────────── */
+.hero-cta-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.hero-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 24px;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    color: var(--text-sec);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.hero-secondary-btn:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+
+/* ─── Scrambling Section ────────────────────────────────────── */
+.scrambling-section {
+    padding: 120px 0;
+    background: var(--bg);
+    border-top: 1px solid var(--card-border);
+}
+
+.scrambling-heading {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: 72px;
+    line-height: 1.15;
+}
+
+.scrambling-rows {
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.scrambling-row {
+    display: grid;
+    grid-template-columns: 1fr 28px 1fr;
+    align-items: center;
+    gap: 16px;
+}
+
+.scrambling-before {
+    text-align: right;
+    color: var(--text-ter);
+    text-decoration: line-through;
+    font-size: 1.0625rem;
+}
+
+.scrambling-arrow {
+    color: var(--accent);
+    font-size: 1.125rem;
+    text-align: center;
+}
+
+.scrambling-after {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
 /* ─── Responsive ────────────────────────────────────────────── */
 @media (max-width: 1024px) {
     .reflective-cards-row {
@@ -854,5 +955,19 @@ html {
     .reflective-cards-row {
         flex-direction: column;
         align-items: center;
+    }
+
+    .scrambling-section {
+        padding: 72px 0;
+    }
+
+    .scrambling-row {
+        grid-template-columns: 1fr 20px 1fr;
+        gap: 8px;
+    }
+
+    .scrambling-before,
+    .scrambling-after {
+        font-size: 0.875rem;
     }
 }

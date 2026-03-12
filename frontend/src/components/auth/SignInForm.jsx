@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import SocialAuth from './SocialAuth';
@@ -53,9 +53,9 @@ export default function SignInForm() {
           placeholder="Min. 8 characters"
         />
 
-        <button type="button" className="text-xs text-text-secondary hover:text-text-primary transition-colors">
+        <Link to="/forgot-password" className="text-xs text-text-secondary hover:text-text-primary transition-colors">
           Forgot password?
-        </button>
+        </Link>
 
         {displayError && (
           <p className="text-sm text-verdict-fail">{displayError}</p>

@@ -1,0 +1,35 @@
+name: RAG Quality Gate
+
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main]
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run RAG Evaluation
+        id: eval
+        uses: ./.github/actions/quorum-evaluate
+        with:
+          api_key: ${{ secrets.QUORUM_API_KEY }}
+          test_cases_path: tests/eval_cases.json
+          strategy: auto
+          fail_threshold: '0.80'
+          post_comment: 'true'
+
+      - name: Print Summary
+        run: |
+          echo "Verdict:    ${{ steps.eval.outputs.verdict }}"
+          echo "Pass rate:  ${{ steps.eval.outputs.pass_rate }}"
+          echo "Avg score:  ${{ steps.eval.outputs.avg_score }}"
+          echo "Cost:       ${{ steps.eval.outputs.total_cost }}"
+          echo "Job ID:     ${{ steps.eval.outputs.job_id }}"

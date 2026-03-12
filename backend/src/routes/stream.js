@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { Evaluation } from '../models/Evaluation.js';
+import { BenchmarkRun } from '../models/BenchmarkRun.js';
 import { sseManager, setSSEHeaders } from '../utils/sse.js';
 import { logger } from '../utils/logger.js';
 
@@ -76,6 +77,41 @@ router.get('/:jobId', async (req, res) => {
     );
     if (!res.headersSent) {
       res.status(500).json({ error: 'Failed to establish stream' });
+    }
+  }
+});
+
+router.get('/benchmark/:runId', async (req, res) => {
+  const { runId } = req.params;
+
+  try {
+    const run = await BenchmarkRun.findOne({ runId, userId: req.user._id });
+
+    if (!run) {
+      return res.status(404).json({ error: 'Benchmark run not found' });
+    }
+
+    setSSEHeaders(res);
+
+    for (const event of run.events || []) {
+      res.write(`event: ${event.type}\ndata: ${JSON.stringify(event.data)}\n\n`);
+    }
+
+    if (run.status !== 'processing') {
+      res.write(`event: replay_complete\ndata: ${JSON.stringify({ runId, status: run.status })}\n\n`);
+      res.end();
+      return;
+    }
+
+    res.write(`event: replay_complete\ndata: ${JSON.stringify({ runId, status: run.status })}\n\n`);
+    sseManager.addConnection(runId, res);
+  } catch (error) {
+    logger.error('sse.benchmark.stream.error', logger.withReq(req, {
+      userId: req.user?._id,
+      metadata: { runId, message: error.message },
+    }));
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Failed to establish benchmark stream' });
     }
   }
 });

@@ -1,0 +1,2647 @@
+[
+  {
+    "id": "general-001",
+    "domain": "general",
+    "difficulty": "easy",
+    "input": "What is the capital of France?",
+    "actualOutput": "The capital of France is Paris, which has served as the country's capital since the 10th century.",
+    "retrievalContext": [
+      "Paris is the capital and most populous city of France. It has been the country's major political and cultural center since the late 10th century."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct, fully grounded in context.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-002",
+    "domain": "general",
+    "difficulty": "easy",
+    "input": "Who wrote Romeo and Juliet?",
+    "actualOutput": "Romeo and Juliet was written by William Shakespeare around 1594-1596. It is one of his most famous tragic plays.",
+    "retrievalContext": [
+      "Romeo and Juliet is a tragedy written by William Shakespeare early in his career, believed to have been written between 1594 and 1596."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct and grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-003",
+    "domain": "general",
+    "difficulty": "medium",
+    "input": "What is the speed of light in a vacuum?",
+    "actualOutput": "The speed of light in a vacuum is approximately 300,000 kilometers per second, or more precisely 299,792,458 meters per second.",
+    "retrievalContext": [
+      "The speed of light in vacuum, commonly denoted c, is a universal physical constant exactly equal to 299,792,458 metres per second."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate and grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-004",
+    "domain": "general",
+    "difficulty": "medium",
+    "input": "When was the Eiffel Tower built?",
+    "actualOutput": "The Eiffel Tower was built between 1887 and 1889 for the 1889 World's Fair in Paris. It was designed by Gustave Eiffel.",
+    "retrievalContext": [
+      "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France. It was constructed from 1887 to 1889 as the centerpiece of the 1889 World's Fair."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct, directly sourced.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-005",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "What is photosynthesis?",
+    "actualOutput": "Photosynthesis is the process by which plants convert sunlight, water, and carbon dioxide into glucose and oxygen. The net equation is: 6CO2 + 6H2O + light → C6H12O6 + 6O2.",
+    "retrievalContext": [
+      "Photosynthesis is a process used by plants and other organisms to convert light energy into chemical energy stored in glucose. The overall reaction can be summarized as: carbon dioxide + water → glucose + oxygen using light energy."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct summary with accurate equation.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-006",
+    "domain": "general",
+    "difficulty": "medium",
+    "input": "How many planets are in the solar system?",
+    "actualOutput": "There are 8 planets in our solar system: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune. Pluto was reclassified as a dwarf planet in 2006 by the IAU.",
+    "retrievalContext": [
+      "The solar system consists of 8 planets: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune. In 2006, the International Astronomical Union redefined the term planet, reclassifying Pluto as a dwarf planet."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Fully accurate and grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-007",
+    "domain": "general",
+    "difficulty": "easy",
+    "input": "What does DNA stand for?",
+    "actualOutput": "DNA stands for Deoxyribonucleic Acid. It carries the genetic information that determines the development and functioning of all living organisms.",
+    "retrievalContext": [
+      "DNA, or deoxyribonucleic acid, is the hereditary material in humans and almost all other organisms. Nearly every cell in a person's body has the same DNA."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct expansion and grounded context.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-008",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "What is quantum entanglement?",
+    "actualOutput": "Quantum entanglement is a phenomenon where two or more particles become correlated so that the quantum state of each cannot be described independently. Measurement of one instantly determines the state of the other, even across unlimited distances, at speeds faster than light.",
+    "retrievalContext": [
+      "Quantum entanglement is a physical phenomenon that occurs when a group of particles are generated, interact, or share spatial proximity in such a way that the quantum state of each particle cannot be described independently. The measurement of one particle's state instantaneously influences the correlated property of the other particle, regardless of distance."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "The output claims information travels 'faster than light', which is a known misconception not stated in context. The correlation exists but no information is transmitted. Single-judge may miss this subtle physics error because the answer sounds authoritative.",
+    "failureMode": "hallucination"
+  },
+  {
+    "id": "general-009",
+    "domain": "general",
+    "difficulty": "medium",
+    "input": "What is the boiling point of water at sea level?",
+    "actualOutput": "Water boils at 100 degrees Celsius (212 degrees Fahrenheit) at sea level, which corresponds to 1 atmosphere of pressure.",
+    "retrievalContext": [
+      "The boiling point of water at standard atmospheric pressure (1 atm, sea level) is 100 degrees Celsius or 212 degrees Fahrenheit."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct and grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-010",
+    "domain": "general",
+    "difficulty": "medium",
+    "input": "What is the largest ocean on Earth?",
+    "actualOutput": "The Pacific Ocean is the largest and deepest ocean on Earth, covering more than 165 million square kilometers and containing more than half of the world's oceanic water.",
+    "retrievalContext": [
+      "The Pacific Ocean is the largest and deepest of Earth's five oceanic divisions. It covers more than 165 million square kilometers."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct. 'More than half the world's oceanic water' is a reasonable inference from the size data.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-011",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "What are the causes of the French Revolution?",
+    "actualOutput": "The French Revolution was caused primarily by economic hardship, including food shortages and high taxes, social inequality under the Estates system, and the influence of Enlightenment ideas. Additionally, France's bankruptcy following the American Revolutionary War played a crucial role.",
+    "retrievalContext": [
+      "The causes of the French Revolution included fiscal mismanagement by the crown, social tensions under the Ancien Régime's estate system, and the spread of Enlightenment ideas that challenged traditional authority. France's near-bankruptcy, exacerbated by its involvement in the Seven Years' War and later conflicts, forced King Louis XVI to convene the Estates-General."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Context attributes France's bankruptcy partly to the Seven Years' War. Output incorrectly attributes it solely to the American Revolutionary War. Single faithfulness judge may give partial credit since most claims are correct.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "general-012",
+    "domain": "general",
+    "difficulty": "easy",
+    "input": "What is the chemical formula for water?",
+    "actualOutput": "The chemical formula for water is H2O, meaning each molecule contains two hydrogen atoms and one oxygen atom.",
+    "retrievalContext": [
+      "Water is a chemical compound with the chemical formula H2O. Each molecule consists of two hydrogen atoms covalently bonded to a single oxygen atom."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Perfect.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-013",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "How does the immune system recognize pathogens?",
+    "actualOutput": "The immune system recognizes pathogens through pattern recognition receptors (PRRs) that detect pathogen-associated molecular patterns (PAMPs). T-cells use T-cell receptors (TCRs) to recognize antigens presented on MHC molecules, while B-cells produce antibodies that bind to specific antigens.",
+    "retrievalContext": [
+      "The innate immune system uses pattern recognition receptors to detect pathogen-associated molecular patterns. The adaptive immune system uses T-cell receptors and B-cell receptors for antigen-specific recognition. Antigens are typically presented on major histocompatibility complex (MHC) molecules to T-cells."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate, comprehensive, and grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-014",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "What is the difference between weather and climate?",
+    "actualOutput": "Weather refers to short-term atmospheric conditions at a specific place and time (such as today's temperature and rain), while climate refers to the average weather patterns of a region over a long period, typically 30 years.",
+    "retrievalContext": [
+      "Weather refers to short-term atmospheric conditions in a specific area, such as current temperature, humidity, and precipitation. Climate describes the typical weather patterns of a region measured over a 30-year average period."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate distinction, directly grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-015",
+    "domain": "general",
+    "difficulty": "medium",
+    "input": "What causes rainbows?",
+    "actualOutput": "Rainbows form when sunlight enters water droplets in the atmosphere, refracts (bends), reflects off the inside of the droplet, and refracts again as it exits. Different wavelengths of light bend at different angles, separating white light into its color spectrum.",
+    "retrievalContext": [
+      "A rainbow is an optical phenomenon produced by reflection, refraction, and dispersion of light in water droplets. When sunlight interacts with a water droplet, it bends (refracts) entering the droplet, reflects off the back, and bends again exiting, separating the white light into a spectrum of colors."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct physics, well grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-016",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "What is CRISPR-Cas9?",
+    "actualOutput": "CRISPR-Cas9 is a revolutionary gene-editing technology that allows scientists to add, remove, or alter genetic material. It was first used successfully in human clinical trials in 2018 and has since cured multiple genetic diseases in clinical settings.",
+    "retrievalContext": [
+      "CRISPR-Cas9 is a molecular tool that allows precise editing of DNA sequences. Derived from a bacterial immune mechanism, it has been adapted for use in eukaryotic cells. Early clinical trials began around 2018-2019, primarily for conditions like sickle cell disease and certain cancers, with some promising results reported in 2023."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output overclaims: 'cured multiple genetic diseases in clinical settings' is not supported by context, which says only 'promising results'. Single-judge may miss this because the confident phrasing sounds credible.",
+    "failureMode": "hallucination"
+  },
+  {
+    "id": "general-017",
+    "domain": "general",
+    "difficulty": "easy",
+    "input": "What year did World War II end?",
+    "actualOutput": "World War II ended in 1945. Germany surrendered on May 8, 1945 (V-E Day), and Japan surrendered on September 2, 1945 (V-J Day) after the atomic bombings of Hiroshima and Nagasaki.",
+    "retrievalContext": [
+      "World War II ended in 1945. Victory in Europe Day (V-E Day) was May 8, 1945, marking Germany's surrender. Victory over Japan (V-J Day) was September 2, 1945, following Japan's formal surrender after the atomic bombings."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct and well-sourced.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-018",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "How does GPS work?",
+    "actualOutput": "GPS works by receiving signals from a network of 24 satellites orbiting Earth. A GPS receiver calculates its position by measuring the time signals take to arrive from multiple satellites, using a process called trilateration. The system requires signals from at least 3 satellites for 2D positioning.",
+    "retrievalContext": [
+      "The Global Positioning System (GPS) uses a constellation of at least 24 satellites in medium Earth orbit. GPS receivers determine location through trilateration — measuring the time delay of signals from multiple satellites. At least 4 satellites are needed for accurate 3D positioning (latitude, longitude, and altitude); 3 satellites suffice for 2D."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states 3 satellites for 2D positioning (correct) but omits that 4 are needed for 3D — the context explicitly states this. This is an incomplete answer that a faithfulness judge might score highly since what IS stated is accurate.",
+    "failureMode": "incomplete"
+  },
+  {
+    "id": "general-019",
+    "domain": "general",
+    "difficulty": "medium",
+    "input": "What is the Pythagorean theorem?",
+    "actualOutput": "The Pythagorean theorem states that in a right triangle, the square of the length of the hypotenuse equals the sum of the squares of the other two sides: a² + b² = c², where c is the hypotenuse.",
+    "retrievalContext": [
+      "The Pythagorean theorem is a fundamental relation in Euclidean geometry among the three sides of a right triangle. It states that the area of the square whose side is the hypotenuse equals the sum of the areas of the squares on the other two sides: a² + b² = c²."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct and grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "general-020",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "What is the difference between machine learning and deep learning?",
+    "actualOutput": "Machine learning is a broader field of AI where systems learn from data using algorithms. Deep learning is a subset of machine learning that uses artificial neural networks with many layers (hence 'deep') to learn representations of data. All deep learning is machine learning, but not all machine learning is deep learning.",
+    "retrievalContext": [
+      "Machine learning is a subset of artificial intelligence that involves algorithms learning from data. Deep learning is a further subset of machine learning that uses multi-layered artificial neural networks, capable of learning complex representations from large datasets."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate hierarchy, well grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "legal-001",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "Does GDPR Article 17 grant an absolute right to erasure?",
+    "actualOutput": "Yes, under GDPR Article 17, individuals have an absolute right to have their personal data erased at any time upon request.",
+    "retrievalContext": [
+      "Article 17 GDPR grants the right to erasure ('right to be forgotten') without undue delay where certain grounds apply, including withdrawal of consent. However, the right does not apply where processing is necessary for compliance with a legal obligation, the exercise of freedom of expression, public health purposes, archiving in the public interest, or the establishment and exercise of legal claims."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "The right is explicitly NOT absolute — the context lists 5+ exceptions. This is a dangerous legal hallucination. Faithfulness judge may partially credit it since the claim about erasure rights is partially true.",
+    "failureMode": "hallucination"
+  },
+  {
+    "id": "legal-002",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What constitutes fair use under US copyright law?",
+    "actualOutput": "Fair use under US copyright law is evaluated using four factors: (1) purpose and character of use (commercial vs. educational), (2) nature of the copyrighted work, (3) amount of the work used, and (4) effect on the market for the original work. No single factor is determinative; all four must be weighed.",
+    "retrievalContext": [
+      "Section 107 of the Copyright Act establishes four factors for fair use analysis: (1) the purpose and character of the use, including whether it is commercial or for nonprofit educational purposes; (2) the nature of the copyrighted work; (3) the amount and substantiality of the portion used; (4) the effect of the use upon the potential market or value of the work. Courts weigh all four factors together."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate four-factor test, correctly caveated that no single factor controls.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "legal-003",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What is the statute of limitations for breach of contract in California?",
+    "actualOutput": "In California, the statute of limitations for breach of a written contract is 4 years from the date of breach. For oral contracts, it is 2 years.",
+    "retrievalContext": [
+      "California Code of Civil Procedure Section 337 provides a 4-year statute of limitations for actions on written contracts. Section 339 provides a 2-year limitation for oral contracts. The limitations period generally begins running from the date of the alleged breach."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate statutory periods, correctly sourced.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "legal-004",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "Can an employer monitor employees' personal emails on company devices?",
+    "actualOutput": "Yes, employers generally have the right to monitor all communications on company-owned devices, including personal emails. Employees have no reasonable expectation of privacy when using company equipment, and most courts have upheld broad employer monitoring rights.",
+    "retrievalContext": [
+      "Employer monitoring of company devices is generally permissible, but legal standards vary. The Electronic Communications Privacy Act (ECPA) allows employers to monitor business communications. However, several states including California require employers to provide advance notice of monitoring policies. The expectation of privacy analysis depends on employer policies, state law, and whether employees were informed that personal communications might be accessed. Some courts have found that allowing personal use creates a limited privacy expectation."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output overstates employer rights as absolute and universal. Context shows significant state-by-state variation and notice requirements. 'No reasonable expectation of privacy' is an oversimplification that varies by jurisdiction and policy. A council combining groundedness and context relevancy will catch this nuance.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "legal-005",
+    "domain": "legal",
+    "difficulty": "medium",
+    "input": "What is the difference between a misdemeanor and a felony in the US?",
+    "actualOutput": "In the US criminal justice system, a felony is a more serious crime typically punishable by imprisonment of more than one year in a state or federal prison. A misdemeanor is less serious and usually results in less than one year in a local jail, fines, or probation.",
+    "retrievalContext": [
+      "Under US federal law and most state statutes, felonies are crimes punishable by imprisonment exceeding one year, typically served in state or federal prison. Misdemeanors carry penalties of up to one year, usually served in local or county jails. The distinction affects voting rights, professional licensing, and immigration status."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate core distinction, appropriately grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "legal-006",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What is promissory estoppel and when does it apply?",
+    "actualOutput": "Promissory estoppel allows a party to enforce a promise even without formal consideration if: (1) a clear promise was made, (2) the promisee reasonably relied on the promise, (3) the reliance was detrimental, and (4) enforcement is necessary to prevent injustice. It is commonly applied when a written contract doesn't exist but one party has significantly changed their position in reliance on a promise.",
+    "retrievalContext": [
+      "Promissory estoppel is an equitable doctrine that allows enforcement of a promise lacking consideration when four elements are met: a clear and definite promise; the promisor should have reasonably expected the promise to induce reliance; the promisee did in fact reasonably rely on the promise to their detriment; and injustice can only be avoided by enforcement. The doctrine developed to prevent unfair outcomes when strict contract requirements are not met."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Four elements correctly stated, accurately grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "legal-007",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "Is an NDA enforceable if it lacks a time limit?",
+    "actualOutput": "No. Non-disclosure agreements without a specified time limit are generally not enforceable because courts require reasonable limitations on the duration of confidentiality obligations. An NDA with no time limit is typically considered overly broad and void.",
+    "retrievalContext": [
+      "NDA enforceability varies by jurisdiction. Some courts have enforced NDAs with no express time limit, reasoning that trade secrets and confidential information warrant perpetual protection. Other courts have voided or limited such agreements as unreasonably broad. Most attorneys recommend including a reasonable time limit (often 2-5 years for general confidential information; longer or perpetual for trade secrets) to maximize enforceability, but indefinite NDAs are not per se unenforceable in all jurisdictions."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states NDAs without time limits are 'generally not enforceable' and 'typically void' — context clearly shows this is jurisdiction-dependent and courts have enforced them, especially for trade secrets. Absolute claim not supported.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "legal-008",
+    "domain": "legal",
+    "difficulty": "medium",
+    "input": "What is the business judgment rule?",
+    "actualOutput": "The business judgment rule is a legal presumption that protects corporate directors from liability for business decisions made in good faith, with reasonable care, and in the honest belief that the action was in the best interest of the company. Courts generally defer to directors' business decisions unless fraud, bad faith, or self-dealing is shown.",
+    "retrievalContext": [
+      "The business judgment rule is a common law doctrine providing that courts will not second-guess the good-faith business decisions of corporate directors, provided the decisions were made on an informed basis, in good faith, and in the honest belief they served the best interests of the corporation. The rule creates a presumption of appropriate conduct, which plaintiffs must overcome by showing bad faith, self-dealing, gross negligence, or fraud."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate description, correctly grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "legal-009",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What rights does a tenant have if a landlord enters without notice?",
+    "actualOutput": "In most US jurisdictions, landlords must provide 24 hours notice before entering a rental unit except in genuine emergencies. If a landlord enters without notice, tenants may: terminate the lease, sue for damages, or file a complaint with housing authorities. Repeated unauthorized entries can constitute harassment or constructive eviction.",
+    "retrievalContext": [
+      "Landlord entry requirements vary significantly by state. Many states, including California, require 24 hours advance written notice for non-emergency entry. Some states require 48 hours. Emergency entry (fire, flooding, imminent danger) is generally exempt from notice requirements. Tenant remedies for unauthorized entry typically include: damages (often 1-2 months rent), injunctive relief, and potentially lease termination. Repeated violations may support claims for harassment or breach of the implied covenant of quiet enjoyment."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate general framework; appropriately notes jurisdictional variation.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "legal-010",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What is a force majeure clause and does it cover COVID-19?",
+    "actualOutput": "A force majeure clause excuses a party's contractual performance when extraordinary events beyond their control prevent fulfillment. Courts universally held that COVID-19 qualified as a force majeure event, allowing businesses to exit contracts without liability during the pandemic.",
+    "retrievalContext": [
+      "Force majeure clauses excuse non-performance due to extraordinary events beyond a party's control. Whether COVID-19 qualifies depends on the specific language of the clause, which must expressly or impliedly cover pandemics, government actions, or 'acts of God'. Courts were divided: some found COVID-19 triggered force majeure where clauses covered epidemics or government orders; others rejected it when performance was merely more expensive rather than truly impossible. The analysis is fact-specific and contract-specific."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states courts 'universally held' COVID-19 qualified — context explicitly says courts were divided. This is a direct factual inversion. A confidence-sounding answer about legal consensus that is actually wrong.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "legal-011",
+    "domain": "legal",
+    "difficulty": "medium",
+    "input": "What is the difference between civil and criminal law?",
+    "actualOutput": "Civil law deals with disputes between private parties, with the goal of compensating the injured party through monetary damages or injunctions. Criminal law involves offenses against the state, with the government prosecuting individuals and penalties including fines, imprisonment, or probation. The burden of proof in criminal cases is 'beyond a reasonable doubt', while civil cases use 'preponderance of the evidence'.",
+    "retrievalContext": [
+      "Civil law addresses disputes between individuals, businesses, or organizations, with remedies typically including monetary damages or equitable relief. Criminal law involves prosecution by the government for offenses deemed harmful to society. The standard of proof in criminal cases is 'beyond a reasonable doubt'; in civil cases it is generally 'preponderance of the evidence' (more likely than not)."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate and grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "legal-012",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "Can a minor enter into a binding contract?",
+    "actualOutput": "No, minors under 18 cannot enter into binding contracts. All contracts with minors are void and completely unenforceable by either party.",
+    "retrievalContext": [
+      "Generally, contracts entered into by minors (persons under 18 in most jurisdictions) are voidable, not void. This means the minor may affirm or disaffirm the contract upon reaching majority. Some contracts are exceptions: minors may be bound for necessities such as food, shelter, clothing, and medical care. Upon disaffirmance, the minor must return any consideration still in their possession. The adult party is generally bound by the contract."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states contracts with minors are 'void' and 'completely unenforceable'. The context explicitly states they are 'voidable' (a critical legal distinction) and that minors can be bound for necessities. This is a fundamental legal error that sounds authoritative.",
+    "failureMode": "hallucination"
+  },
+  {
+    "id": "legal-013",
+    "domain": "legal",
+    "difficulty": "medium",
+    "input": "What is res judicata?",
+    "actualOutput": "Res judicata (claim preclusion) is a legal doctrine that prevents the same claim from being litigated twice once a final judgment on the merits has been rendered. It bars relitigation between the same parties on the same claim, promoting judicial efficiency and finality.",
+    "retrievalContext": [
+      "Res judicata, or claim preclusion, is a common law doctrine that prevents parties from relitigating claims that have already been decided by a court with proper jurisdiction. For res judicata to apply, there must be: (1) a final judgment on the merits, (2) the same parties or those in privity, and (3) the same claim or cause of action. The doctrine promotes finality of judgments and judicial efficiency."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate and grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "legal-014",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "When is an employer liable for employee discrimination?",
+    "actualOutput": "An employer is liable for employee discrimination whenever any employee discriminates against another employee or customer. Employers are strictly liable under Title VII for all discriminatory acts committed by their employees during work hours.",
+    "retrievalContext": [
+      "Employer liability for employee discrimination under Title VII depends on the type of harassment and who committed it. For supervisor harassment resulting in tangible employment action, employer liability is strict. For supervisor harassment without tangible employment action, employers may assert the Faragher-Ellerth affirmative defense by showing they exercised reasonable care to prevent and correct harassment and the plaintiff unreasonably failed to use corrective opportunities. For co-worker harassment, employers are liable only if they knew or should have known of the harassment and failed to take prompt corrective action."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states employers are 'strictly liable for all discriminatory acts by employees during work hours' — context clearly shows liability varies significantly by supervisor vs. co-worker status and available affirmative defenses. Blanket strict liability is legally wrong.",
+    "failureMode": "hallucination"
+  },
+  {
+    "id": "legal-015",
+    "domain": "legal",
+    "difficulty": "medium",
+    "input": "What is the difference between a patent and a trademark?",
+    "actualOutput": "A patent protects inventions or discoveries, granting the inventor exclusive rights for 20 years from the filing date. A trademark protects brand identifiers (names, logos, slogans) that distinguish goods or services, and can be renewed indefinitely as long as it remains in use.",
+    "retrievalContext": [
+      "Patents protect inventions and grant exclusive rights for a period (typically 20 years from filing for utility patents). Trademarks protect words, symbols, logos, or slogans identifying the source of goods or services. Unlike patents, trademarks can potentially last indefinitely as long as they are actively used in commerce and renewed (typically every 10 years with USPTO)."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate core distinction.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "medical-001",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What is the recommended first-line treatment for Type 2 diabetes?",
+    "actualOutput": "The first-line treatment for Type 2 diabetes is metformin, combined with lifestyle modifications including diet and exercise. Metformin is preferred due to its efficacy, safety profile, low cost, and potential cardiovascular benefits.",
+    "retrievalContext": [
+      "Current clinical guidelines from the American Diabetes Association recommend metformin as the preferred initial pharmacologic agent for type 2 diabetes in the absence of contraindications, alongside lifestyle intervention. Metformin has a well-established safety profile, is inexpensive, and may provide cardiovascular benefits. Contraindications include severe renal impairment (eGFR < 30 mL/min/1.73m²)."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate, grounded, and appropriately describes first-line treatment.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "medical-002",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "Can ibuprofen be taken safely with blood thinners like warfarin?",
+    "actualOutput": "Yes, ibuprofen and warfarin can generally be taken together, though patients should monitor for potential interactions. The combination is commonly used in elderly patients and is considered safe with proper monitoring.",
+    "retrievalContext": [
+      "Ibuprofen and other NSAIDs interact significantly with warfarin. NSAIDs can increase anticoagulant effect by displacing warfarin from plasma proteins, inhibit platelet aggregation, and cause GI mucosal damage — all of which substantially increase bleeding risk. This combination is generally contraindicated or requires very careful monitoring with dose adjustments. The FDA has flagged this interaction. Clinicians should consider safer alternatives like acetaminophen for pain management in patients on warfarin."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states the combination is 'generally safe' and 'commonly used' — context explicitly says it is 'generally contraindicated' and substantially increases bleeding risk. This is a dangerous medical misinformation case. Exactly the type of failure documented in Microsoft Copilot study.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "medical-003",
+    "domain": "medical",
+    "difficulty": "medium",
+    "input": "What are the symptoms of appendicitis?",
+    "actualOutput": "Appendicitis typically presents with: sudden pain beginning around the navel then shifting to the lower right abdomen, nausea and vomiting, loss of appetite, fever (usually low-grade initially), and abdominal guarding. Rebound tenderness at McBurney's point is a classic sign.",
+    "retrievalContext": [
+      "Classic appendicitis presents with periumbilical pain that migrates to the right lower quadrant, nausea, vomiting, anorexia, and low-grade fever. Physical examination may reveal tenderness at McBurney's point, rebound tenderness (Blumberg's sign), and guarding. Presentations can vary, particularly in pregnant women, the elderly, and children."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate classic presentation, appropriately grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "medical-004",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What is the maximum safe daily dose of acetaminophen for adults?",
+    "actualOutput": "The maximum safe daily dose of acetaminophen for healthy adults is 4,000 mg (4 grams) per day. However, for patients who regularly consume alcohol or have liver disease, the safe limit is lower, typically 2,000 mg per day.",
+    "retrievalContext": [
+      "The FDA recommends that healthy adults take no more than 4,000 mg of acetaminophen per day. However, due to concerns about liver toxicity, many healthcare providers now recommend limiting intake to 3,000 mg per day for healthy adults. For adults with liver disease, heavy alcohol use (more than 3 drinks per day), or who are malnourished, the maximum should not exceed 2,000 mg per day."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states healthy adult limit is 4,000 mg/day. Context shows many providers now recommend 3,000 mg/day due to toxicity concerns — a clinically significant difference. The 4,000 mg figure is the FDA regulatory maximum, not current clinical practice guideline. Incomplete information with safety implications.",
+    "failureMode": "incomplete"
+  },
+  {
+    "id": "medical-005",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What are the signs of a stroke and what is the FAST acronym?",
+    "actualOutput": "FAST stands for Face drooping, Arm weakness, Speech difficulty, Time to call 911. These are the key warning signs of stroke. Early recognition and treatment within the golden hour is critical for outcome.",
+    "retrievalContext": [
+      "The FAST acronym helps recognize stroke symptoms: F - Face drooping (ask the person to smile, does one side droop?), A - Arm weakness (ask to raise both arms, does one drift downward?), S - Speech difficulty (is speech slurred, strange, or unable to speak?), T - Time to call 911 immediately. Some updated versions use BE-FAST adding Balance problems and Eye vision changes. Every minute of delayed treatment causes approximately 1.9 million neurons to die."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct FAST acronym. Omission of BE-FAST extension is acceptable for this question scope.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "medical-006",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "Is it safe to stop taking antidepressants abruptly?",
+    "actualOutput": "If you're feeling better, it's generally fine to stop taking antidepressants when you feel you no longer need them. Many people discontinue successfully once their depression resolves.",
+    "retrievalContext": [
+      "Abrupt discontinuation of antidepressants can cause discontinuation syndrome, characterized by flu-like symptoms, sensory disturbances ('brain zaps'), insomnia, irritability, and dizziness. The risk is highest with SSRIs and SNRIs that have short half-lives (paroxetine, venlafaxine). Clinicians recommend tapering over weeks to months depending on duration of treatment and dose. Abrupt cessation may also increase relapse risk for depression. Patients should always consult their prescriber before stopping."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "This is dangerous medical advice — suggesting abrupt discontinuation is 'generally fine'. Context clearly states this causes discontinuation syndrome and risks relapse. This is exactly the category of harmful medical advice documented in the Microsoft Copilot study.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "medical-007",
+    "domain": "medical",
+    "difficulty": "medium",
+    "input": "What is the difference between Type 1 and Type 2 diabetes?",
+    "actualOutput": "Type 1 diabetes is an autoimmune condition where the immune system destroys insulin-producing beta cells, requiring lifelong insulin therapy. Type 2 diabetes is characterized by insulin resistance and relative insulin deficiency, often manageable with lifestyle changes and oral medications before insulin is needed.",
+    "retrievalContext": [
+      "Type 1 diabetes mellitus is an autoimmune condition in which the immune system destroys pancreatic beta cells, resulting in absolute insulin deficiency requiring lifelong insulin replacement. Type 2 diabetes is characterized by insulin resistance and progressive beta cell dysfunction. It is strongly associated with obesity and lifestyle factors. Initial management typically involves lifestyle modification and metformin, with insulin added as the disease progresses."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate and well-grounded distinction.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "medical-008",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What are the contraindications for aspirin therapy?",
+    "actualOutput": "Aspirin is contraindicated in patients with known aspirin allergy, active peptic ulcers, severe hepatic or renal impairment, and bleeding disorders. It should also be avoided in children under 16 due to Reye's syndrome risk.",
+    "retrievalContext": [
+      "Contraindications to aspirin include: hypersensitivity to aspirin or NSAIDs; active peptic ulcer disease or GI bleeding; severe hepatic impairment; bleeding disorders (hemophilia, thrombocytopenia); concurrent anticoagulant therapy (relative contraindication, used in some contexts); and children/adolescents under 16 years with viral illness due to Reye's syndrome risk. Pregnancy (especially third trimester) is also a contraindication due to effects on fetal circulation."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output omits pregnancy (third trimester) as a contraindication — a critical clinical omission. The context explicitly mentions it. Clinically incomplete answer on a drug safety question.",
+    "failureMode": "incomplete"
+  },
+  {
+    "id": "medical-009",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What is sepsis and what are its diagnostic criteria?",
+    "actualOutput": "Sepsis is a life-threatening condition caused by the body's extreme response to infection. Under the Sepsis-3 definition, it is diagnosed when infection is suspected and the Sequential Organ Failure Assessment (SOFA) score increases by 2 or more points, indicating organ dysfunction.",
+    "retrievalContext": [
+      "Sepsis is defined under Sepsis-3 criteria as life-threatening organ dysfunction caused by a dysregulated host response to infection. Diagnosis is confirmed when a suspected infection is accompanied by an acute SOFA score increase of ≥2 points from baseline. Septic shock is a subset identified by vasopressor requirements to maintain MAP ≥65 mmHg and serum lactate >2 mmol/L despite adequate fluid resuscitation."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct Sepsis-3 criteria, accurately grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "medical-010",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "Can statins cause muscle damage?",
+    "actualOutput": "Statins occasionally cause minor muscle soreness (myalgia) in some patients, but serious muscle damage is extremely rare and mostly a theoretical concern. Patients on statins need not worry about muscle-related side effects in routine use.",
+    "retrievalContext": [
+      "Statins can cause a spectrum of muscle-related adverse effects: myalgia (muscle pain without CK elevation, 5-10% of patients), myopathy (muscle symptoms with CK elevation >10x ULN, rare), and rhabdomyolysis (severe muscle breakdown with renal failure risk, very rare but potentially fatal). Risk increases with high doses, drug interactions (especially with gemfibrozil, certain antibiotics, and antifungals), hypothyroidism, and renal impairment. Patients experiencing unexplained muscle pain should have CK measured."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output downplays statin myopathy significantly. Context describes a spectrum of effects including potentially fatal rhabdomyolysis and notes 5-10% myalgia rate. Advising patients 'need not worry' is clinically inappropriate and contrary to the context.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "medical-011",
+    "domain": "medical",
+    "difficulty": "medium",
+    "input": "What is the recommended BMI range for healthy adults?",
+    "actualOutput": "According to WHO standards, a healthy BMI for adults falls between 18.5 and 24.9. BMI under 18.5 indicates underweight, 25-29.9 indicates overweight, and 30 or above indicates obesity.",
+    "retrievalContext": [
+      "The World Health Organization defines BMI categories for adults as: underweight (<18.5), normal weight (18.5-24.9), overweight (25.0-29.9), and obese (≥30.0). BMI is a useful screening tool but does not directly measure body fat or account for muscle mass, age, sex, or ethnic variation in health risk."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate WHO ranges, well grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "medical-012",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What is the mechanism of action of beta-blockers?",
+    "actualOutput": "Beta-blockers competitively antagonize catecholamines (epinephrine, norepinephrine) at beta-adrenergic receptors. This reduces heart rate, myocardial contractility, and blood pressure. Beta-1 selective agents primarily affect the heart, while non-selective agents also block beta-2 receptors in the lungs and peripheral vasculature.",
+    "retrievalContext": [
+      "Beta-adrenergic blocking agents competitively block catecholamines at beta receptors. Beta-1 selective (cardioselective) agents like metoprolol and atenolol predominantly affect cardiac beta-1 receptors, reducing heart rate (negative chronotropy) and contractility (negative inotropy). Non-selective agents like propranolol also block beta-2 receptors, which can cause bronchoconstriction — a concern in asthma/COPD patients. The result is decreased cardiac output and blood pressure."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate MOA, appropriately distinguishes selective vs non-selective.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "medical-013",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "Is it safe to take herbal supplements with prescription medications?",
+    "actualOutput": "Generally, herbal supplements are natural products and safe to take alongside prescription medications. They are derived from plants and are well-tolerated by most people without significant drug interactions.",
+    "retrievalContext": [
+      "Herbal supplements can have clinically significant interactions with prescription medications. St. John's Wort is a potent inducer of CYP3A4 and reduces plasma levels of many drugs including warfarin, oral contraceptives, HIV antiretrovirals, and cyclosporine. Ginkgo biloba and ginseng have antiplatelet effects that may potentiate anticoagulants. Kava can cause liver toxicity. The FDA does not rigorously regulate herbal supplements for safety or efficacy before market. Patients should always disclose supplement use to healthcare providers."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output makes a dangerously false blanket claim that herbal supplements are 'generally safe' with medications. Context describes specific life-threatening drug interactions. 'Natural = safe' is a common but medically incorrect assumption this output perpetuates.",
+    "failureMode": "hallucination"
+  },
+  {
+    "id": "medical-014",
+    "domain": "medical",
+    "difficulty": "medium",
+    "input": "What is hypertension and what blood pressure level is considered high?",
+    "actualOutput": "Hypertension is high blood pressure, defined as a systolic pressure of 130 mmHg or higher, or diastolic pressure of 80 mmHg or higher, according to the 2017 ACC/AHA guidelines. Stage 2 hypertension is defined as 140/90 mmHg or higher.",
+    "retrievalContext": [
+      "According to the 2017 ACC/AHA guidelines, hypertension is now defined as blood pressure ≥130/80 mmHg (Stage 1: 130-139/80-89 mmHg; Stage 2: ≥140/90 mmHg). Previously, hypertension was defined as ≥140/90 mmHg. The new guideline lowered the diagnostic threshold to enable earlier intervention."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate 2017 guideline thresholds, correctly grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "medical-015",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What are the warning signs of anaphylaxis and how should it be treated?",
+    "actualOutput": "Anaphylaxis warning signs include hives, swelling, difficulty breathing, vomiting, dizziness, and rapid drop in blood pressure. Treatment is immediate injection of epinephrine (EpiPen), followed by calling emergency services. Antihistamines alone are not sufficient treatment for anaphylaxis.",
+    "retrievalContext": [
+      "Anaphylaxis presents rapidly with symptoms across multiple organ systems: skin (urticaria, angioedema, flushing), respiratory (bronchospasm, stridor, respiratory failure), cardiovascular (hypotension, tachycardia, cardiac arrest), and GI (nausea, vomiting, cramps). Epinephrine (0.3-0.5 mg IM into the lateral thigh) is the first-line and potentially life-saving treatment — antihistamines and corticosteroids are adjunctive only. Emergency services should be activated. Patient should be observed for biphasic reaction for 4-8 hours."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate key signs and treatment. Correctly notes antihistamines alone are insufficient.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "financial-001",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the difference between a Roth IRA and a Traditional IRA?",
+    "actualOutput": "A Traditional IRA offers tax-deductible contributions, with withdrawals taxed as ordinary income in retirement. A Roth IRA uses after-tax contributions, but withdrawals in retirement are tax-free. The 2024 contribution limit for both is $7,000 ($8,000 if age 50+).",
+    "retrievalContext": [
+      "Traditional IRA contributions may be tax-deductible depending on income and workplace retirement plan participation; withdrawals are taxed as ordinary income and subject to required minimum distributions starting at age 73. Roth IRA contributions are made with after-tax dollars; qualified withdrawals are tax-free with no RMDs during the owner's lifetime. The 2024 IRA contribution limit is $7,000 ($8,000 for those 50 and older). Roth IRA eligibility phases out at higher incomes ($146,000-$161,000 for single filers in 2024)."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output omits income limits for Roth IRA eligibility and fails to mention RMDs for Traditional IRA at 73 — both critical facts for financial planning. Incomplete answer on a personal finance question with significant tax implications.",
+    "failureMode": "incomplete"
+  },
+  {
+    "id": "financial-002",
+    "domain": "financial",
+    "difficulty": "medium",
+    "input": "What is compound interest?",
+    "actualOutput": "Compound interest is interest calculated on both the initial principal and the accumulated interest from previous periods. Unlike simple interest, it causes balances to grow exponentially. For example, $1,000 at 5% compounded annually becomes $1,276.28 after 5 years.",
+    "retrievalContext": [
+      "Compound interest is the addition of interest to the principal sum of a loan or deposit, resulting in interest being earned on interest. The formula is A = P(1 + r/n)^(nt), where P is principal, r is annual interest rate, n is compounding periods per year, and t is time in years. Compounding frequency (daily, monthly, annually) significantly affects the effective yield."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate definition with correct example calculation.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "financial-003",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "Is it always better to pay off debt before investing?",
+    "actualOutput": "Yes, it is always financially optimal to pay off all debt completely before beginning any investments. Carrying debt while investing is financially irrational because debt interest rates will always exceed investment returns.",
+    "retrievalContext": [
+      "Whether to pay off debt or invest depends on comparing interest rates. High-interest debt (credit cards at 20%+) should typically be paid off before investing since reliable investment returns rarely exceed those rates. However, low-interest debt (mortgage at 3-4%) may be worth carrying while investing in assets with historically higher returns (equity markets averaging 7-10% historically). Tax advantages of retirement accounts (401k match, IRA deductions) often make investing simultaneously with low-rate debt payoff mathematically advantageous. This is a nuanced personal finance decision."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output makes an absolute claim that is explicitly contradicted by context. The context shows the decision is interest-rate-dependent and that investing alongside low-rate debt is often advantageous. 'Always' claims in finance are rarely accurate.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "financial-004",
+    "domain": "financial",
+    "difficulty": "medium",
+    "input": "What is a fiduciary and what are they required to do?",
+    "actualOutput": "A fiduciary is a person or entity with a legal and ethical obligation to act in the best interest of another party. Financial fiduciaries — such as certain financial advisors — must put clients' interests ahead of their own, avoid conflicts of interest, and provide full disclosure of all fees and compensation.",
+    "retrievalContext": [
+      "A fiduciary has a legal duty to act in the best interest of another party (the beneficiary). In financial services, fiduciary advisors (such as Registered Investment Advisers under the Investment Advisers Act of 1940) must: act in clients' best interests, avoid or disclose conflicts of interest, execute transactions at best prices, and fully disclose all fees and material information. This is a higher standard than the 'suitability' standard that applies to broker-dealers, which only requires recommendations to be 'suitable'."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate description of fiduciary duty.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "financial-005",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the wash sale rule?",
+    "actualOutput": "The wash sale rule prevents investors from claiming a tax loss on a security if they purchase a substantially identical security within 30 days before or after the sale. The disallowed loss is added to the cost basis of the replacement security.",
+    "retrievalContext": [
+      "The wash sale rule (IRC Section 1091) disallows a tax loss deduction if the taxpayer sells a security at a loss and within 30 days before or after the sale, purchases substantially identical securities. The disallowed loss is not permanently lost — it is added to the cost basis of the replacement security, deferring the loss until that security is ultimately sold. Wash sale rules do not currently apply to cryptocurrency (as of 2024)."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate wash sale rule description including the carryover basis treatment.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "financial-006",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What happens to stock options when a company is acquired?",
+    "actualOutput": "When a company is acquired, all outstanding stock options are automatically converted to cash at their intrinsic value. Option holders receive an immediate cash payment equal to the acquisition price minus the strike price for all vested and unvested options.",
+    "retrievalContext": [
+      "The treatment of stock options in an acquisition depends on the deal structure and option agreement terms. Common outcomes include: cash-out (options settled for cash equal to deal price minus strike price — typically for vested options); rollover (options converted to acquirer's options); or acceleration (unvested options may vest if the agreement includes change-of-control provisions). Double-trigger acceleration requires both a change of control and termination. Underwater options (strike price above deal price) typically expire worthless. The specific outcome must be determined by the merger agreement and equity plan documents."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states options are 'automatically converted to cash' for all options — context shows this is just one of multiple possible outcomes and underwater options expire worthless. This is a significant oversimplification with major financial implications for employees.",
+    "failureMode": "hallucination"
+  },
+  {
+    "id": "financial-007",
+    "domain": "financial",
+    "difficulty": "medium",
+    "input": "What is dollar-cost averaging?",
+    "actualOutput": "Dollar-cost averaging (DCA) is an investment strategy where you invest a fixed dollar amount at regular intervals (weekly, monthly) regardless of market price. When prices are low, you buy more shares; when prices are high, you buy fewer — reducing the impact of volatility on the average purchase price over time.",
+    "retrievalContext": [
+      "Dollar-cost averaging is an investment technique where an investor divides a total sum to invest across periodic purchases in equal amounts, regardless of price. By investing consistently, investors purchase more shares when prices are lower and fewer when prices are higher, potentially lowering the average cost per share over time. DCA removes the pressure of market timing and encourages investment discipline."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate definition and mechanism.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "financial-008",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the capital gains tax rate on stocks held less than one year?",
+    "actualOutput": "Short-term capital gains on stocks held less than one year are taxed at the same rate as ordinary income. For 2024, this means federal rates ranging from 10% to 37% depending on your total taxable income.",
+    "retrievalContext": [
+      "Short-term capital gains (assets held one year or less) are taxed as ordinary income at the individual's marginal federal income tax rate. For 2024, federal ordinary income tax brackets range from 10% to 37%. State taxes also apply in most states. By contrast, long-term capital gains (assets held more than one year) are taxed at preferential rates of 0%, 15%, or 20% depending on income, plus the 3.8% Net Investment Income Tax may apply for high earners."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate short-term rate treatment. Reasonable scope for the question asked.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "financial-009",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the FDIC insurance limit per bank account?",
+    "actualOutput": "The FDIC insures deposits up to $250,000 per depositor, per insured bank, per account ownership category. This means a person can have more than $250,000 protected if they hold funds in different ownership categories at the same bank.",
+    "retrievalContext": [
+      "FDIC insurance covers deposits up to $250,000 per depositor, per insured bank, per ownership category. Ownership categories include: single accounts, joint accounts (each co-owner has $250,000 coverage), retirement accounts (IRAs covered up to $250,000), revocable trust accounts (coverage per beneficiary), and others. This means a married couple with joint and individual accounts can have significantly more than $500,000 covered at a single FDIC-insured institution by properly structuring ownership."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate FDIC limit with correct note about ownership categories.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "financial-010",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "Is real estate always a good investment compared to stocks?",
+    "actualOutput": "Yes, real estate has historically outperformed the stock market over the long term due to leverage, tax advantages, and appreciation. It is generally considered the superior investment vehicle for wealth building compared to equities.",
+    "retrievalContext": [
+      "The historical comparison between real estate and stocks is nuanced. The S&P 500 has returned approximately 10% annually before inflation over the long term. Real estate appreciation has historically averaged 3-5% annually before inflation, though leverage can amplify returns. Real estate offers tax advantages (mortgage interest deduction, 1031 exchanges, depreciation) but involves higher transaction costs, illiquidity, active management burden, and concentration risk. Academic research (Jordà et al., 2019) found housing and equity returns roughly comparable over very long periods, with equities showing higher volatility. Neither consistently dominates."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output makes an absolute claim ('always', 'generally superior') that the context explicitly contradicts — academic research shows comparable long-term returns and neither consistently dominates. Financial absolutism is the type of claim that sounds confident but is unsupported.",
+    "failureMode": "hallucination"
+  },
+  {
+    "id": "financial-011",
+    "domain": "financial",
+    "difficulty": "medium",
+    "input": "What is an expense ratio in mutual funds?",
+    "actualOutput": "An expense ratio is the annual fee that mutual funds and ETFs charge investors, expressed as a percentage of assets under management. It covers operating costs including management fees, administrative costs, and distribution fees. A lower expense ratio means more of your returns are retained.",
+    "retrievalContext": [
+      "The expense ratio is the annual fee charged by mutual funds or ETFs to cover operating expenses, expressed as a percentage of average net assets. It includes management fees, administrative costs, and 12b-1 distribution fees. Actively managed funds typically have higher expense ratios (0.5-1.5%) than index funds (0.03-0.20%). The expense ratio is deducted from fund assets daily, reducing the fund's NAV."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate and appropriately grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "financial-012",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the penalty for early withdrawal from a 401(k)?",
+    "actualOutput": "Withdrawing from a 401(k) before age 59½ typically results in a 10% early withdrawal penalty plus the amount being added to your ordinary income for that tax year. However, certain exceptions apply, such as disability, death, or substantially equal periodic payments (SEPP).",
+    "retrievalContext": [
+      "Early withdrawal from a 401(k) before age 59½ triggers a 10% penalty on the distributed amount, plus the distribution is included in taxable income for that year, potentially pushing the taxpayer into a higher bracket. Exceptions to the 10% penalty include: death, disability, SEPP (72(t) distributions), medical expenses exceeding 7.5% of AGI, qualified domestic relations orders, separation from service at age 55 or older, and others. The SECURE 2.0 Act (2022) added several new penalty exceptions."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate core penalty description with reasonable exception examples.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "financial-013",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "How do interest rate increases affect bond prices?",
+    "actualOutput": "When interest rates rise, bond prices fall because newly issued bonds offer higher yields, making existing lower-yield bonds less attractive. Conversely, when rates fall, bond prices rise. Longer-duration bonds are more sensitive to rate changes.",
+    "retrievalContext": [
+      "Bond prices and interest rates have an inverse relationship. When market interest rates rise, existing bond prices fall because investors can buy new bonds at the higher rate, reducing demand for existing lower-rate bonds. The magnitude of price change per interest rate change is captured by duration — a bond's duration measures its price sensitivity to interest rate changes. Longer-duration bonds experience larger price swings per basis point change in rates."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate inverse relationship and duration concept, well grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "financial-014",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the difference between a bull market and a bear market?",
+    "actualOutput": "A bull market is characterized by rising prices, typically defined as a 20% or greater rise from a recent low. A bear market is defined as a 20% or greater decline from a recent high. Bull markets are associated with economic expansion, while bear markets often coincide with recessions.",
+    "retrievalContext": [
+      "A bull market is generally defined as a period during which security prices rise 20% or more from a recent low. A bear market is typically defined as a decline of 20% or more from a recent peak. These terms most commonly refer to broad market indices. Bull markets are associated with investor confidence and economic expansion. Bear markets often precede or accompany economic recessions, though the timing relationship is variable."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate 20% threshold definitions, grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "financial-015",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the carried interest tax provision?",
+    "actualOutput": "Carried interest refers to the share of profits earned by private equity and hedge fund managers as compensation, typically 20% of profits. Under US tax law, carried interest is taxed as ordinary income, the same as salary, making it equivalent in tax treatment to wages.",
+    "retrievalContext": [
+      "Carried interest is the performance fee earned by fund managers in private equity, venture capital, and hedge funds — typically 20% of profits. Under current US tax law (as of 2024), carried interest is generally taxed at long-term capital gains rates (0-20%) when investments are held for more than 3 years, rather than at ordinary income rates (up to 37%). The TCJA 2017 extended the holding period requirement from 1 to 3 years. Critics argue fund managers should pay ordinary income rates on what is effectively labor compensation."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states carried interest is taxed as ordinary income — context explicitly says it is taxed at capital gains rates. This is a direct factual inversion of a politically significant tax provision.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "technical-001",
+    "domain": "technical",
+    "difficulty": "medium",
+    "input": "What is the difference between REST and GraphQL APIs?",
+    "actualOutput": "REST APIs use fixed endpoints for each resource, returning predetermined data structures. GraphQL uses a single endpoint where clients specify exactly what data they need via queries. GraphQL eliminates over-fetching and under-fetching problems common in REST.",
+    "retrievalContext": [
+      "REST (Representational State Transfer) uses multiple fixed endpoints, each returning a fixed data structure defined by the server. GraphQL uses a single endpoint with a query language that allows clients to specify exactly the data they need, eliminating over-fetching (receiving more data than needed) and under-fetching (needing multiple requests to get sufficient data). GraphQL also enables introspection and strongly typed schemas."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate technical comparison, well grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-002",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is the difference between TCP and UDP?",
+    "actualOutput": "TCP (Transmission Control Protocol) is connection-oriented, guarantees delivery and ordering of packets, and uses error checking. UDP (User Datagram Protocol) is connectionless, faster but does not guarantee delivery or ordering. TCP is used for HTTP/HTTPS, email, and file transfers; UDP for video streaming and DNS.",
+    "retrievalContext": [
+      "TCP provides reliable, ordered, error-checked delivery of data between applications. It establishes connections via a three-way handshake and uses acknowledgments and retransmission for reliability. UDP is a connectionless protocol that provides no delivery guarantees or ordering, but has lower latency and overhead. UDP is preferred for real-time applications (video/audio streaming, gaming, DNS lookups) where speed matters more than reliability."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate and grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-003",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is a SQL injection attack and how is it prevented?",
+    "actualOutput": "SQL injection is an attack where malicious SQL code is inserted into input fields to manipulate the database. Prevention methods include: using parameterized queries/prepared statements (primary defense), input validation and sanitization, using an ORM, applying principle of least privilege to DB accounts, and using a WAF.",
+    "retrievalContext": [
+      "SQL injection occurs when untrusted data is sent to an interpreter as part of a command, allowing attackers to access, modify, or delete database data. Prevention: primary defense is parameterized queries (also called prepared statements) which ensure user input is always treated as data, never as SQL code. Secondary defenses include input validation, stored procedures, escaping all user-supplied input, least privilege database accounts, and Web Application Firewalls. OWASP lists SQLi as a top web application vulnerability."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate and comprehensive prevention methods.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-004",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is the time complexity of quicksort?",
+    "actualOutput": "Quicksort has an average-case time complexity of O(n log n) and a worst-case of O(n²) which occurs when the pivot consistently produces highly unbalanced partitions. In practice, well-implemented quicksort uses random pivot selection or median-of-three to avoid worst-case behavior.",
+    "retrievalContext": [
+      "Quicksort has an average-case time complexity of O(n log n) and O(n) space complexity (recursive call stack). The worst case is O(n²) and occurs with poor pivot selection (e.g., always selecting the smallest or largest element on a sorted or reverse-sorted array). Randomized pivot selection or median-of-three reduces worst-case probability. Despite the theoretical worst case, quicksort is often faster in practice than O(n log n) algorithms like merge sort due to better cache performance."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate complexity analysis.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-005",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is the CAP theorem?",
+    "actualOutput": "The CAP theorem states that a distributed system can simultaneously guarantee all three of the following: Consistency, Availability, and Partition tolerance. In practice, engineers must choose which two to prioritize.",
+    "retrievalContext": [
+      "The CAP theorem (Brewer's theorem) states that a distributed data store cannot simultaneously provide more than two of the three guarantees: Consistency (every read receives the most recent write), Availability (every request receives a response, though possibly stale), and Partition tolerance (the system continues operating despite network partitions). Since network partitions are unavoidable in practice, real systems must choose between consistency and availability during a partition — resulting in CP systems (Zookeeper, HBase) or AP systems (Cassandra, CouchDB)."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states a distributed system 'can simultaneously guarantee all three' — the entire point of CAP theorem is that it CANNOT guarantee all three simultaneously. This is the direct opposite of the theorem's claim. A factual inversion of the core statement.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "technical-006",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is the difference between authentication and authorization?",
+    "actualOutput": "Authentication verifies who you are (identity verification), while authorization determines what you are allowed to do (permission verification). Authentication typically comes first (login with credentials), followed by authorization checks (can this user access this resource?).",
+    "retrievalContext": [
+      "Authentication is the process of verifying the identity of a user, device, or system — confirming they are who they claim to be (e.g., via passwords, biometrics, tokens). Authorization is the process of determining whether an authenticated identity has permission to access specific resources or perform specific actions. Authentication always precedes authorization in a secure system."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Clear, accurate, and grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-007",
+    "domain": "technical",
+    "difficulty": "medium",
+    "input": "What does SOLID stand for in software engineering?",
+    "actualOutput": "SOLID is an acronym for five object-oriented design principles: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion. These principles aim to make code more maintainable, scalable, and testable.",
+    "retrievalContext": [
+      "SOLID is an acronym representing five design principles for object-oriented programming: S - Single Responsibility Principle (a class should have one reason to change); O - Open/Closed Principle (open for extension, closed for modification); L - Liskov Substitution Principle (subtypes must be substitutable for base types); I - Interface Segregation Principle (clients shouldn't depend on interfaces they don't use); D - Dependency Inversion Principle (depend on abstractions, not concretions)."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Correct and grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-008",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is the purpose of Docker and how does it differ from virtual machines?",
+    "actualOutput": "Docker containers are lightweight runtime environments that package applications and their dependencies. Unlike virtual machines, containers share the host OS kernel, making them faster to start and more resource-efficient. A VM includes a full guest OS, whereas a container runs on the host kernel with OS-level isolation via namespaces and cgroups.",
+    "retrievalContext": [
+      "Docker is a platform for packaging and running applications in containers. Containers share the host operating system kernel and isolate application processes using Linux namespaces and cgroups, making them significantly lighter than VMs. Virtual machines virtualize hardware and run a complete guest operating system via a hypervisor, consuming more resources but providing stronger isolation. Containers start in milliseconds; VMs typically take minutes to boot."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate technical distinction, well grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-009",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is a race condition in software?",
+    "actualOutput": "A race condition occurs when two or more processes or threads access shared data simultaneously and at least one access is a write, causing unpredictable results that depend on the timing of execution. It is a type of concurrency bug that only manifests when the relative timing of events affects the outcome.",
+    "retrievalContext": [
+      "A race condition is a software flaw that occurs when the system's behavior depends on the relative timing or sequence of uncontrollable events (typically concurrent thread execution). It arises when multiple threads access shared resources concurrently with at least one write operation, without proper synchronization. Race conditions are notoriously difficult to reproduce and debug because they are timing-dependent. Solutions include mutexes, locks, semaphores, atomic operations, and thread-safe data structures."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate definition, well grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-010",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "How does HTTPS encryption work?",
+    "actualOutput": "HTTPS uses TLS (Transport Layer Security) to encrypt HTTP communications. The TLS handshake establishes a secure session by: verifying the server's certificate, agreeing on a cipher suite, and using asymmetric encryption to exchange a symmetric session key. All subsequent communication uses faster symmetric encryption with that session key.",
+    "retrievalContext": [
+      "HTTPS secures HTTP communications using TLS/SSL. The TLS handshake process: (1) Client sends 'hello' with supported cipher suites and TLS version; (2) Server responds with its certificate and chosen cipher suite; (3) Client verifies the certificate against trusted CAs; (4) Key exchange occurs (using RSA or Diffie-Hellman) to establish a shared secret; (5) Both parties derive symmetric session keys from the shared secret. All subsequent communication is encrypted with AES or similar symmetric cipher. This hybrid approach uses asymmetric crypto for key exchange and faster symmetric crypto for data transmission."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate TLS handshake description.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-011",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is eventual consistency in distributed systems?",
+    "actualOutput": "Eventual consistency is a consistency model in distributed systems where, given no new updates, all replicas will eventually converge to the same value. It sacrifices strong consistency for higher availability and lower latency, making it suitable for systems like DNS, shopping carts, and social media feeds where temporary inconsistency is acceptable.",
+    "retrievalContext": [
+      "Eventual consistency is a consistency model used in distributed computing stating that if no new updates are made to a given data item, eventually all accesses will return the last updated value. It is an 'optimistic replication' approach that allows replicas to diverge temporarily. Systems using eventual consistency (Cassandra, DynamoDB, DNS) offer high availability and low latency at the cost of potential stale reads. Strong consistency guarantees every read reflects the most recent write but requires coordination overhead."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate definition and appropriate use case examples.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-012",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is the difference between a process and a thread?",
+    "actualOutput": "A process is an independent program execution with its own memory space, file handles, and system resources. A thread is a unit of execution within a process — multiple threads share the same memory space and resources of their parent process. Context switching between threads is cheaper than between processes.",
+    "retrievalContext": [
+      "A process is an instance of a running program with its own isolated memory address space, heap, stack, and OS resources. Threads are units of execution within a process, sharing the process's memory and resources. Creating and context-switching between threads is less expensive than between processes because threads share memory. However, shared memory means threads can interfere with each other, requiring synchronization mechanisms. This makes multi-threaded programming more error-prone than multi-process architectures."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate and grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-013",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is a deadlock in operating systems?",
+    "actualOutput": "A deadlock occurs when two or more processes are blocked indefinitely, each waiting for a resource held by another. For a deadlock to occur, all four Coffman conditions must be present simultaneously: mutual exclusion, hold and wait, no preemption, and circular wait. Breaking any one condition prevents deadlock.",
+    "retrievalContext": [
+      "A deadlock is a state in which two or more processes are permanently blocked because each is waiting for a resource held by another. Coffman (1971) identified four necessary conditions: (1) Mutual exclusion — resources cannot be shared; (2) Hold and wait — processes holding resources can request more; (3) No preemption — resources cannot be forcibly taken; (4) Circular wait — a circular chain of processes each waiting for the next. All four must hold simultaneously for deadlock. Prevention strategies target eliminating at least one condition."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate four Coffman conditions, correctly grounded.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-014",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is memoization and when should it be used?",
+    "actualOutput": "Memoization is an optimization technique that caches the results of expensive function calls based on their inputs, returning the cached result when the same inputs are encountered again. It is most effective for pure functions with repeated identical calls and computationally expensive outputs — such as recursive Fibonacci, dynamic programming problems, or expensive data transformations.",
+    "retrievalContext": [
+      "Memoization is a specific form of caching where the return values of a function are stored keyed by their arguments. When the function is called with the same arguments again, the cached result is returned without re-execution. It is effective for: referentially transparent (pure) functions; functions called with repeated arguments; computationally expensive functions. Inappropriate for functions with side effects, very large input spaces (causing memory issues), or functions rarely called with the same arguments."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate definition and good use case guidance.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "technical-015",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is a memory leak and how do you detect it?",
+    "actualOutput": "A memory leak occurs when a program allocates memory but fails to release it after use, causing memory consumption to grow over time. Detection tools include Valgrind (C/C++), heapq for Python, Chrome DevTools Memory profiler, and Node.js --inspect with heap snapshots. Symptoms include gradually increasing memory usage and eventual OOM errors or crashes.",
+    "retrievalContext": [
+      "A memory leak occurs when a program allocates memory that is never freed, causing the process's memory footprint to grow over time until it crashes or degrades in performance. Common causes in managed languages include: unintended object references preventing garbage collection, event listeners not removed, closures capturing references, and caching without eviction policies. Detection tools include: Valgrind for C/C++, Memory Profiler in Python, Chrome DevTools Heap Snapshots for JavaScript, and dotMemory for .NET."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Accurate description and reasonable tool examples.",
+    "failureMode": "correct"
+  },
+  {
+    "id": "adversarial-001",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What is the recommended daily intake of vitamin D for adults?",
+    "actualOutput": "The recommended daily intake of vitamin D for adults is 600-800 IU according to the Institute of Medicine. Most healthy adults who spend reasonable time outdoors do not need supplementation as sunlight synthesis is sufficient.",
+    "retrievalContext": [
+      "The Institute of Medicine recommends 600 IU of vitamin D daily for adults 19-70 and 800 IU for those over 70. However, the Endocrine Society and many specialists recommend 1,500-2,000 IU daily for at-risk individuals, noting that vitamin D deficiency is widespread — affecting up to 40% of the US population. Indoor lifestyles, sunscreen use, dark skin tone, and geographic latitude all significantly reduce sunlight-mediated synthesis. Many clinicians now routinely screen for deficiency and supplement accordingly."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output claims 'most healthy adults do not need supplementation' — context says deficiency affects up to 40% of the US population and multiple factors limit sunlight synthesis. The claim that sunlight is 'sufficient' contradicts the context. Faithfulness judge may give this high marks because the IOM numbers are cited correctly, missing the critical omission.",
+    "failureMode": "incomplete"
+  },
+  {
+    "id": "adversarial-002",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "Is it safe to drive after taking antihistamines?",
+    "actualOutput": "Yes, modern antihistamines like cetirizine and loratadine are non-drowsy formulations and are safe to drive after taking. First-generation antihistamines like diphenhydramine should be avoided, but second-generation antihistamines have been approved for use while driving.",
+    "retrievalContext": [
+      "First-generation antihistamines (diphenhydramine, chlorpheniramine) cause significant sedation and are contraindicated for driving. Second-generation antihistamines (loratadine, cetirizine, fexofenadine) were designed to minimize sedation and are generally preferred. However, individual responses vary significantly — some patients experience drowsiness even with second-generation antihistamines. The FDA requires labeling advising caution with all antihistamines and activities requiring mental alertness. Studies show even 'non-drowsy' antihistamines can impair driving in some individuals, though less than first-generation agents."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states second-generation antihistamines 'have been approved for use while driving' — context shows FDA requires caution labeling on ALL antihistamines and individual responses vary. Approving driving without caveats is medically inappropriate per the context. A confident, fluent answer with dangerous omissions.",
+    "failureMode": "incomplete"
+  },
+  {
+    "id": "adversarial-003",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What is the employment rate in the US as of 2023?",
+    "actualOutput": "The US unemployment rate as of late 2023 was approximately 3.7%, reflecting a strong labor market with near-full employment. This represents one of the lowest unemployment rates in decades.",
+    "retrievalContext": [
+      "According to the Bureau of Labor Statistics, the US unemployment rate averaged 3.6% in 2023, reaching 3.7% in some months. The labor force participation rate was approximately 62.5-62.8%, remaining below pre-pandemic levels of 63.3% (February 2020). The U-6 measure, which includes underemployed and marginally attached workers, was approximately 6.9-7.2%, roughly double the headline rate. Youth unemployment was significantly higher at approximately 8%."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output presents only the headline unemployment rate without noting that labor force participation remains below pre-pandemic levels, U-6 is nearly double the headline rate, and youth unemployment is significantly elevated. A comprehensive answer to 'employment rate' should contextualize the headline number — the incomplete framing creates a more positive picture than warranted by context.",
+    "failureMode": "incomplete"
+  },
+  {
+    "id": "adversarial-004",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "Can machine learning models be biased?",
+    "actualOutput": "Machine learning models can technically exhibit bias if trained on biased data. However, modern ML practices include bias detection and mitigation techniques that generally resolve these issues before deployment. Established ML frameworks include built-in fairness checks that prevent discriminatory outcomes.",
+    "retrievalContext": [
+      "Machine learning bias is a pervasive and documented problem. Bias can originate from training data that reflects historical discrimination, unrepresentative samples, flawed feature selection, or optimization objectives misaligned with fairness. High-profile documented cases include: COMPAS recidivism tool showing racial bias, Amazon's hiring algorithm discriminating against women, facial recognition systems with significantly higher error rates for darker skin tones, and healthcare algorithms undertreating Black patients. Bias mitigation techniques exist (fairness constraints, adversarial debiasing, reweighting) but cannot eliminate all bias, and tradeoffs between different fairness definitions are mathematically proven to be impossible to satisfy simultaneously in most cases. There is no 'solved' state for ML bias."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output dismisses ML bias as something 'generally resolved' by modern practices — context documents high-profile deployed systems with serious ongoing bias problems and notes mathematically proven impossibility of satisfying all fairness criteria simultaneously. The dismissive framing is directly contradicted by the context.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "adversarial-005",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "Is intermittent fasting effective for weight loss?",
+    "actualOutput": "Yes, intermittent fasting is highly effective for weight loss and has been proven superior to traditional caloric restriction in multiple clinical trials. It is recommended as the primary dietary approach for sustainable weight management.",
+    "retrievalContext": [
+      "Research on intermittent fasting (IF) for weight loss shows mixed results. Meta-analyses comparing IF to continuous caloric restriction find similar weight loss outcomes when total calorie intake is matched — IF is not superior when calories are controlled. IF works primarily through caloric restriction (eating windows reduce total intake). Some studies show advantages for adherence in certain populations. The American Heart Association's 2024 statement noted concerns about IF's impact on cardiovascular health markers. IF may not be appropriate for people with eating disorder history, diabetes, or those who are pregnant. Current evidence supports IF as one option among several, not the superior approach."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Output states IF has 'been proven superior to traditional caloric restriction' — context explicitly states meta-analyses find 'similar weight loss outcomes when total calorie intake is matched' and the AHA raised concerns. Claims of superiority directly contradict the evidence base in context.",
+    "failureMode": "unfaithful"
+  },
+  {
+    "id": "financial-synth-086",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the penalty for early withdrawal from a 401(k)?",
+    "actualOutput": "Early 401(k) withdrawals before age 59½ incur a 10% penalty plus ordinary income taxes. Exceptions exist for separation from service after 55 and disability.",
+    "retrievalContext": [
+      "Withdrawals from a 401(k) before age 59½ are subject to a 10% early withdrawal penalty, plus ordinary income taxes on the full amount withdrawn. Exceptions include separation from service after age 55 and certain disability cases."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-fail-086",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the penalty for early withdrawal from a 401(k)?",
+    "actualOutput": "Early 401(k) withdrawals incur a 5% flat penalty and are taxed at a preferential capital gains rate of 15%.",
+    "retrievalContext": [
+      "Withdrawals from a 401(k) before age 59½ are subject to a 10% early withdrawal penalty, plus ordinary income taxes on the full amount withdrawn. Exceptions include separation from service after age 55 and certain disability cases."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-088",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the contribution limit for a Health Savings Account (HSA) in 2024?",
+    "actualOutput": "In 2024, HSA contribution limits are $4,150 for self-only coverage and $8,300 for family coverage, with a $1,000 catch-up for those 55+.",
+    "retrievalContext": [
+      "For 2024, the HSA contribution limit is $4,150 for self-only coverage and $8,300 for family coverage. Individuals age 55 and older can contribute an additional $1,000 catch-up contribution."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-fail-088",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the contribution limit for a Health Savings Account (HSA) in 2024?",
+    "actualOutput": "The 2024 HSA limit is $3,850 for individuals and $7,750 for families, unchanged from 2023.",
+    "retrievalContext": [
+      "For 2024, the HSA contribution limit is $4,150 for self-only coverage and $8,300 for family coverage. Individuals age 55 and older can contribute an additional $1,000 catch-up contribution."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-090",
+    "domain": "financial",
+    "difficulty": "medium",
+    "input": "What is a put option in stock trading?",
+    "actualOutput": "A put option grants the holder the right to sell an asset at the strike price before expiration. Put buyers profit when the asset price falls.",
+    "retrievalContext": [
+      "A put option gives the holder the right, but not the obligation, to sell an underlying security at a specified strike price before or at expiration. Put buyers profit when the underlying asset decreases in value."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-fail-090",
+    "domain": "financial",
+    "difficulty": "medium",
+    "input": "What is a put option in stock trading?",
+    "actualOutput": "A put option obligates the buyer to purchase shares at the strike price. Put buyers profit when the asset rises in value.",
+    "retrievalContext": [
+      "A put option gives the holder the right, but not the obligation, to sell an underlying security at a specified strike price before or at expiration. Put buyers profit when the underlying asset decreases in value."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-092",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "How does the Federal Reserve control inflation?",
+    "actualOutput": "The Federal Reserve controls inflation through monetary policy: adjusting the federal funds rate, conducting open market operations (buying/selling government securities), and setting reserve requirements.",
+    "retrievalContext": [
+      "The Federal Reserve primarily controls inflation through monetary policy. Its main tools are the federal funds rate (the interest rate at which banks lend to each other overnight), open market operations (buying or selling government securities), and reserve requirements."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-fail-092",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "How does the Federal Reserve control inflation?",
+    "actualOutput": "The Federal Reserve controls inflation by directly setting consumer interest rates and printing or destroying currency as needed to maintain price stability.",
+    "retrievalContext": [
+      "The Federal Reserve primarily controls inflation through monetary policy. Its main tools are the federal funds rate (the interest rate at which banks lend to each other overnight), open market operations (buying or selling government securities), and reserve requirements."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-094",
+    "domain": "financial",
+    "difficulty": "medium",
+    "input": "What is the difference between a stock and a bond?",
+    "actualOutput": "Stocks represent ownership equity in a company with claims on assets and earnings. Bonds are debt instruments where the issuer pays periodic interest and returns principal at maturity.",
+    "retrievalContext": [
+      "A stock represents ownership equity in a company, giving shareholders a claim on the company's assets and earnings. A bond is a debt instrument where the issuer borrows money from bondholders and promises to pay periodic interest plus return the principal at maturity."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-fail-094",
+    "domain": "financial",
+    "difficulty": "medium",
+    "input": "What is the difference between a stock and a bond?",
+    "actualOutput": "Stocks pay guaranteed dividends and have priority over bonds in bankruptcy. Bonds represent partial ownership with variable returns based on company performance.",
+    "retrievalContext": [
+      "A stock represents ownership equity in a company, giving shareholders a claim on the company's assets and earnings. A bond is a debt instrument where the issuer borrows money from bondholders and promises to pay periodic interest plus return the principal at maturity."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-096",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What triggers the alternative minimum tax (AMT)?",
+    "actualOutput": "AMT is triggered when AMTI exceeds the AMT exemption. Common triggers include large state and local tax deductions, high itemized deductions, and incentive stock option exercises.",
+    "retrievalContext": [
+      "The AMT is triggered when a taxpayer's alternative minimum taxable income (AMTI) exceeds the AMT exemption. Common triggers include large deductions for state and local taxes, high itemized deductions, and significant incentive stock option exercises."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-fail-096",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What triggers the alternative minimum tax (AMT)?",
+    "actualOutput": "AMT applies automatically to all taxpayers earning over $200,000 and is calculated at a flat 26% rate with no exemptions.",
+    "retrievalContext": [
+      "The AMT is triggered when a taxpayer's alternative minimum taxable income (AMTI) exceeds the AMT exemption. Common triggers include large deductions for state and local taxes, high itemized deductions, and significant incentive stock option exercises."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-098",
+    "domain": "financial",
+    "difficulty": "medium",
+    "input": "What is a margin call?",
+    "actualOutput": "A margin call occurs when account value falls below the required maintenance margin. The broker demands additional funds or may sell holdings to restore the minimum balance.",
+    "retrievalContext": [
+      "A margin call occurs when the value of securities in a margin account falls below the broker's required minimum maintenance margin. The broker demands the investor deposit additional funds or securities to restore the account to the minimum level, or the broker may sell holdings."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-fail-098",
+    "domain": "financial",
+    "difficulty": "medium",
+    "input": "What is a margin call?",
+    "actualOutput": "A margin call is when a broker automatically purchases additional securities on the investor's behalf when their account balance drops. The investor has 30 days to repay.",
+    "retrievalContext": [
+      "A margin call occurs when the value of securities in a margin account falls below the broker's required minimum maintenance margin. The broker demands the investor deposit additional funds or securities to restore the account to the minimum level, or the broker may sell holdings."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-100",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the difference between Chapter 7 and Chapter 13 bankruptcy?",
+    "actualOutput": "Chapter 7 (liquidation) discharges unsecured debts and may require selling non-exempt assets. Chapter 13 (reorganization) lets you keep assets while repaying through a 3–5 year plan.",
+    "retrievalContext": [
+      "Chapter 7 bankruptcy, called liquidation bankruptcy, discharges most unsecured debts but may require selling non-exempt assets. Chapter 13, called reorganization bankruptcy, lets debtors keep assets while repaying debts through a 3–5 year court-approved plan."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-fail-100",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "What is the difference between Chapter 7 and Chapter 13 bankruptcy?",
+    "actualOutput": "Chapter 7 applies to businesses only and liquidates all assets. Chapter 13 is for individuals and discharges all debts immediately without a repayment plan.",
+    "retrievalContext": [
+      "Chapter 7 bankruptcy, called liquidation bankruptcy, discharges most unsecured debts but may require selling non-exempt assets. Chapter 13, called reorganization bankruptcy, lets debtors keep assets while repaying debts through a 3–5 year court-approved plan."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-102",
+    "domain": "financial",
+    "difficulty": "medium",
+    "input": "What is dollar-cost averaging?",
+    "actualOutput": "Dollar-cost averaging invests a fixed amount periodically regardless of price, buying more shares when prices are low and fewer when high, reducing volatility impact.",
+    "retrievalContext": [
+      "Dollar-cost averaging (DCA) is an investment strategy where an investor divides the total investment amount into periodic purchases of a target asset, regardless of price. This reduces the impact of volatility by buying more shares when prices are low and fewer when prices are high."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-fail-102",
+    "domain": "financial",
+    "difficulty": "medium",
+    "input": "What is dollar-cost averaging?",
+    "actualOutput": "Dollar-cost averaging means investing all capital at once at the lowest point of a market cycle. Timing the market is essential for this strategy to work.",
+    "retrievalContext": [
+      "Dollar-cost averaging (DCA) is an investment strategy where an investor divides the total investment amount into periodic purchases of a target asset, regardless of price. This reduces the impact of volatility by buying more shares when prices are low and fewer when prices are high."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-104",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "Can a company deduct stock-based compensation for tax purposes?",
+    "actualOutput": "Employers can deduct stock-based compensation when employees recognize income — at exercise for NQSOs or at vesting for restricted stock. ISOs are generally not employer-deductible.",
+    "retrievalContext": [
+      "Under IRC Section 83, employers can deduct stock-based compensation when employees recognize income from it — typically when non-qualified stock options are exercised or when restricted stock vests. ISOs are generally not deductible by the employer."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "financial-synth-fail-104",
+    "domain": "financial",
+    "difficulty": "hard",
+    "input": "Can a company deduct stock-based compensation for tax purposes?",
+    "actualOutput": "All stock-based compensation is immediately deductible at grant date at fair market value, including incentive stock options.",
+    "retrievalContext": [
+      "Under IRC Section 83, employers can deduct stock-based compensation when employees recognize income from it — typically when non-qualified stock options are exercised or when restricted stock vests. ISOs are generally not deductible by the employer."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-106",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What are the diagnostic criteria for major depressive disorder (MDD)?",
+    "actualOutput": "DSM-5 MDD requires ≥5 of 9 symptoms for ≥2 weeks, including depressed mood or loss of interest, causing significant distress/impairment, not due to substances or medical conditions.",
+    "retrievalContext": [
+      "According to DSM-5, MDD requires five or more of nine specified symptoms for at least two weeks, including either depressed mood or loss of interest. Symptoms must cause significant distress or impairment and not be attributable to substances or another medical condition."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-fail-106",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What are the diagnostic criteria for major depressive disorder (MDD)?",
+    "actualOutput": "MDD is diagnosed when a patient reports feeling sad for more than one week combined with at least one additional symptom such as appetite change or fatigue.",
+    "retrievalContext": [
+      "According to DSM-5, MDD requires five or more of nine specified symptoms for at least two weeks, including either depressed mood or loss of interest. Symptoms must cause significant distress or impairment and not be attributable to substances or another medical condition."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-108",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What is the first-line treatment for community-acquired pneumonia in outpatients?",
+    "actualOutput": "Healthy outpatients with CAP receive amoxicillin first-line. Patients with comorbidities receive a respiratory fluoroquinolone or beta-lactam plus macrolide combination.",
+    "retrievalContext": [
+      "For healthy outpatients with community-acquired pneumonia (CAP) and no comorbidities, guidelines recommend amoxicillin as first-line therapy. For patients with comorbidities or risk factors, a respiratory fluoroquinolone or combination of beta-lactam plus macrolide is preferred."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-fail-108",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What is the first-line treatment for community-acquired pneumonia in outpatients?",
+    "actualOutput": "All CAP cases are treated first-line with azithromycin monotherapy regardless of comorbidities. Hospitalization is required for any confirmed pneumonia.",
+    "retrievalContext": [
+      "For healthy outpatients with community-acquired pneumonia (CAP) and no comorbidities, guidelines recommend amoxicillin as first-line therapy. For patients with comorbidities or risk factors, a respiratory fluoroquinolone or combination of beta-lactam plus macrolide is preferred."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-110",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What is the mechanism of action of SSRIs?",
+    "actualOutput": "SSRIs block the serotonin transporter (SERT) on presynaptic neurons, preventing serotonin reuptake and increasing its availability in the synaptic cleft.",
+    "retrievalContext": [
+      "Selective serotonin reuptake inhibitors (SSRIs) work by blocking the serotonin transporter (SERT) on presynaptic neurons, preventing serotonin reuptake from the synaptic cleft. This increases serotonin availability in the synapse, enhancing serotonergic neurotransmission."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-fail-110",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What is the mechanism of action of SSRIs?",
+    "actualOutput": "SSRIs increase serotonin production in the presynaptic neuron and block dopamine receptors to prevent excessive stimulation.",
+    "retrievalContext": [
+      "Selective serotonin reuptake inhibitors (SSRIs) work by blocking the serotonin transporter (SERT) on presynaptic neurons, preventing serotonin reuptake from the synaptic cleft. This increases serotonin availability in the synapse, enhancing serotonergic neurotransmission."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-112",
+    "domain": "medical",
+    "difficulty": "medium",
+    "input": "What are the stages of chronic kidney disease (CKD)?",
+    "actualOutput": "CKD has 5 stages by GFR: Stage 1 (≥90), Stage 2 (60–89), Stage 3 (30–59), Stage 4 (15–29), Stage 5 (<15, kidney failure requiring dialysis/transplant).",
+    "retrievalContext": [
+      "CKD is classified into five stages based on glomerular filtration rate (GFR): Stage 1 (GFR ≥90), Stage 2 (GFR 60–89), Stage 3 (GFR 30–59), Stage 4 (GFR 15–29), and Stage 5 (GFR <15), which is kidney failure requiring dialysis or transplant."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-fail-112",
+    "domain": "medical",
+    "difficulty": "medium",
+    "input": "What are the stages of chronic kidney disease (CKD)?",
+    "actualOutput": "CKD has three stages: mild (GFR 60–90), moderate (GFR 30–60), and severe (GFR <30). Stage 3 always requires immediate dialysis.",
+    "retrievalContext": [
+      "CKD is classified into five stages based on glomerular filtration rate (GFR): Stage 1 (GFR ≥90), Stage 2 (GFR 60–89), Stage 3 (GFR 30–59), Stage 4 (GFR 15–29), and Stage 5 (GFR <15), which is kidney failure requiring dialysis or transplant."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-114",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What are the contraindications for thrombolytic therapy in stroke?",
+    "actualOutput": "IV tPA contraindications include prior intracranial hemorrhage, head trauma/stroke in last 3 months, intracranial neoplasm, active bleeding, and BP >185/110 mmHg. Window: 3–4.5 hours from onset.",
+    "retrievalContext": [
+      "Absolute contraindications for IV tPA in acute ischemic stroke include: prior intracranial hemorrhage, significant head trauma or stroke within 3 months, intracranial neoplasm, active internal bleeding, and blood pressure >185/110 mmHg that cannot be controlled. Time window is generally within 3–4.5 hours of symptom onset."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-fail-114",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What are the contraindications for thrombolytic therapy in stroke?",
+    "actualOutput": "Thrombolytics are contraindicated in all stroke patients over age 80. The treatment window is 12 hours and blood pressure must be below 120/80 mmHg.",
+    "retrievalContext": [
+      "Absolute contraindications for IV tPA in acute ischemic stroke include: prior intracranial hemorrhage, significant head trauma or stroke within 3 months, intracranial neoplasm, active internal bleeding, and blood pressure >185/110 mmHg that cannot be controlled. Time window is generally within 3–4.5 hours of symptom onset."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-116",
+    "domain": "medical",
+    "difficulty": "medium",
+    "input": "What is the APGAR score and what does it assess?",
+    "actualOutput": "APGAR (assessed at 1 and 5 minutes) scores five criteria 0–2: Appearance, Pulse, Grimace, Activity, Respiration. Maximum score is 10.",
+    "retrievalContext": [
+      "The APGAR score, assessed at 1 and 5 minutes after birth, evaluates five criteria: Appearance (skin color), Pulse (heart rate), Grimace (reflex irritability), Activity (muscle tone), and Respiration. Each is scored 0–2, with a maximum score of 10."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-fail-116",
+    "domain": "medical",
+    "difficulty": "medium",
+    "input": "What is the APGAR score and what does it assess?",
+    "actualOutput": "The APGAR score is assessed only at birth and measures seven criteria including temperature and reflexes. A score above 6 indicates good health.",
+    "retrievalContext": [
+      "The APGAR score, assessed at 1 and 5 minutes after birth, evaluates five criteria: Appearance (skin color), Pulse (heart rate), Grimace (reflex irritability), Activity (muscle tone), and Respiration. Each is scored 0–2, with a maximum score of 10."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-118",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What is the difference between Type I and Type II hypersensitivity reactions?",
+    "actualOutput": "Type I (IgE-mediated, immediate): anaphylaxis, allergic asthma. Type II (IgG/IgM against cell surface antigens): cell destruction, e.g. autoimmune hemolytic anemia.",
+    "retrievalContext": [
+      "Type I hypersensitivity (immediate) is IgE-mediated, occurring within minutes of antigen exposure, as in anaphylaxis and allergic asthma. Type II hypersensitivity is antibody-mediated (IgG/IgM), targeting cell surface antigens, causing cell destruction — as in autoimmune hemolytic anemia."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-fail-118",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What is the difference between Type I and Type II hypersensitivity reactions?",
+    "actualOutput": "Type I hypersensitivity involves T-cells and appears 24–72 hours after exposure. Type II is IgE-mediated and appears within minutes.",
+    "retrievalContext": [
+      "Type I hypersensitivity (immediate) is IgE-mediated, occurring within minutes of antigen exposure, as in anaphylaxis and allergic asthma. Type II hypersensitivity is antibody-mediated (IgG/IgM), targeting cell surface antigens, causing cell destruction — as in autoimmune hemolytic anemia."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-120",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "When is prophylactic antibiotic therapy indicated before dental procedures?",
+    "actualOutput": "AHA recommends dental antibiotic prophylaxis only for highest-risk patients: prosthetic cardiac valves, prior infective endocarditis, certain congenital heart defects, or cardiac transplant with valve disease.",
+    "retrievalContext": [
+      "Current AHA guidelines recommend antibiotic prophylaxis before dental procedures only for patients with the highest risk of adverse outcomes from infective endocarditis: those with prosthetic cardiac valves, prior infective endocarditis, certain congenital heart defects, or cardiac transplant recipients with valve disease."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-fail-120",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "When is prophylactic antibiotic therapy indicated before dental procedures?",
+    "actualOutput": "All patients with any history of heart disease should receive antibiotic prophylaxis before every dental procedure to prevent endocarditis.",
+    "retrievalContext": [
+      "Current AHA guidelines recommend antibiotic prophylaxis before dental procedures only for patients with the highest risk of adverse outcomes from infective endocarditis: those with prosthetic cardiac valves, prior infective endocarditis, certain congenital heart defects, or cardiac transplant recipients with valve disease."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-122",
+    "domain": "medical",
+    "difficulty": "medium",
+    "input": "What is the recommended screening age for colorectal cancer?",
+    "actualOutput": "ACS recommends colorectal cancer screening starting at age 45 for average-risk individuals. Higher-risk patients may start earlier. Colonoscopy is the gold standard.",
+    "retrievalContext": [
+      "Current guidelines from the American Cancer Society recommend colorectal cancer screening begin at age 45 for people at average risk. Those with higher risk factors (family history, prior polyps) may need to start earlier. Colonoscopy is the gold standard screening method."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-fail-122",
+    "domain": "medical",
+    "difficulty": "medium",
+    "input": "What is the recommended screening age for colorectal cancer?",
+    "actualOutput": "Colorectal cancer screening should start at age 60 for all patients. Annual fecal occult blood testing is the only recommended screening method.",
+    "retrievalContext": [
+      "Current guidelines from the American Cancer Society recommend colorectal cancer screening begin at age 45 for people at average risk. Those with higher risk factors (family history, prior polyps) may need to start earlier. Colonoscopy is the gold standard screening method."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-124",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What are the warning signs of pulmonary embolism?",
+    "actualOutput": "PE presents with sudden dyspnea (most common), pleuritic chest pain, hemoptysis, tachycardia, and hypoxemia. Massive PE may cause syncope, hypotension, or cardiac arrest.",
+    "retrievalContext": [
+      "Classic symptoms of pulmonary embolism include sudden onset dyspnea (most common), pleuritic chest pain, hemoptysis, tachycardia, and hypoxemia. Massive PE may present with syncope, hypotension, or cardiac arrest. PE should be suspected in any patient with unexplained tachycardia or dyspnea."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "medical-synth-fail-124",
+    "domain": "medical",
+    "difficulty": "hard",
+    "input": "What are the warning signs of pulmonary embolism?",
+    "actualOutput": "Pulmonary embolism presents with gradual onset bilateral leg pain, fever above 39°C, and productive cough. It is reliably diagnosed by chest X-ray.",
+    "retrievalContext": [
+      "Classic symptoms of pulmonary embolism include sudden onset dyspnea (most common), pleuritic chest pain, hemoptysis, tachycardia, and hypoxemia. Massive PE may present with syncope, hypotension, or cardiac arrest. PE should be suspected in any patient with unexplained tachycardia or dyspnea."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-126",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What is the standard of proof in a civil lawsuit?",
+    "actualOutput": "Civil lawsuits use the \"preponderance of the evidence\" standard — the plaintiff must show it is more likely than not (>50%) that their claim is true, unlike the criminal \"beyond reasonable doubt\" standard.",
+    "retrievalContext": [
+      "In civil lawsuits, the standard of proof is a preponderance of the evidence, meaning the plaintiff must show it is more likely than not (greater than 50%) that their claim is true. This contrasts with criminal law's \"beyond reasonable doubt\" standard."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-fail-126",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What is the standard of proof in a civil lawsuit?",
+    "actualOutput": "Civil lawsuits require proof beyond reasonable doubt, the same standard used in criminal cases. The plaintiff must eliminate all doubt to prevail.",
+    "retrievalContext": [
+      "In civil lawsuits, the standard of proof is a preponderance of the evidence, meaning the plaintiff must show it is more likely than not (greater than 50%) that their claim is true. This contrasts with criminal law's \"beyond reasonable doubt\" standard."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-128",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What constitutes copyright infringement?",
+    "actualOutput": "Copyright infringement occurs when someone exercises an owner's exclusive rights (reproduction, distribution, derivative works, public display/performance) without permission or a fair use exception.",
+    "retrievalContext": [
+      "Copyright infringement occurs when someone exercises one of the copyright owner's exclusive rights without permission or a valid exception like fair use. These exclusive rights include reproduction, distribution, creation of derivative works, public display, and public performance."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-fail-128",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What constitutes copyright infringement?",
+    "actualOutput": "Copyright infringement requires proving intent and financial harm. Accidental reproduction of copyrighted material without profit is not infringement.",
+    "retrievalContext": [
+      "Copyright infringement occurs when someone exercises one of the copyright owner's exclusive rights without permission or a valid exception like fair use. These exclusive rights include reproduction, distribution, creation of derivative works, public display, and public performance."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-130",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What is the implied covenant of good faith and fair dealing?",
+    "actualOutput": "The implied covenant of good faith and fair dealing requires parties to act honestly and not deprive the other party of their contract benefits, even if specific acts aren't prohibited.",
+    "retrievalContext": [
+      "The implied covenant of good faith and fair dealing is a general presumption that parties to a contract will deal with each other honestly and in good faith. It prevents either party from acting in a way that deprives the other party of the benefit of the bargain, even if such action is not explicitly prohibited by the contract."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-fail-130",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What is the implied covenant of good faith and fair dealing?",
+    "actualOutput": "The implied covenant of good faith applies only to insurance contracts and requires insurers to pay all claims promptly regardless of policy terms.",
+    "retrievalContext": [
+      "The implied covenant of good faith and fair dealing is a general presumption that parties to a contract will deal with each other honestly and in good faith. It prevents either party from acting in a way that deprives the other party of the benefit of the bargain, even if such action is not explicitly prohibited by the contract."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-132",
+    "domain": "legal",
+    "difficulty": "medium",
+    "input": "What is the difference between a will and a trust?",
+    "actualOutput": "A will directs asset distribution after death and requires probate. A trust (revocable or irrevocable) holds assets via a trustee for beneficiaries, avoiding probate and allowing management during incapacity.",
+    "retrievalContext": [
+      "A will is a legal document that specifies how assets should be distributed after death and must go through probate. A trust is a legal arrangement where a trustee holds assets for beneficiaries. Trusts can be revocable or irrevocable and can avoid probate, provide privacy, and allow assets to be managed during the grantor's incapacity."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-fail-132",
+    "domain": "legal",
+    "difficulty": "medium",
+    "input": "What is the difference between a will and a trust?",
+    "actualOutput": "Wills and trusts are identical legal instruments; the only difference is that trusts must be filed with a court while wills remain private documents.",
+    "retrievalContext": [
+      "A will is a legal document that specifies how assets should be distributed after death and must go through probate. A trust is a legal arrangement where a trustee holds assets for beneficiaries. Trusts can be revocable or irrevocable and can avoid probate, provide privacy, and allow assets to be managed during the grantor's incapacity."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-134",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "Under what circumstances can a non-compete agreement be enforced?",
+    "actualOutput": "Non-competes must be reasonable in scope, geography, and duration; protect a legitimate business interest; and be supported by consideration. California and a few states ban them outright.",
+    "retrievalContext": [
+      "Non-compete enforceability varies by state. Most states require non-competes to be reasonable in scope, geographic area, and duration. They must protect a legitimate business interest (trade secrets, customer relationships) and be supported by consideration. California, North Dakota, and a few other states generally ban them entirely."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-fail-134",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "Under what circumstances can a non-compete agreement be enforced?",
+    "actualOutput": "Non-compete agreements are enforceable in all states as long as they are signed by the employee. They can cover any industry and have no limitations on duration.",
+    "retrievalContext": [
+      "Non-compete enforceability varies by state. Most states require non-competes to be reasonable in scope, geographic area, and duration. They must protect a legitimate business interest (trade secrets, customer relationships) and be supported by consideration. California, North Dakota, and a few other states generally ban them entirely."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-136",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What is the tort of negligent misrepresentation?",
+    "actualOutput": "Negligent misrepresentation: false information given without reasonable care in a business/professional context, causing justifiable reliance and financial harm. No intent to deceive required (unlike fraud).",
+    "retrievalContext": [
+      "Negligent misrepresentation occurs when a defendant, in the course of their business or profession, provides false information without exercising reasonable care, causing another party to justifiably rely on that information to their financial detriment. Unlike fraud, it does not require intent to deceive."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-fail-136",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What is the tort of negligent misrepresentation?",
+    "actualOutput": "Negligent misrepresentation requires proof that the defendant intentionally lied and received financial gain from the misrepresentation. It is equivalent to common law fraud.",
+    "retrievalContext": [
+      "Negligent misrepresentation occurs when a defendant, in the course of their business or profession, provides false information without exercising reasonable care, causing another party to justifiably rely on that information to their financial detriment. Unlike fraud, it does not require intent to deceive."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-138",
+    "domain": "legal",
+    "difficulty": "medium",
+    "input": "What rights does the Fourth Amendment protect?",
+    "actualOutput": "The Fourth Amendment protects against unreasonable government searches and seizures. Warrants must be based on probable cause, supported by oath, and particularly describe the place/items searched.",
+    "retrievalContext": [
+      "The Fourth Amendment protects against unreasonable searches and seizures by government agents. It requires that warrants be based on probable cause, be supported by oath or affirmation, and particularly describe the place to be searched and persons or things to be seized."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-fail-138",
+    "domain": "legal",
+    "difficulty": "medium",
+    "input": "What rights does the Fourth Amendment protect?",
+    "actualOutput": "The Fourth Amendment protects the right to privacy in all circumstances, including from private parties. Any search without prior consent is prohibited.",
+    "retrievalContext": [
+      "The Fourth Amendment protects against unreasonable searches and seizures by government agents. It requires that warrants be based on probable cause, be supported by oath or affirmation, and particularly describe the place to be searched and persons or things to be seized."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-140",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What is the difference between murder and manslaughter?",
+    "actualOutput": "Murder requires malice aforethought (intent to kill/harm or extreme recklessness), with first-degree adding premeditation. Manslaughter lacks malice: voluntary (heat of passion) or involuntary (criminal negligence).",
+    "retrievalContext": [
+      "Murder requires malice aforethought — the intent to kill or cause serious bodily harm, or extreme recklessness. First-degree murder adds premeditation. Manslaughter lacks malice: voluntary manslaughter involves a killing in the heat of passion with adequate provocation; involuntary manslaughter is an unintentional killing from criminal negligence."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-fail-140",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What is the difference between murder and manslaughter?",
+    "actualOutput": "Murder and manslaughter are the same offense. The distinction is only sentencing: murder carries life imprisonment while manslaughter is capped at 10 years.",
+    "retrievalContext": [
+      "Murder requires malice aforethought — the intent to kill or cause serious bodily harm, or extreme recklessness. First-degree murder adds premeditation. Manslaughter lacks malice: voluntary manslaughter involves a killing in the heat of passion with adequate provocation; involuntary manslaughter is an unintentional killing from criminal negligence."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-142",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What constitutes a valid contract consideration?",
+    "actualOutput": "Valid consideration is something of legal value (promise, act, or forbearance) bargained for in exchange. Adequacy isn't evaluated, but past consideration and moral obligations are insufficient.",
+    "retrievalContext": [
+      "Consideration is something of legal value bargained for and exchanged between parties. It can be a promise, an act, or a forbearance from acting. Courts generally do not evaluate the adequacy of consideration — what matters is that something of value was exchanged. Past consideration and moral obligations are generally insufficient."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-fail-142",
+    "domain": "legal",
+    "difficulty": "hard",
+    "input": "What constitutes a valid contract consideration?",
+    "actualOutput": "Consideration must be money. Promises or services cannot constitute valid consideration. The exchange must be of equal monetary value to be enforceable.",
+    "retrievalContext": [
+      "Consideration is something of legal value bargained for and exchanged between parties. It can be a promise, an act, or a forbearance from acting. Courts generally do not evaluate the adequacy of consideration — what matters is that something of value was exchanged. Past consideration and moral obligations are generally insufficient."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-144",
+    "domain": "legal",
+    "difficulty": "medium",
+    "input": "What is the attorney-client privilege?",
+    "actualOutput": "Attorney-client privilege protects confidential client-attorney communications made for legal advice. The client holds the privilege and may waive it. Crime-fraud exception removes protection.",
+    "retrievalContext": [
+      "Attorney-client privilege protects confidential communications between a client and their attorney made for the purpose of seeking or providing legal advice. The privilege belongs to the client, who can waive it. It does not protect communications made to facilitate a crime or fraud."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "legal-synth-fail-144",
+    "domain": "legal",
+    "difficulty": "medium",
+    "input": "What is the attorney-client privilege?",
+    "actualOutput": "Attorney-client privilege covers all communications between an attorney and anyone, not just clients. The attorney can waive the privilege at any time for any reason.",
+    "retrievalContext": [
+      "Attorney-client privilege protects confidential communications between a client and their attorney made for the purpose of seeking or providing legal advice. The privilege belongs to the client, who can waive it. It does not protect communications made to facilitate a crime or fraud."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-146",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is the difference between horizontal and vertical scaling?",
+    "actualOutput": "Horizontal scaling adds more machines to distribute load (requires load balancing, more fault-tolerant). Vertical scaling upgrades existing machines (CPU/RAM). Vertical has hardware limits.",
+    "retrievalContext": [
+      "Horizontal scaling (scaling out) adds more machines to a system to distribute load across multiple nodes. Vertical scaling (scaling up) increases the capacity of existing machines by adding more CPU, RAM, or storage. Horizontal scaling is more fault-tolerant but requires load balancing; vertical scaling has limits based on hardware constraints."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-fail-146",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is the difference between horizontal and vertical scaling?",
+    "actualOutput": "Horizontal scaling increases RAM and CPU on a single server. Vertical scaling adds more servers. Both approaches are equally fault-tolerant.",
+    "retrievalContext": [
+      "Horizontal scaling (scaling out) adds more machines to a system to distribute load across multiple nodes. Vertical scaling (scaling up) increases the capacity of existing machines by adding more CPU, RAM, or storage. Horizontal scaling is more fault-tolerant but requires load balancing; vertical scaling has limits based on hardware constraints."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-148",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is a B-tree index and why is it used in databases?",
+    "actualOutput": "B-tree indexes use a balanced hierarchical structure with all leaves at equal depth. They support O(log n) search/insert/delete and are efficient for databases due to minimal disk reads and sequential access.",
+    "retrievalContext": [
+      "A B-tree (balanced tree) index stores data in a sorted, hierarchical structure where all leaf nodes are at the same depth. It supports O(log n) search, insert, and delete operations. B-trees are used in databases because they minimize disk reads by keeping the tree balanced and allowing sequential access patterns efficiently."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-fail-148",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is a B-tree index and why is it used in databases?",
+    "actualOutput": "B-tree indexes store data in hash buckets for O(1) average lookup. They are best suited for exact-match queries and do not support range queries.",
+    "retrievalContext": [
+      "A B-tree (balanced tree) index stores data in a sorted, hierarchical structure where all leaf nodes are at the same depth. It supports O(log n) search, insert, and delete operations. B-trees are used in databases because they minimize disk reads by keeping the tree balanced and allowing sequential access patterns efficiently."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-150",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is the difference between strong and eventual consistency?",
+    "actualOutput": "Strong consistency: reads always return the latest written value from any node. Eventual consistency: reads may temporarily return stale data, but all nodes converge given no new updates.",
+    "retrievalContext": [
+      "Strong consistency guarantees that any read operation returns the most recently written value, regardless of which node is queried. Eventual consistency allows reads to temporarily return stale data, but guarantees that all nodes will eventually converge to the same value if no new updates are made."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-fail-150",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is the difference between strong and eventual consistency?",
+    "actualOutput": "Strong consistency requires a majority quorum for all operations. Eventual consistency means some nodes permanently retain stale data and never update.",
+    "retrievalContext": [
+      "Strong consistency guarantees that any read operation returns the most recently written value, regardless of which node is queried. Eventual consistency allows reads to temporarily return stale data, but guarantees that all nodes will eventually converge to the same value if no new updates are made."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-152",
+    "domain": "technical",
+    "difficulty": "medium",
+    "input": "What is the purpose of a message queue like Kafka?",
+    "actualOutput": "Kafka is a distributed event streaming platform for async producer-to-consumer messaging. It offers high throughput, fault tolerance via replication, message retention for replay, and decouples producers from consumers.",
+    "retrievalContext": [
+      "Apache Kafka is a distributed event streaming platform that allows producers to publish messages to topics and consumers to subscribe and process them asynchronously. It provides high throughput, fault tolerance through replication, and message retention for replay. It decouples producers from consumers."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-fail-152",
+    "domain": "technical",
+    "difficulty": "medium",
+    "input": "What is the purpose of a message queue like Kafka?",
+    "actualOutput": "Kafka is a synchronous RPC framework that connects services directly. Messages are deleted immediately after delivery and cannot be replayed. Producers wait for consumer acknowledgment.",
+    "retrievalContext": [
+      "Apache Kafka is a distributed event streaming platform that allows producers to publish messages to topics and consumers to subscribe and process them asynchronously. It provides high throughput, fault tolerance through replication, and message retention for replay. It decouples producers from consumers."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-154",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is the difference between optimistic and pessimistic locking in databases?",
+    "actualOutput": "Pessimistic locking locks the resource before access, blocking others until released. Optimistic locking reads without locking and checks for conflicts at commit — rolling back if modified.",
+    "retrievalContext": [
+      "Pessimistic locking acquires a lock on a resource before reading or modifying it, preventing other transactions from accessing it until released. Optimistic locking assumes conflicts are rare — it reads data without locking, then checks at commit time whether data was modified. If a conflict is detected, the transaction is rolled back."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-fail-154",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is the difference between optimistic and pessimistic locking in databases?",
+    "actualOutput": "Optimistic locking acquires locks at the start of a transaction and holds them permanently. Pessimistic locking never uses locks and relies on timestamps only.",
+    "retrievalContext": [
+      "Pessimistic locking acquires a lock on a resource before reading or modifying it, preventing other transactions from accessing it until released. Optimistic locking assumes conflicts are rare — it reads data without locking, then checks at commit time whether data was modified. If a conflict is detected, the transaction is rolled back."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-156",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is a hash collision and how is it handled?",
+    "actualOutput": "A hash collision occurs when two keys produce the same hash. Resolution strategies: chaining (linked list per bucket) or open addressing (linear/quadratic/double-hash probing).",
+    "retrievalContext": [
+      "A hash collision occurs when two different keys produce the same hash value. Common resolution strategies include chaining (storing colliding elements in a linked list at the same bucket) and open addressing (probing for the next available bucket using linear, quadratic, or double hashing)."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-fail-156",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is a hash collision and how is it handled?",
+    "actualOutput": "Hash collisions are impossible in modern hash functions. When they occur, the entire hash table must be rebuilt with a larger prime number size.",
+    "retrievalContext": [
+      "A hash collision occurs when two different keys produce the same hash value. Common resolution strategies include chaining (storing colliding elements in a linked list at the same bucket) and open addressing (probing for the next available bucket using linear, quadratic, or double hashing)."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-158",
+    "domain": "technical",
+    "difficulty": "medium",
+    "input": "What is the difference between synchronous and asynchronous programming?",
+    "actualOutput": "Synchronous: sequential, blocking execution. Asynchronous: non-blocking, allows concurrent operations using callbacks, promises, or async/await while waiting for I/O.",
+    "retrievalContext": [
+      "Synchronous programming executes operations sequentially, blocking until each operation completes before moving to the next. Asynchronous programming allows operations to run concurrently without blocking — the program continues executing while waiting for I/O or other long-running tasks to complete, using callbacks, promises, or async/await."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-fail-158",
+    "domain": "technical",
+    "difficulty": "medium",
+    "input": "What is the difference between synchronous and asynchronous programming?",
+    "actualOutput": "Synchronous programming is faster because it uses multiple CPU cores simultaneously. Asynchronous programming is single-threaded and always slower due to callback overhead.",
+    "retrievalContext": [
+      "Synchronous programming executes operations sequentially, blocking until each operation completes before moving to the next. Asynchronous programming allows operations to run concurrently without blocking — the program continues executing while waiting for I/O or other long-running tasks to complete, using callbacks, promises, or async/await."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-160",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "How does garbage collection work in Java?",
+    "actualOutput": "Java's GC reclaims unreachable objects. The heap is split into Young Gen (Eden + Survivor) and Old Gen. Minor GC handles short-lived objects; long-lived objects promote to Old Gen for Major GC.",
+    "retrievalContext": [
+      "Java's garbage collector automatically reclaims memory occupied by objects no longer reachable from any live reference. The JVM uses generational collection: the heap is divided into Young Generation (Eden + Survivor spaces) and Old Generation. Most objects die young (Minor GC); long-lived objects are promoted to Old Generation (Major/Full GC)."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-fail-160",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "How does garbage collection work in Java?",
+    "actualOutput": "Java garbage collection requires programmers to manually call System.gc() to free memory. The JVM cannot determine when objects are unreachable without explicit instructions.",
+    "retrievalContext": [
+      "Java's garbage collector automatically reclaims memory occupied by objects no longer reachable from any live reference. The JVM uses generational collection: the heap is divided into Young Generation (Eden + Survivor spaces) and Old Generation. Most objects die young (Minor GC); long-lived objects are promoted to Old Generation (Major/Full GC)."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-162",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is a CSRF attack and how is it prevented?",
+    "actualOutput": "CSRF tricks authenticated browsers into unwanted requests via automatic cookie transmission. Prevention: CSRF tokens in forms, SameSite cookie attribute, and Origin/Referer header verification.",
+    "retrievalContext": [
+      "Cross-Site Request Forgery (CSRF) tricks an authenticated user's browser into making unwanted requests to a web application, exploiting the browser's automatic cookie transmission. Prevention methods include CSRF tokens (unique per-session values embedded in forms), SameSite cookie attributes, and verifying the Origin/Referer headers."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-fail-162",
+    "domain": "technical",
+    "difficulty": "hard",
+    "input": "What is a CSRF attack and how is it prevented?",
+    "actualOutput": "CSRF attacks intercept network traffic between client and server. Prevention requires all traffic to use HTTPS and rate-limiting login attempts.",
+    "retrievalContext": [
+      "Cross-Site Request Forgery (CSRF) tricks an authenticated user's browser into making unwanted requests to a web application, exploiting the browser's automatic cookie transmission. Prevention methods include CSRF tokens (unique per-session values embedded in forms), SameSite cookie attributes, and verifying the Origin/Referer headers."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-164",
+    "domain": "technical",
+    "difficulty": "medium",
+    "input": "What is the observer pattern in software design?",
+    "actualOutput": "The observer pattern creates a one-to-many dependency where the subject notifies all observers of state changes automatically. Used in event-driven systems, GUIs, and reactive programming.",
+    "retrievalContext": [
+      "The observer pattern defines a one-to-many dependency between objects so that when one object (the subject) changes state, all its dependents (observers) are notified and updated automatically. It is commonly used in event-driven systems, GUI frameworks, and reactive programming."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "technical-synth-fail-164",
+    "domain": "technical",
+    "difficulty": "medium",
+    "input": "What is the observer pattern in software design?",
+    "actualOutput": "The observer pattern requires observers to continuously poll the subject for changes. It is used primarily for database replication and network monitoring.",
+    "retrievalContext": [
+      "The observer pattern defines a one-to-many dependency between objects so that when one object (the subject) changes state, all its dependents (observers) are notified and updated automatically. It is commonly used in event-driven systems, GUI frameworks, and reactive programming."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-166",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "According to the document, what did the CEO say about layoffs?",
+    "actualOutput": "According to the document, CEO Jane Smith stated in the Q3 earnings call that the company has no plans for layoffs in fiscal year 2024 and is focused on organic growth and strategic hiring.",
+    "retrievalContext": [
+      "CEO Jane Smith stated in the Q3 earnings call: \"We are committed to our workforce and have no plans for layoffs in fiscal year 2024. We are focused on organic growth and strategic hiring in our core divisions.\""
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-fail-166",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "According to the document, what did the CEO say about layoffs?",
+    "actualOutput": "The CEO announced a 15% workforce reduction across all divisions, citing macroeconomic headwinds and the need to improve profitability.",
+    "retrievalContext": [
+      "CEO Jane Smith stated in the Q3 earnings call: \"We are committed to our workforce and have no plans for layoffs in fiscal year 2024. We are focused on organic growth and strategic hiring in our core divisions.\""
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-168",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What interest rate did the policy document specify for late payments?",
+    "actualOutput": "Per Section 4.2, overdue invoices accrue interest at 1.5% per month (18% per annum) from the due date until receipt.",
+    "retrievalContext": [
+      "Per Section 4.2 of the payment policy: \"Overdue invoices will accrue interest at a rate of 1.5% per month (18% per annum) from the date payment was due until the date of receipt.\""
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-fail-168",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What interest rate did the policy document specify for late payments?",
+    "actualOutput": "The policy specifies a 2% monthly interest rate on late payments, compounded daily, with a minimum charge of $50 per invoice.",
+    "retrievalContext": [
+      "Per Section 4.2 of the payment policy: \"Overdue invoices will accrue interest at a rate of 1.5% per month (18% per annum) from the date payment was due until the date of receipt.\""
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-170",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "Does the clinical trial report show statistical significance for the primary endpoint?",
+    "actualOutput": "Yes — the trial showed an 8.2 mmHg reduction (treatment) vs 2.1 mmHg (placebo), p=0.032, 95% CI 1.8–10.4 mmHg. The primary endpoint (≥5 mmHg reduction) was met.",
+    "retrievalContext": [
+      "The trial results showed a reduction in systolic blood pressure of 8.2 mmHg in the treatment group vs. 2.1 mmHg in placebo (p=0.032, 95% CI: 1.8–10.4 mmHg). The primary endpoint of ≥5 mmHg reduction was met."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-fail-170",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "Does the clinical trial report show statistical significance for the primary endpoint?",
+    "actualOutput": "The trial did not reach statistical significance (p=0.12). The primary endpoint was not met, with only a 3.1 mmHg difference between groups.",
+    "retrievalContext": [
+      "The trial results showed a reduction in systolic blood pressure of 8.2 mmHg in the treatment group vs. 2.1 mmHg in placebo (p=0.032, 95% CI: 1.8–10.4 mmHg). The primary endpoint of ≥5 mmHg reduction was met."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-172",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What termination notice period does the contract specify?",
+    "actualOutput": "Article 12.3 specifies 60 days written notice for termination without cause, and 15 days for termination due to material breach.",
+    "retrievalContext": [
+      "Article 12.3 of the agreement states: \"Either party may terminate this Agreement without cause upon sixty (60) days written notice to the other party. Termination for material breach requires only fifteen (15) days written notice.\""
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-fail-172",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What termination notice period does the contract specify?",
+    "actualOutput": "The contract requires 90 days notice for any termination, with no distinction between cause and no-cause scenarios.",
+    "retrievalContext": [
+      "Article 12.3 of the agreement states: \"Either party may terminate this Agreement without cause upon sixty (60) days written notice to the other party. Termination for material breach requires only fifteen (15) days written notice.\""
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-174",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What does the research paper conclude about the intervention's effect on student outcomes?",
+    "actualOutput": "The paper found no statistically significant improvement in test scores (d=0.12, p=0.43) and concluded the intervention should not be recommended as scalable based on current evidence.",
+    "retrievalContext": [
+      "The study found no statistically significant improvement in standardized test scores between the intervention and control groups (d=0.12, p=0.43). The authors concluded that while some qualitative benefits were observed, the intervention should not be recommended as a scalable academic intervention based on current evidence."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-fail-174",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What does the research paper conclude about the intervention's effect on student outcomes?",
+    "actualOutput": "The study demonstrated significant improvement in student outcomes with an effect size of d=0.65, and the authors strongly recommended scaling the intervention nationally.",
+    "retrievalContext": [
+      "The study found no statistically significant improvement in standardized test scores between the intervention and control groups (d=0.12, p=0.43). The authors concluded that while some qualitative benefits were observed, the intervention should not be recommended as a scalable academic intervention based on current evidence."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-176",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "According to the financial filing, what was the company's revenue growth year-over-year?",
+    "actualOutput": "Per the 10-K, FY2023 revenue was $4.2B vs $3.8B in FY2022 — a 10.5% YoY increase driven by cloud product adoption.",
+    "retrievalContext": [
+      "From the 10-K filing: \"Total revenue for fiscal year 2023 was $4.2 billion, compared to $3.8 billion in fiscal year 2022, representing a 10.5% year-over-year increase. This growth was driven primarily by increased adoption of the company's cloud-based product suite.\""
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-fail-176",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "According to the financial filing, what was the company's revenue growth year-over-year?",
+    "actualOutput": "The filing shows 23% revenue growth, with total revenue reaching $4.8 billion in fiscal 2023, driven by an acquisition completed in Q2.",
+    "retrievalContext": [
+      "From the 10-K filing: \"Total revenue for fiscal year 2023 was $4.2 billion, compared to $3.8 billion in fiscal year 2022, representing a 10.5% year-over-year increase. This growth was driven primarily by increased adoption of the company's cloud-based product suite.\""
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-178",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What coverage limit does the insurance policy specify for water damage?",
+    "actualOutput": "Section 6 covers sudden accidental plumbing discharge up to $25,000 per occurrence. Flood damage from external sources is excluded and requires separate flood insurance.",
+    "retrievalContext": [
+      "Policy Section 6, Coverage C: \"Water damage resulting from sudden and accidental discharge of plumbing is covered up to $25,000 per occurrence. Flood damage from external water sources is explicitly excluded and requires separate flood insurance.\""
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-fail-178",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What coverage limit does the insurance policy specify for water damage?",
+    "actualOutput": "The policy covers all water damage up to $100,000 including floods, with a $500 deductible. Flood insurance riders are automatically included.",
+    "retrievalContext": [
+      "Policy Section 6, Coverage C: \"Water damage resulting from sudden and accidental discharge of plumbing is covered up to $25,000 per occurrence. Flood damage from external water sources is explicitly excluded and requires separate flood insurance.\""
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-180",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "Based on the memo, what did management decide about the remote work policy?",
+    "actualOutput": "Management decided to maintain the current hybrid model (3 days in-office/week) through December 31, 2024, after which it will be reassessed.",
+    "retrievalContext": [
+      "Internal memo, March 5: \"After review, the Executive Committee has decided to maintain the current hybrid model of three days in-office per week for all employees. This policy will remain in effect through December 31, 2024, after which it will be reassessed.\""
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-fail-180",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "Based on the memo, what did management decide about the remote work policy?",
+    "actualOutput": "The memo announces a return to full-time in-office work starting April 1, with exceptions only for medical accommodations approved by HR.",
+    "retrievalContext": [
+      "Internal memo, March 5: \"After review, the Executive Committee has decided to maintain the current hybrid model of three days in-office per week for all employees. This policy will remain in effect through December 31, 2024, after which it will be reassessed.\""
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-182",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What safety data does the product document report for this medication?",
+    "actualOutput": "Phase 3 safety (n=2,847): headache 12.3%, nausea 9.8%, fatigue 8.1%. Serious adverse events: 2.1% (vs 2.3% placebo). No treatment-related deaths.",
+    "retrievalContext": [
+      "In the Phase 3 safety analysis (n=2,847), the most common adverse events were headache (12.3%), nausea (9.8%), and fatigue (8.1%). Serious adverse events occurred in 2.1% of patients, consistent with the placebo group (2.3%). No treatment-related deaths were reported."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-fail-182",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "What safety data does the product document report for this medication?",
+    "actualOutput": "The document reports serious adverse events in 8.7% of patients, with 3 treatment-related deaths. The most common side effects were cardiac arrhythmias and liver enzyme elevation.",
+    "retrievalContext": [
+      "In the Phase 3 safety analysis (n=2,847), the most common adverse events were headache (12.3%), nausea (9.8%), and fatigue (8.1%). Serious adverse events occurred in 2.1% of patients, consistent with the placebo group (2.3%). No treatment-related deaths were reported."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-184",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "According to the spec, what authentication method does the API require?",
+    "actualOutput": "The API requires Bearer token in the Authorization header via OAuth 2.0 client credentials flow. Tokens expire after 3600 seconds. API keys are not accepted for production.",
+    "retrievalContext": [
+      "API Authentication (v2.1 spec): All requests must include a Bearer token in the Authorization header. Tokens expire after 3600 seconds (1 hour). API keys are not accepted for production endpoints. OAuth 2.0 client credentials flow is used to obtain tokens."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "adversarial-synth-fail-184",
+    "domain": "adversarial",
+    "difficulty": "hard",
+    "input": "According to the spec, what authentication method does the API require?",
+    "actualOutput": "The API uses Basic authentication with a username and password in the Authorization header. Tokens are not required and API keys can be passed as query parameters.",
+    "retrievalContext": [
+      "API Authentication (v2.1 spec): All requests must include a Bearer token in the Authorization header. Tokens expire after 3600 seconds (1 hour). API keys are not accepted for production endpoints. OAuth 2.0 client credentials flow is used to obtain tokens."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "general-synth-186",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "What is the greenhouse effect and how does it contribute to climate change?",
+    "actualOutput": "The greenhouse effect: atmospheric gases (CO2, methane, water vapor) absorb and re-emit infrared radiation, trapping heat. Human-caused GHG increases have enhanced this, driving anthropogenic climate change.",
+    "retrievalContext": [
+      "The greenhouse effect occurs when atmospheric gases (CO2, methane, water vapor) absorb and re-emit infrared radiation from Earth's surface, trapping heat. Human activities have increased greenhouse gas concentrations, enhancing this effect and causing average global temperatures to rise — the core mechanism of anthropogenic climate change."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "general-synth-fail-186",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "What is the greenhouse effect and how does it contribute to climate change?",
+    "actualOutput": "The greenhouse effect is caused by holes in the ozone layer that allow UV radiation to penetrate and heat the Earth. Reducing CFC emissions is the primary solution.",
+    "retrievalContext": [
+      "The greenhouse effect occurs when atmospheric gases (CO2, methane, water vapor) absorb and re-emit infrared radiation from Earth's surface, trapping heat. Human activities have increased greenhouse gas concentrations, enhancing this effect and causing average global temperatures to rise — the core mechanism of anthropogenic climate change."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "general-synth-188",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "What is the significance of the Turing test?",
+    "actualOutput": "Proposed by Turing in 1950, the test assesses if a machine's text responses are indistinguishable from a human's. If an interrogator can't identify the machine reliably, it passes. A foundational AI philosophy concept.",
+    "retrievalContext": [
+      "Proposed by Alan Turing in 1950, the Turing test evaluates a machine's ability to exhibit intelligent behavior indistinguishable from a human. In the standard setup, an interrogator communicates via text with a human and a machine; if the interrogator cannot reliably identify the machine, the machine is said to have passed. It remains a foundational concept in AI philosophy."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "general-synth-fail-188",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "What is the significance of the Turing test?",
+    "actualOutput": "The Turing test requires a machine to solve complex mathematical problems faster than a human. It measures computational speed, not conversational ability.",
+    "retrievalContext": [
+      "Proposed by Alan Turing in 1950, the Turing test evaluates a machine's ability to exhibit intelligent behavior indistinguishable from a human. In the standard setup, an interrogator communicates via text with a human and a machine; if the interrogator cannot reliably identify the machine, the machine is said to have passed. It remains a foundational concept in AI philosophy."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "general-synth-190",
+    "domain": "general",
+    "difficulty": "medium",
+    "input": "What is the role of mitochondria in cells?",
+    "actualOutput": "Mitochondria produce ATP via cellular respiration, serving as the cell's primary energy source. They have their own DNA and double membrane, originating from ancient bacterial endosymbionts.",
+    "retrievalContext": [
+      "Mitochondria are organelles found in eukaryotic cells that produce adenosine triphosphate (ATP) through cellular respiration, making them the primary energy source for the cell. They have their own DNA and double membrane, and are believed to have originated from ancient bacterial endosymbionts."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "general-synth-fail-190",
+    "domain": "general",
+    "difficulty": "medium",
+    "input": "What is the role of mitochondria in cells?",
+    "actualOutput": "Mitochondria are responsible for protein synthesis in cells and are found only in plant cells. They produce glucose through photosynthesis using sunlight.",
+    "retrievalContext": [
+      "Mitochondria are organelles found in eukaryotic cells that produce adenosine triphosphate (ATP) through cellular respiration, making them the primary energy source for the cell. They have their own DNA and double membrane, and are believed to have originated from ancient bacterial endosymbionts."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "general-synth-192",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "How does mRNA vaccine technology work?",
+    "actualOutput": "mRNA vaccines deliver synthetic mRNA encoding a target antigen into cells, which produce the antigen and trigger immunity. The mRNA degrades within days and does not enter the nucleus or affect DNA.",
+    "retrievalContext": [
+      "mRNA vaccines deliver synthetic messenger RNA encoding a target antigen (e.g., spike protein) into human cells. The cells use this mRNA to produce the antigen, which triggers an immune response. The mRNA degrades within days and does not enter the cell nucleus or interact with DNA."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "general-synth-fail-192",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "How does mRNA vaccine technology work?",
+    "actualOutput": "mRNA vaccines permanently modify the recipient's DNA in the cell nucleus. The mRNA integrates into the genome and causes cells to permanently produce spike proteins.",
+    "retrievalContext": [
+      "mRNA vaccines deliver synthetic messenger RNA encoding a target antigen (e.g., spike protein) into human cells. The cells use this mRNA to produce the antigen, which triggers an immune response. The mRNA degrades within days and does not enter the cell nucleus or interact with DNA."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  },
+  {
+    "id": "general-synth-194",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "What is the theory of plate tectonics?",
+    "actualOutput": "Plate tectonics: Earth's lithosphere consists of rigid plates moving on the asthenosphere. Plate boundary interactions cause earthquakes, volcanoes, and mountains, driven by mantle convection and ridge push/slab pull.",
+    "retrievalContext": [
+      "Plate tectonics holds that Earth's lithosphere is divided into large rigid plates that move on the underlying asthenosphere. Interactions at plate boundaries cause earthquakes, volcanic activity, and mountain formation. Plates move by convection currents in the mantle and ridge push/slab pull forces."
+    ],
+    "humanVerdict": "PASS",
+    "humanRationale": "Answer is fully grounded in the provided context.",
+    "failureMode": "correct",
+    "source": "synthetic"
+  },
+  {
+    "id": "general-synth-fail-194",
+    "domain": "general",
+    "difficulty": "hard",
+    "input": "What is the theory of plate tectonics?",
+    "actualOutput": "Plate tectonics describes how continents float on water beneath Earth's crust. Earthquakes occur when continents collide and tides cause the ocean floor to shift.",
+    "retrievalContext": [
+      "Plate tectonics holds that Earth's lithosphere is divided into large rigid plates that move on the underlying asthenosphere. Interactions at plate boundaries cause earthquakes, volcanic activity, and mountain formation. Plates move by convection currents in the mantle and ridge push/slab pull forces."
+    ],
+    "humanVerdict": "FAIL",
+    "humanRationale": "Answer contains specific claims contradicted by or absent from the context.",
+    "failureMode": "hallucination",
+    "source": "synthetic"
+  }
+]

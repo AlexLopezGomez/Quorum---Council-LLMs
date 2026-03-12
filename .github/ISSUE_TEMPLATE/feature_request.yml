@@ -1,0 +1,51 @@
+name: Feature request
+description: Propose an improvement or new capability for Quorum.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing an idea. Strong requests explain the user problem,
+        why it matters, and any constraints or alternatives already considered.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What problem are you trying to solve?
+      placeholder: Describe the workflow, pain point, or unmet need.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you like Quorum to do?
+      placeholder: Describe the ideal behavior, API, UI, or workflow.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What workarounds or other approaches have you considered?
+      placeholder: Include competing ideas, rejected approaches, or current workarounds.
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Why this matters
+      description: Who benefits, and what outcome improves if this ships?
+      placeholder: Explain the user or maintainer impact.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add examples, links, screenshots, or related prior art.

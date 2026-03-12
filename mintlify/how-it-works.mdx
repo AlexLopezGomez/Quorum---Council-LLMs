@@ -1,0 +1,83 @@
+---
+title: "How It Works"
+description: "Understand Quorum's adaptive routing, judge strategies, and streaming flow."
+---
+
+# How It Works
+
+Quorum evaluates each test case with a strategy chosen by risk, not with a
+one-size-fits-all pipeline.
+
+## Adaptive routing
+
+Every test case is scored for risk first. That score determines which
+evaluation path runs next.
+
+| Risk range | Strategy | Behavior |
+| --- | --- | --- |
+| `>= 0.8` | `council` | Run all judges and aggregate the result |
+| `0.4 - 0.8` | `hybrid` | Run deterministic checks plus one LLM judge |
+| `< 0.4` | `single` | Run one lightweight judge |
+
+## Strategy breakdown
+
+### Council mode
+
+- Best for high-stakes cases such as medical, legal, or financial content
+- Runs OpenAI, Anthropic, and Gemini judges in parallel
+- Uses an aggregator to synthesize the final verdict
+
+### Hybrid mode
+
+- Best for medium-risk technical or advisory content
+- Runs deterministic checks such as similarity, entity matching, freshness, and completeness
+- Adds one LLM judge and computes the verdict locally
+
+### Single mode
+
+- Best for low-risk factoid-style queries
+- Runs one judge only for the lowest-cost path
+
+## Streaming lifecycle
+
+Quorum exposes the evaluation lifecycle as SSE events so the UI can render
+every stage live.
+
+Typical flow:
+
+```text
+risk_scored -> strategy_selected -> judge_start -> judge_complete -> aggregator_start -> aggregator_complete -> evaluation_complete
+```
+
+The frontend uses those events to render only the components relevant to the
+selected strategy.
+
+## System shape
+
+- Frontend: uploads, strategy selection, live streaming, history, cost views
+- Backend: routing, orchestration, deterministic checks, aggregation, persistence
+- Integrations: webhooks plus SDK capture/ingest workflows
+
+## Authentication
+
+All app endpoints require a valid session cookie obtained via `/api/auth/login`. The session is an HttpOnly cookie valid for 7 days.
+
+## Current API surface
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/auth/register` | Create account |
+| `POST` | `/api/auth/login` | Sign in, receive session cookie |
+| `POST` | `/api/auth/logout` | Clear session |
+| `GET` | `/api/auth/me` | Get current user |
+| `POST` | `/api/auth/forgot-password` | Request password reset email |
+| `POST` | `/api/auth/reset-password` | Reset password with token |
+| `GET` | `/api/auth/verify-email` | Verify email from link |
+| `POST` | `/api/evaluate` | Start an evaluation |
+| `GET` | `/api/stream/:jobId` | Stream live and replayed SSE events |
+| `GET` | `/api/results/:jobId` | Poll results |
+| `GET` | `/api/history` | List past evaluations |
+| `GET` | `/api/history/:jobId/cost` | Inspect cost breakdown |
+| `GET` | `/api/stats` | View aggregate statistics |
+
+For runtime tracing and auditing details, continue to [Observability](/observability).

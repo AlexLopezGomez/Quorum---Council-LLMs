@@ -24,13 +24,14 @@ function getActiveJudges(strategy) {
   }
 }
 
-// ~0.0001 per gpt-4o-mini call, ~0.00004 per gemini-1.5-flash, ~0.003 per claude-sonnet aggregator
+// ~0.0001 per gpt-4o-mini, ~0.00004 per gemini-2.5-flash, ~0.0002 per claude-haiku
+// Statistical aggregation: $0 (no LLM call)
 function estimateCost(strategy) {
   switch (strategy) {
-    case 'council': return 0.0035;
+    case 'council': return 0.0005;
     case 'hybrid': return 0.0002;
     case 'single': return 0.00005;
-    default: return 0.0035;
+    default: return 0.0005;
   }
 }
 

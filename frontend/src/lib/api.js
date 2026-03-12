@@ -182,4 +182,24 @@ export const authApi = {
   me(signal) {
     return fetchJson(`${API_BASE}/auth/me`, {}, signal);
   },
+  forgotPassword({ email }) {
+    return fetchJson(`${API_BASE}/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+  },
+  resetPassword({ token, password }) {
+    return fetchJson(`${API_BASE}/auth/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, password }),
+    });
+  },
+  verifyEmail(token) {
+    return fetchJson(`${API_BASE}/auth/verify-email?token=${encodeURIComponent(token)}`);
+  },
+  resendVerification() {
+    return fetchJson(`${API_BASE}/auth/resend-verification`, { method: 'POST' });
+  },
 };

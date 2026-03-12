@@ -1,0 +1,80 @@
+---
+title: "Quickstart"
+description: "Run Quorum locally in demo mode, full mode, or Docker."
+---
+
+# Quickstart
+
+Quorum supports three practical ways to get started.
+
+## Demo mode
+
+Use this mode when you want to see the product behavior without external API
+keys or a MongoDB instance.
+
+```bash
+git clone https://github.com/AlexLopezGomez/Quorum---Council-LLMs.git
+cd Quorum
+
+cd frontend
+npm install
+npm run build
+
+cd ../backend
+npm install
+set DEMO_MODE=true
+node src/index.js
+```
+
+Open `http://localhost:3000`.
+
+## Full local mode
+
+Use this mode when you want the full stack with live provider calls.
+
+```bash
+docker run -d -p 27017:27017 mongo:7
+
+cd backend
+cp .env.example .env
+npm install
+npm run dev
+
+cd ../frontend
+npm install
+npm run dev
+```
+
+Required environment variables:
+
+- `OPENAI_API_KEY`
+- `ANTHROPIC_API_KEY`
+- `GOOGLE_API_KEY`
+- `JWT_SECRET` (auth tokens — use a random 32+ character string)
+- `API_KEY_ENCRYPTION_SECRET` (stored API key encryption)
+- `RESEND_API_KEY` + `RESEND_FROM_EMAIL` (password reset and email verification)
+
+Open `http://localhost:5173`.
+
+## Docker
+
+Set `MONGO_PASSWORD` in a `.env` file at the project root before running:
+
+```bash
+docker-compose up --build
+```
+
+Open `http://localhost:8080`.
+
+## What to expect
+
+- Create an account — an email verification link will be sent on signup
+- Upload structured test cases
+- Watch `risk_scored`, `strategy_selected`, judge events, and aggregator events stream live
+- Review verdicts, cost, and historical runs in the app
+
+## Related pages
+
+- [How It Works](/how-it-works)
+- [Observability](/observability)
+- [Contributing](/community/contributing)

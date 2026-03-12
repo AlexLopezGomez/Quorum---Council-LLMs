@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { STRATEGY_STYLE } from '../lib/constants';
+import { Badge } from './ui/badge';
 
 function RiskMeter({ score }) {
   if (score === null || score === undefined) return null;
@@ -26,10 +27,10 @@ export function StrategyBadge({ strategy, riskScore }) {
 
   return (
     <div className="flex items-center gap-3">
-      <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${config.bg} ${config.text} ${config.border}`}>
+      <Badge variant="outline" className={`h-auto px-2.5 py-1 rounded-full gap-1.5 ${config.bg} ${config.text} ${config.border}`}>
         <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
         {config.label}
-      </span>
+      </Badge>
       {riskScore !== null && riskScore !== undefined && (
         <div className="flex items-center gap-1">
           <span className="text-xs text-text-tertiary">Risk:</span>

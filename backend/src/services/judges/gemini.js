@@ -1,5 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
-import { CONTEXT_RELEVANCY_PROMPT, formatPrompt } from '../../utils/prompts.js';
+import { FAITHFULNESS_PROMPT, formatPrompt } from '../../utils/prompts.js';
 
 const MODEL = 'gemini-2.5-flash';
 const INPUT_COST_PER_1K = 0.0001;
@@ -9,17 +9,19 @@ export async function evaluateContextRelevancy(testCase, apiKey) {
   const ai = new GoogleGenAI({ apiKey: apiKey || process.env.GOOGLE_API_KEY });
   const startTime = Date.now();
 
-  const prompt = formatPrompt(CONTEXT_RELEVANCY_PROMPT, {
+  const prompt = formatPrompt(FAITHFULNESS_PROMPT, {
     input: testCase.input,
     actualOutput: testCase.actualOutput,
-    retrievalContext: testCase.retrievalContext,
+    retrievalContext: Array.isArray(testCase.retrievalContext)
+      ? testCase.retrievalContext.join('\n\n')
+      : testCase.retrievalContext,
   });
 
   const response = await ai.models.generateContent({
     model: MODEL,
     contents: prompt,
     config: {
-      systemInstruction: 'You are an expert RAG evaluator. Always respond with valid JSON only.',
+      systemInstruction: 'You are a skeptical expert RAG evaluator. Assume the response contains errors unless the context explicitly confirms each claim. Always respond with valid JSON only.',
       temperature: 0,
       responseMimeType: 'application/json',
     },
@@ -36,9 +38,7 @@ export async function evaluateContextRelevancy(testCase, apiKey) {
   let parsed;
   try {
     const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('No JSON found in response');
-    }
+    if (!jsonMatch) throw new Error('No JSON found in response');
     parsed = JSON.parse(jsonMatch[0]);
   } catch {
     throw new Error(`Failed to parse Gemini response: ${content}`);
@@ -46,9 +46,12 @@ export async function evaluateContextRelevancy(testCase, apiKey) {
 
   return {
     judge: 'gemini',
-    metric: 'contextRelevancy',
+    metric: 'faithfulness',
     model: MODEL,
     score: parsed.score,
+    reasoning: parsed.reasoning,
+    hallucinations: parsed.hallucinations || [],
+    confidence: parsed.confidence,
     reason: parsed.reason,
     details: parsed.details,
     tokens: {

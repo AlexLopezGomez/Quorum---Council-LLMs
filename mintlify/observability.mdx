@@ -1,0 +1,81 @@
+---
+title: "Observability"
+description: "Trace requests, inspect failures, and audit key actions in Quorum."
+---
+
+# Observability
+
+Quorum provides correlation-aware logs and audit events so you can reconstruct
+what happened during evaluation, ingestion, streaming, and webhook flows.
+
+## What is collected
+
+Quorum stores two observability streams in MongoDB:
+
+- `app_logs` for operational logs
+- `audit_events` for security and business-critical events
+
+Both include:
+
+- `requestId` from `X-Correlation-ID`
+- `userId`
+- `jobId`
+- HTTP metadata such as path, method, status code, and duration
+- sanitized `metadata`
+
+Sensitive fields are redacted by the backend logger utilities.
+
+## Correlation ID flow
+
+1. Backend middleware reads or generates `X-Correlation-ID`
+2. Backend returns `X-Correlation-ID` on responses
+3. Frontend reuses it across API and SSE calls
+4. SDKs propagate it through headers and metadata
+
+## Event taxonomy
+
+Primary event families include:
+
+- `auth.*`
+- `evaluation.*`
+- `orchestrator.*`
+- `webhook.*`
+- `sse.*`
+- `system.*`
+- `history.*`
+- `results.*`
+- `sdk.ingest.*`
+
+## Retention policy
+
+Key environment variables:
+
+- `LOG_PERSIST`
+- `APP_LOG_TTL_DAYS`
+- `AUDIT_TTL_DAYS`
+
+TTL indexes are defined in:
+
+- `backend/src/models/AppLog.js`
+- `backend/src/models/AuditEvent.js`
+
+## Investigation workflow
+
+### By correlation ID
+
+1. Capture `X-Correlation-ID`
+2. Query `/api/observability/search?requestId=<requestId>`
+3. Reconstruct the sequence from `app_logs` and `audit_events`
+
+### By job ID
+
+1. Start from the evaluation `jobId`
+2. Query `/api/observability/search?jobId=<jobId>`
+3. Review route events, orchestration milestones, webhook outcomes, and SSE activity
+
+## Operational checks
+
+- Confirm `LOG_PERSIST=true` in production
+- Verify TTL indexes exist for both collections
+- Periodically review event volume and noise
+- Ensure redaction coverage remains tested before release

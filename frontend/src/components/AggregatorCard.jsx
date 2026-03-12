@@ -42,7 +42,8 @@ export function AggregatorCard({ status, result, error }) {
             <p className="text-xs text-text-secondary mt-0.5">
               {result?.model === 'local-hybrid' ? 'Local Hybrid Aggregation'
                 : result?.model === 'local' ? 'Local Threshold'
-                  : 'Claude Sonnet Aggregator'}
+                  : result?.model?.startsWith('statistical') ? 'Statistical Aggregation'
+                    : 'Claude Sonnet Aggregator'}
             </p>
           </div>
 

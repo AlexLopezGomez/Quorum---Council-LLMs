@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
     Brain, BarChart3, Zap, Menu, X, Upload, Users, TrendingDown,
@@ -8,12 +8,11 @@ import {
 import Prism from '../components/landing/Prism';
 import BlurText from '../components/landing/BlurText';
 import SpotlightCard from '../components/landing/SpotlightCard';
-import WaitlistForm from '../components/landing/WaitlistForm';
-import WaitlistModal from '../components/landing/WaitlistModal';
 import RotatingText from '../components/landing/RotatingText';
 import ReflectiveCard from '../components/landing/ReflectiveCard';
 import MagicBento from '../components/landing/MagicBento';
 import TerminalDemo from '../components/landing/TerminalDemo';
+import ResearchPaperSection from '../components/landing/ResearchPaperSection';
 import './LandingPage.css';
 
 const FEATURES = [
@@ -73,6 +72,14 @@ const FEATURES = [
     },
 ];
 
+const SCRAMBLING_ROWS = [
+    { before: 'Trusting a single model\'s verdict', after: 'Consensus from three independent judges' },
+    { before: 'Hallucinations slipping into production', after: 'Caught before every deployment' },
+    { before: 'Paying full cost on every test case', after: 'Up to 70% saved with adaptive routing' },
+    { before: 'Black-box evaluation results', after: 'Every judge decision, live and transparent' },
+    { before: 'Manual quality checks per release', after: 'Batch hundreds of cases in one run' },
+];
+
 const HOW_IT_WORKS = [
     {
         number: '01',
@@ -97,7 +104,6 @@ const HOW_IT_WORKS = [
 export default function LandingPage() {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('');
 
     useEffect(() => {
@@ -154,6 +160,9 @@ export default function LandingPage() {
                             Features
                             <span className="nav-active-dot" />
                         </a>
+                        <Link to="/benchmarks" className="nav-link">
+                            Benchmarks
+                        </Link>
                     </div>
 
                     {/* CTA — split pill */}
@@ -183,6 +192,14 @@ export default function LandingPage() {
                         <a href="#demo" onClick={() => setMobileMenuOpen(false)} className="nav-link nav-link--mobile">Demo</a>
                         <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="nav-link nav-link--mobile">How it works</a>
                         <a href="#features" onClick={() => setMobileMenuOpen(false)} className="nav-link nav-link--mobile">Features</a>
+                        <Link
+                            to="/benchmarks"
+                            className="nav-link nav-link--mobile"
+                            onClick={() => setMobileMenuOpen(false)}
+                            style={{ textDecoration: 'none' }}
+                        >
+                            Benchmarks
+                        </Link>
                         <Link
                             to="/login"
                             className="nav-link nav-link--mobile"
@@ -225,11 +242,11 @@ export default function LandingPage() {
 
                 <div className="hero-content max-w-5xl mx-auto px-6 text-center relative z-10">
                     <div className="hero-badge mb-8">
-                        Open Source · RAG Evaluation Platform
+                        RAG Evaluation Platform
                     </div>
 
                     <h1 className="hero-title mb-4">
-                        The open-source way to{' '}
+                        The modern way to{' '}
                         <span className="rotating-wrapper">
                             <RotatingText
                                 texts={[
@@ -250,12 +267,15 @@ export default function LandingPage() {
                         then adaptively route each test case to cut evaluation costs by up to 70%.
                     </p>
 
-                    <div className="mt-10">
-                        <WaitlistForm />
+                    <div className="hero-cta-row mt-10">
+                        <Link to="/register" className="cta-waitlist-btn">
+                            Get Started <ArrowRight size={16} className="inline ml-1.5" />
+                        </Link>
+                        <a href="#demo" className="hero-secondary-btn">Watch Demo</a>
                     </div>
 
                     <p className="mt-5 text-xs" style={{ color: 'var(--text-ter)' }}>
-                        No credit card required · Deploy in minutes · MIT licensed
+                        Free to self-host · MIT licensed
                     </p>
                 </div>
 
@@ -367,6 +387,27 @@ export default function LandingPage() {
                 </div>
             </section>
 
+            {/* ─── Research Paper ────────────────────────────────── */}
+            <ResearchPaperSection />
+
+            {/* ─── Scrambling Section ────────────────────────────── */}
+            <section className="scrambling-section">
+                <div className="section-container">
+                    <h2 className="scrambling-heading">
+                        Stop flying blind.<br />Start shipping confidently.
+                    </h2>
+                    <div className="scrambling-rows">
+                        {SCRAMBLING_ROWS.map((row, i) => (
+                            <div key={i} className="scrambling-row">
+                                <span className="scrambling-before">{row.before}</span>
+                                <span className="scrambling-arrow">→</span>
+                                <span className="scrambling-after">{row.after}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* ─── CTA ───────────────────────────────────────────── */}
             <section className="cta-section">
                 <div className="cta-glow" />
@@ -375,38 +416,29 @@ export default function LandingPage() {
                         Start evaluating your RAG pipeline today
                     </h2>
                     <p className="cta-sub mt-4">
-                        Join the waitlist and be among the first to ship reliable, cost-efficient RAG evaluations.
+                        Deploy in minutes. Self-host for free. No credit card required.
                     </p>
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="cta-waitlist-btn mt-10"
-                    >
-                        Join Waitlist <ArrowRight size={16} className="inline ml-1.5" />
-                    </button>
+                    <Link to="/register" className="cta-waitlist-btn mt-10">
+                        Get Started <ArrowRight size={16} className="inline ml-1.5" />
+                    </Link>
                 </div>
             </section>
 
             {/* ─── Footer ────────────────────────────────────────── */}
             <footer className="landing-footer">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="footer-row">
-                        <div className="flex items-center gap-3">
-                            <span className="landing-logo">Quorum</span>
-                            <span className="text-sm" style={{ color: 'var(--text-ter)' }}>&copy; 2026 Quorum</span>
-                        </div>
-                        <div className="flex items-center gap-5">
-                        <Link to="/privacy" className="footer-icon-link" style={{ fontSize: '0.8125rem' }}>
-                            Privacy Policy
-                        </Link>
-                        <Link to="/terms" className="footer-icon-link" style={{ fontSize: '0.8125rem' }}>
-                            Terms
-                        </Link>
+                <div className="footer-nav-row max-w-6xl mx-auto px-6">
+                    <div className="flex items-center gap-3">
+                        <span className="landing-logo">Quorum</span>
+                        <span className="footer-tagline">· Built for RAG teams</span>
                     </div>
+                    <div className="flex items-center gap-5">
+                        <Link to="/privacy" className="footer-icon-link" style={{ fontSize: '0.8125rem' }}>Privacy</Link>
+                        <Link to="/terms" className="footer-icon-link" style={{ fontSize: '0.8125rem' }}>Terms</Link>
+                        <a href="https://github.com/AlexLopezGomez/Quorum---Council-LLMs" className="footer-icon-link" style={{ fontSize: '0.8125rem' }} target="_blank" rel="noopener noreferrer">GitHub</a>
                     </div>
                 </div>
+                <span className="footer-wordmark">QUORUM</span>
             </footer>
-
-            <WaitlistModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </div>
     );
 }

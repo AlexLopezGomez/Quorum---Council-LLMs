@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { JUDGE_CONFIG } from '../lib/constants';
 import { safeFixed } from '../lib/utils';
 import { ScoreBar } from './ui/ScoreBar';
+import { Badge } from './ui/badge';
 
 const PULSE_BORDER = {
   openai: 'border-openai',
@@ -36,9 +37,9 @@ export function JudgeCard({ judge, status, result, error, staggerIndex = 0 }) {
             <span className="text-sm font-semibold text-text-primary">{config.name}</span>
             <span className="text-xs text-text-secondary">{result?.model || config.model}</span>
           </div>
-          <span className={`text-xs px-2 py-0.5 rounded-full ${config.pillBg} ${config.pillText} font-medium`}>
+          <Badge variant="outline" className={`rounded-full ${config.pillBg} ${config.pillText}`}>
             {config.metric}
-          </span>
+          </Badge>
         </div>
 
         {/* Score with scale-in on complete */}

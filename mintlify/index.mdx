@@ -1,0 +1,46 @@
+---
+title: "Overview"
+description: "Adaptive RAG evaluation with a Council-of-LLMs."
+---
+
+# Quorum
+
+Quorum is a RAG evaluation platform that routes each test case to the right
+evaluation strategy based on risk. Instead of paying for a full judge panel on
+every case, Quorum uses adaptive orchestration to balance quality, cost, and
+latency.
+
+## Why teams use Quorum
+
+- Catch silent RAG failures before they reach production
+- Run multi-judge evaluation only where it matters
+- Stream every evaluation milestone in real time over SSE
+- Inspect cost, verdict, and judge-level reasoning for each run
+
+## Evaluation strategies
+
+| Strategy | When to use it | What runs |
+| --- | --- | --- |
+| `council` | High-risk cases | OpenAI + Anthropic + Gemini judges, then an aggregator |
+| `hybrid` | Medium-risk cases | Deterministic checks plus one LLM judge |
+| `single` | Low-risk cases | One lightweight judge |
+| `auto` | Default mode | Risk-based routing across all three |
+
+## What the platform includes
+
+- A React frontend for uploads, live streaming, and history
+- An Express backend with orchestration, SSE, and persistence
+- JavaScript and Python SDKs
+- Public benchmark results at [the benchmarks page](https://quorum.onrender.com/benchmarks)
+
+## Key links
+
+- Live demo: [quorum.onrender.com](https://quorum.onrender.com)
+- GitHub: [AlexLopezGomez/Quorum---Council-LLMs](https://github.com/AlexLopezGomez/Quorum---Council-LLMs)
+- Benchmarks: [quorum.onrender.com/benchmarks](https://quorum.onrender.com/benchmarks)
+
+## Next steps
+
+- Start with [Quickstart](/quickstart)
+- Learn the routing model in [How It Works](/how-it-works)
+- Explore the SDKs in [JavaScript SDK](/sdk/javascript) and [Python SDK](/sdk/python)

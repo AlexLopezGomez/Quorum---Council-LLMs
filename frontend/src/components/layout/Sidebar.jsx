@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LogOut, Settings } from 'lucide-react';
 import { sileo } from 'sileo';
+import { Button } from '@/components/ui/button';
 import { NAV_ITEMS } from '../../lib/constants';
 import { StatusIndicator } from '../ui/StatusIndicator';
 import { useEvaluation } from '../../context/EvaluationContext';
@@ -79,11 +80,12 @@ export function Sidebar() {
 
             <nav className="flex-1 px-3 space-y-1">
                 {NAV_ITEMS.map((item) => (
-                    <button
+                    <Button
                         key={item.key}
+                        variant="ghost"
                         onClick={() => navigate(item.path)}
-                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${isActive(item)
-                            ? 'bg-surface-tertiary text-text-primary font-medium'
+                        className={`w-full justify-start gap-3 px-3 py-2 h-auto text-sm font-normal rounded-lg transition-colors ${isActive(item)
+                            ? 'bg-surface-tertiary text-text-primary font-medium hover:bg-surface-tertiary'
                             : 'text-text-secondary hover:bg-surface-tertiary hover:text-text-primary'
                             }`}
                     >
@@ -92,34 +94,36 @@ export function Sidebar() {
                         {item.key === 'upload' && isEvaluating && !pathname.startsWith('/app/evaluate') && (
                             <span className="ml-auto w-2 h-2 rounded-full bg-verdict-pass animate-pulse" />
                         )}
-                    </button>
+                    </Button>
                 ))}
             </nav>
 
             {pathname.startsWith('/app/evaluate') && (
                 <div className="px-3 pb-4 border-t border-surface-border pt-4">
                     <StatusIndicator status={sseStatus} />
-                    <button
+                    <Button
+                        variant="ghost"
                         onClick={handleNewEvaluation}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-text-secondary hover:bg-surface-tertiary hover:text-text-primary transition-colors"
+                        className="w-full justify-start gap-3 px-3 py-2 h-auto text-sm font-normal text-text-secondary hover:bg-surface-tertiary hover:text-text-primary"
                     >
                         {isEvaluating ? 'Evaluation Running' : 'New Evaluation'}
-                    </button>
+                    </Button>
                 </div>
             )}
 
             {user && (
                 <div className="px-3 pb-4 border-t border-surface-border pt-4">
-                    <button
+                    <Button
+                        variant="ghost"
                         onClick={() => navigate('/app/settings')}
-                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors mb-1 ${pathname.startsWith('/app/settings')
-                            ? 'bg-surface-tertiary text-text-primary font-medium'
+                        className={`w-full justify-start gap-3 px-3 py-2 h-auto text-sm font-normal mb-1 ${pathname.startsWith('/app/settings')
+                            ? 'bg-surface-tertiary text-text-primary font-medium hover:bg-surface-tertiary'
                             : 'text-text-secondary hover:bg-surface-tertiary hover:text-text-primary'
                             }`}
                     >
                         <Settings size={18} />
                         Settings
-                    </button>
+                    </Button>
                     <div className="flex items-center gap-3 px-2">
                         <div className="w-8 h-8 rounded-lg bg-surface-tertiary flex items-center justify-center text-sm font-medium text-text-primary shrink-0">
                             {user.username?.[0]?.toUpperCase() ?? '?'}

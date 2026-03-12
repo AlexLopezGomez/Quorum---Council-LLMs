@@ -8,6 +8,10 @@ import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
 import PrivacyPage from './pages/PrivacyPage.jsx';
 import TermsPage from './pages/TermsPage.jsx';
+import BenchmarksPage from './pages/BenchmarksPage.jsx';
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
+import VerifyEmailPage from './pages/VerifyEmailPage.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import './index.css';
 
@@ -31,8 +35,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <App />
             </ProtectedRoute>
           } />
+          <Route path="/benchmarks" element={<BenchmarksPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

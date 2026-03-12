@@ -6,6 +6,8 @@ import { STRATEGIES, STRATEGY_DESCRIPTIONS } from '../lib/constants';
 import { PageHeader } from './PageHeader';
 import { ErrorAlert } from './ui/ErrorAlert';
 import { DEMO_TEST_CASES } from '../lib/demoTestCases';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 
 const SAMPLE_DATA = [
   {
@@ -250,17 +252,17 @@ export function TestCaseUpload({ onSubmit, isLoading, activeEvaluation, onResume
 
             <div className="p-6 space-y-4">
               {/* Evaluation name */}
-              <div>
-                <label className="block text-xs font-medium text-text-secondary uppercase tracking-wide mb-1.5">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-text-secondary uppercase tracking-wide">
                   Evaluation Name <span className="normal-case text-text-tertiary font-normal">(optional)</span>
-                </label>
-                <input
+                </Label>
+                <Input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. RAG v2 baseline, Sprint 14 test…"
                   maxLength={100}
-                  className="w-full px-3 py-2 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
+                  className="bg-surface border-surface-border text-text-primary placeholder:text-text-tertiary focus:ring-accent/20 focus:border-accent"
                 />
               </div>
 

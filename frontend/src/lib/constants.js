@@ -1,10 +1,11 @@
-import { LayoutDashboard, History, Bell, Brain, Sparkles, Gem } from 'lucide-react';
+import { LayoutDashboard, History, Bell, Brain, Sparkles, Gem, FlaskConical } from 'lucide-react';
 
 // ─── Navigation ──────────────────────────────────────────────
 export const NAV_ITEMS = [
     { key: 'upload',   label: 'Evaluate', icon: LayoutDashboard, path: '/app' },
     { key: 'history',  label: 'History',  icon: History,         path: '/app/history' },
-    { key: 'webhooks', label: 'Webhooks', icon: Bell,            path: '/app/webhooks' },
+    { key: 'benchmark',  label: 'Benchmark', icon: FlaskConical,    path: '/app/benchmark' },
+    { key: 'webhooks',   label: 'Webhooks',  icon: Bell,            path: '/app/webhooks' },
 ];
 
 // ─── Evaluation Strategies ───────────────────────────────────
@@ -17,7 +18,7 @@ export const STRATEGIES = [
 
 export const STRATEGY_DESCRIPTIONS = {
     auto: 'Each test case will be routed to the optimal strategy based on its risk score.',
-    council: 'All test cases evaluated by 3 judges (OpenAI, Anthropic, Gemini) + Claude aggregator.',
+    council: 'All test cases evaluated by 3 judges (OpenAI, Anthropic, Gemini) with statistical majority-vote aggregation.',
     hybrid: 'Deterministic checks + single OpenAI judge. Balanced cost and accuracy.',
     single: 'Gemini judge only. Lowest cost, suitable for simple queries.',
 };
@@ -73,7 +74,7 @@ export const JUDGE_CONFIG = {
     gemini: {
         name: 'Gemini',
         metric: 'Context Relevancy',
-        model: 'gemini-1.5-flash',
+        model: 'gemini-2.5-flash',
         colorBar: 'bg-gemini',
         dot: 'bg-gemini',
         pillBg: 'bg-gemini-light',

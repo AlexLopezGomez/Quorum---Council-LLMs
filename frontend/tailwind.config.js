@@ -7,6 +7,16 @@ export default {
         sans: ["'New York'", 'ui-serif', 'Georgia', 'serif'],
       },
       colors: {
+        background: '#F5F3EF',
+        foreground: '#3b3c36',
+        card: { DEFAULT: '#FFFFFF', foreground: '#3b3c36' },
+        primary: { DEFAULT: '#d99058', foreground: '#FFFFFF' },
+        secondary: { DEFAULT: '#EEEBE4', foreground: '#3b3c36' },
+        muted: { DEFAULT: '#EEEBE4', foreground: '#6e6e66' },
+        border: '#DDD9D1',
+        input: '#DDD9D1',
+        ring: '#d99058',
+        destructive: { DEFAULT: '#EF4444', foreground: '#FFFFFF' },
         surface: {
           DEFAULT: '#FFFFFF',
           secondary: '#F5F3EF',

@@ -1,4 +1,4 @@
-.PHONY: dev up down demo logs clean
+.PHONY: dev up down demo logs clean docs
 
 dev:
 	@echo "Starting backend and frontend in dev mode..."
@@ -27,3 +27,6 @@ logs:
 clean:
 	docker-compose --profile demo down -v
 	@echo "Volumes removed"
+
+docs:
+	cd mintlify && mint dev

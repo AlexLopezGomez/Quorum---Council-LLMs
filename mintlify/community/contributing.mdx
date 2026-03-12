@@ -1,0 +1,66 @@
+---
+title: "Contributing"
+description: "Set up Quorum locally and follow the repository contribution workflow."
+---
+
+# Contributing
+
+Community contributions are welcome.
+
+## Prerequisites
+
+- Node.js 20+
+- Docker for MongoDB
+- Provider API keys:
+  - `OPENAI_API_KEY`
+  - `ANTHROPIC_API_KEY`
+  - `GOOGLE_API_KEY`
+
+## Local setup
+
+```bash
+docker run -d -p 27017:27017 mongo:7
+
+cd backend
+cp .env.example .env
+npm run dev
+
+cd ../frontend
+npm run dev
+```
+
+Open `http://localhost:5173`.
+
+## Architecture overview
+
+Request flow:
+
+1. `POST /api/evaluate` validates input and creates an evaluation record
+2. `services/orchestrator.js` processes test cases sequentially
+3. `orchestrator/adaptiveRouter.js` selects `council`, `hybrid`, or `single`
+4. SSE events stream through `utils/sse.js`
+
+## Adding a new judge
+
+1. Create `backend/src/services/judges/<provider>.js`
+2. Register it in `backend/src/services/orchestrator.js`
+3. Add provider styling in the frontend
+4. Update `.env.example` with any required credentials
+
+## Code style
+
+- Backend uses ESM with `.js` import extensions
+- Comments should stay sparse and purposeful
+- Cost values round to 6 decimal places
+
+## Pull request process
+
+1. Branch from `main` with a descriptive name
+2. Open a PR that explains both the change and the reason for it
+3. Update `CHANGELOG.md` under `Unreleased`
+4. Verify the stack runs cleanly before requesting review
+
+## Questions
+
+For discussion that is not a bug or feature request, use
+[GitHub Discussions](https://github.com/AlexLopezGomez/Quorum---Council-LLMs/discussions).

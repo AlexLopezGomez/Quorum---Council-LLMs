@@ -17,9 +17,12 @@ import keysRouter from './routes/keys.js';
 import serviceKeysRouter from './routes/serviceKeys.js';
 import observabilityRouter from './routes/observability.js';
 import waitlistRouter from './routes/waitlist.js';
+import benchmarkRouter from './routes/benchmark.js';
+import * as batchPoller from './services/batchPoller.js';
 import swaggerUi from 'swagger-ui-express';
 import { sseManager } from './utils/sse.js';
 import { Evaluation } from './models/Evaluation.js';
+import { BenchmarkRun } from './models/BenchmarkRun.js';
 import { spec } from './utils/openapi.js';
 import { requireAuth, requireAnyAuth } from './middleware/requireAuth.js';
 import { requireServiceScope } from './middleware/requireServiceAuth.js';
@@ -110,6 +113,7 @@ app.use('/api/webhooks', requireAuth, webhooksRouter);
 app.use('/api/keys', requireAuth, keysRouter);
 app.use('/api/service-keys', requireAuth, serviceKeysRouter);
 app.use('/api/observability', requireAuth, observabilityRouter);
+app.use('/api', requireAuth, benchmarkRouter);
 
 app.get('/health', (req, res) => {
   logger.info('system.health.check', logger.withReq(req, { statusCode: 200 }));
@@ -164,19 +168,24 @@ async function connectWithRetry(retries = 5, delay = 5000) {
 
 async function cleanupStaleJobs() {
   try {
-    const result = await Evaluation.updateMany(
+    const evalResult = await Evaluation.updateMany(
       { status: 'processing' },
       {
         $set: { status: 'failed', completedAt: new Date() },
         $push: { events: { type: 'server_restart', data: { reason: 'Server restarted while evaluation was in progress' }, timestamp: new Date() } },
       }
     );
-    if (result.modifiedCount > 0) {
+
+    const benchmarkResult = await BenchmarkRun.updateMany(
+      { status: { $in: ['processing', 'submitting', 'aggregating'] } },
+      { $set: { status: 'failed', completedAt: new Date() } }
+    );
+
+    const total = evalResult.modifiedCount + benchmarkResult.modifiedCount;
+    if (total > 0) {
       logger.audit('system.jobs.cleaned', {
         actor: 'system',
-        metadata: {
-          staleJobs: result.modifiedCount,
-        },
+        metadata: { staleEvaluations: evalResult.modifiedCount, staleBenchmarks: benchmarkResult.modifiedCount },
       });
     }
   } catch (err) {
@@ -191,6 +200,7 @@ async function start() {
     validateProductionSecrets();
     await connectWithRetry();
     await cleanupStaleJobs();
+    batchPoller.start();
 
     serveFrontend(app);
 
@@ -201,6 +211,7 @@ async function start() {
     const shutdown = async (signal) => {
       logger.warn('system.shutdown.started', { metadata: { signal } });
 
+      batchPoller.stop();
       sseManager.closeAll();
       logger.info('system.sse.closed');
 

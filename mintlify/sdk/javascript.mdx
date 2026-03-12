@@ -1,0 +1,82 @@
+---
+title: "JavaScript SDK"
+description: "Capture RAG interactions and send them to Quorum for evaluation."
+---
+
+# JavaScript SDK
+
+The JavaScript SDK is a lightweight, zero-dependency client for capturing RAG
+interactions and sending them to Quorum for evaluation.
+
+## Quick start
+
+```js
+import { Quorum } from '@quorum/sdk';
+
+const quorum = new Quorum({ endpoint: 'http://localhost:3000' });
+
+quorum.capture({
+  input: 'What is the capital of France?',
+  actualOutput: 'The capital of France is Paris.',
+  retrievalContext: ['Paris is the capital and largest city of France.'],
+});
+
+await quorum.close();
+```
+
+## Integration patterns
+
+### Direct capture
+
+Call `capture()` after each RAG interaction. It is designed to be non-blocking.
+
+### Express middleware
+
+```js
+import { quorumMiddleware } from './middleware.js';
+
+app.use(quorumMiddleware);
+```
+
+This pattern wraps `res.json()` and captures responses automatically when
+`req.ragContext` is available.
+
+### LangChain callback
+
+Extend `BaseCallbackHandler` and call `quorum.capture()` in `handleChainEnd`.
+
+## Configuration
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `endpoint` | `string` | required | Quorum backend URL |
+| `apiKey` | `string` | none | Optional API key |
+| `defaultStrategy` | `string` | `auto` | `auto`, `single`, `hybrid`, or `council` |
+| `batchSize` | `number` | `10` | Flush when the buffer reaches this size |
+| `flushInterval` | `number` | `5000` | Auto-flush interval in milliseconds |
+| `onError` | `function` | `console.warn` | Error callback |
+| `correlationId` | `string` | auto-generated | Propagated as `X-Correlation-ID` |
+
+## Data flow
+
+```text
+Your app -> capture() -> buffer -> flush() -> POST /api/ingest -> Quorum backend
+```
+
+## Core methods
+
+### `new Quorum(config)`
+
+Creates a new SDK instance.
+
+### `.capture(payload)`
+
+Buffers a RAG interaction. Returns `void`.
+
+### `.flush()`
+
+Sends buffered captures to the backend and returns a Promise.
+
+### `.close()`
+
+Flushes remaining captures and stops the interval timer.

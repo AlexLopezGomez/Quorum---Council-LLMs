@@ -46,6 +46,24 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    emailVerificationToken: {
+      type: String,
+      select: false,
+    },
+    emailVerificationExpires: {
+      type: Date,
+    },
+    resetPasswordToken: {
+      type: String,
+      select: false,
+    },
+    resetPasswordExpires: {
+      type: Date,
+    },
     apiKeys: {
       openai: { type: encryptedKeySchema, default: undefined },
       anthropic: { type: encryptedKeySchema, default: undefined },
@@ -64,6 +82,7 @@ userSchema.methods.toPublicJSON = function () {
     id: this._id,
     email: this.email,
     username: this.username,
+    emailVerified: this.emailVerified,
     createdAt: this.createdAt,
   };
 };

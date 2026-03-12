@@ -64,3 +64,13 @@ videos/
 /docs
 
 RATE_LIMIT.md
+
+# Personal/local tooling
+.claude/
+.cursor/
+.windsurf/
+.playwright-mcp/
+
+# Unpublished paper
+paper/
+paper.zip

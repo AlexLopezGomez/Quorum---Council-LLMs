@@ -1,0 +1,53 @@
+---
+title: "Security"
+description: "Report vulnerabilities privately and understand the scope of Quorum's security policy."
+---
+
+# Security
+
+If you discover a security issue in Quorum, please report it privately and do
+not open a public issue.
+
+## Reporting a vulnerability
+
+Preferred channel:
+
+- [GitHub private vulnerability reporting](https://github.com/AlexLopezGomez/Quorum---Council-LLMs/security/advisories/new)
+
+Fallback:
+
+- [Project maintainer on GitHub](https://github.com/AlexLopezGomez)
+
+Please include:
+
+- a clear description of the issue
+- affected components
+- reproduction steps or proof of concept
+- potential impact
+- any known mitigation ideas
+
+## Response expectations
+
+- acknowledgment within 72 hours
+- initial triage within 7 days
+- status updates for confirmed issues until mitigation or resolution
+
+## In scope
+
+- API key and secret handling
+- JWT and session secret exposure
+- MongoDB exposure and unsafe defaults
+- authentication and authorization flaws
+- injection, traversal, deserialization, or remote code execution risks
+- vulnerabilities in SDKs, benchmark tooling, deployment config, or the GitHub Action
+
+## Out of scope
+
+- best-practice suggestions without a concrete exploit path
+- issues in unrelated third-party services
+- self-XSS that requires pasting attacker-controlled code into developer tools
+
+## Secret handling
+
+Do not include live API keys, tokens, or database dumps in reports. Use redacted
+examples wherever possible.

@@ -74,11 +74,11 @@
     "links": [
       {
         "label": "Demo",
-        "href": "https://quorum.onrender.com"
+        "href": "https://testquorum.com"
       },
       {
         "label": "Benchmarks",
-        "href": "https://quorum.onrender.com/benchmarks"
+        "href": "https://testquorum.com/benchmarks"
       },
       {
         "label": "GitHub",
@@ -88,7 +88,7 @@
     "primary": {
       "type": "button",
       "label": "Open App",
-      "href": "https://quorum.onrender.com"
+      "href": "https://testquorum.com"
     }
   },
   "footer": {
@@ -101,11 +101,11 @@
         "items": [
           {
             "label": "Live Demo",
-            "href": "https://quorum.onrender.com"
+            "href": "https://testquorum.com"
           },
           {
             "label": "Benchmarks",
-            "href": "https://quorum.onrender.com/benchmarks"
+            "href": "https://testquorum.com/benchmarks"
           }
         ]
       },

@@ -48,7 +48,7 @@ Open `http://localhost:5173`.
 
 - **Backend:** ESM modules (`"type": "module"`). All imports use `.js` extensions.
 - **Comments:** Only for complex logic — sparse by default.
-- **No test framework is configured.** Manually verify changes with the dev servers.
+- **Tests:** Run `npm test` in `backend/` (vitest). No frontend tests exist yet.
 - Cost values round to 6 decimal places: `Math.round(cost * 1000000) / 1000000`
 
 ## Pull Request Process

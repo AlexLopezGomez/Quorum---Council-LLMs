@@ -132,9 +132,6 @@ export async function executeWithProviderResilience({
     try {
       return await limiter.run(run);
     } catch (error) {
-      // #region agent log
-      try { const {appendFileSync:_a}=await import('fs');const {fileURLToPath:_f}=await import('url');const {dirname:_d,join:_j}=await import('path');_a(_j(_d(_f(import.meta.url)),'../../../debug-b43e2f.log'),JSON.stringify({sessionId:'b43e2f',location:'providerResilience:catch',message:'provider_error',data:{provider,operation,attempt,errorMsg:error?.message?.substring(0,200),errorStatus:error?.status||error?.statusCode,isRateLimit:isRateLimitedError(error)},timestamp:Date.now()})+'\n');} catch(e){}
-      // #endregion
       const canRetry = isRateLimitedError(error) && attempt <= maxRetries;
       const retryAfterMs = parseRetryAfterMs(error);
 

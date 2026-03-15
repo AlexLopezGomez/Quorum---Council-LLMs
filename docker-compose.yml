@@ -31,7 +31,7 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - MONGODB_URI=mongodb://${MONGO_USER:-quorum}:${MONGO_PASSWORD:?Set MONGO_PASSWORD in your .env file}@mongodb:27017/quorum?authSource=admin
-      - FRONTEND_URL=http://localhost:8080
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:8080}
       - EVALUATION_TIMEOUT=30000
     depends_on:
       mongodb:

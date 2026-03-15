@@ -1,14 +1,14 @@
 import { FileText, ExternalLink, ArrowUpRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import SpotlightCard from './SpotlightCard';
 import CountUp from './CountUp';
 
-const PAPER_URL = 'https://github.com/AlexLopezGomez/Quorum---Council-LLMs/blob/main/paper/main_publish.tex';
-const BLOG_POST_URL = 'https://github.com/AlexLopezGomez/Quorum---Council-LLMs/blob/main/paper/blog_post.md';
+const BLOG_POST_URL = 'https://open.substack.com/pub/alexlopez7/p/councils-of-llms-for-rag-evaluation';
 
 const STATS = [
-    { value: 94.2, suffix: '%', label: 'Council Accuracy', desc: 'vs 88.5% single-judge baseline' },
-    { value: 31, suffix: '%', label: 'FNR Reduction', desc: 'fewer false negatives vs solo judge' },
-    { value: 0.89, suffix: '', label: "Cohen's Kappa", desc: 'inter-rater agreement score' },
+    { value: 5000, suffix: '', label: 'Benchmark Scale', desc: 'RAGTruth + HaluBench, 3 domains' },
+    { value: 82, suffix: '%', label: 'Gemini Flash Accuracy', desc: 'best evaluator on all metrics' },
+    { value: 6, suffix: ' pp', label: 'Council Accuracy Deficit', desc: 'vs. best standalone judge' },
 ];
 
 export default function ResearchPaperSection() {
@@ -41,11 +41,11 @@ export default function ResearchPaperSection() {
                         </div>
 
                         <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.4, marginBottom: '1rem' }}>
-                            Council vs. Single-Judge: A 5,000-Case Benchmark of LLM Deliberation for RAG Evaluation
+                            Evaluating Deliberative Multi-LLM Judge Councils for RAG Evaluation: Evidence from a 5,000-Case Benchmark
                         </h3>
 
                         <p style={{ fontSize: '0.875rem', color: 'var(--text-sec)', lineHeight: 1.7, marginBottom: '1.25rem' }}>
-                            We benchmark council-based LLM deliberation against single-judge evaluation across 5,000 RAG test cases spanning 6 domains. Results show council deliberation achieves 94.2% accuracy with a 31% reduction in false negative rate.
+                            We benchmark a three-judge deliberative council against standalone judges across 5,000 RAG test cases from RAGTruth and HaluBench. A single Gemini 2.0 Flash judge outperforms the full council on accuracy, F1, calibration, cost, and latency — with the largest gap (−27 pp) in Financial evaluation.
                         </p>
 
                         <p style={{ fontSize: '0.8125rem', color: 'var(--text-ter)', marginBottom: '1.75rem' }}>
@@ -53,10 +53,8 @@ export default function ResearchPaperSection() {
                         </p>
 
                         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                            <a
-                                href={PAPER_URL}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                            <Link
+                                to="/paper"
                                 style={{
                                     display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
                                     padding: '0.5rem 1rem', borderRadius: 8,
@@ -67,8 +65,8 @@ export default function ResearchPaperSection() {
                                 onMouseEnter={e => e.currentTarget.style.background = 'var(--accent-hover)'}
                                 onMouseLeave={e => e.currentTarget.style.background = 'var(--accent)'}
                             >
-                                View Paper <ExternalLink size={13} />
-                            </a>
+                                Read Paper <ExternalLink size={13} />
+                            </Link>
                             <a
                                 href={BLOG_POST_URL}
                                 target="_blank"
@@ -84,7 +82,7 @@ export default function ResearchPaperSection() {
                                 onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent)'}
                                 onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--card-border)'}
                             >
-                                Read Blog Post <ArrowUpRight size={13} />
+                                Blog Post <ArrowUpRight size={13} />
                             </a>
                         </div>
                     </SpotlightCard>

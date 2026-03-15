@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
     Brain, BarChart3, Zap, Menu, X, Upload, Users, TrendingDown,
     Shield, DollarSign, Activity, GitBranch, FileJson, ArrowRight,
-    ArrowUpRight,
+    ArrowUpRight, Github,
 } from 'lucide-react';
 import Prism from '../components/landing/Prism';
 import BlurText from '../components/landing/BlurText';
@@ -163,10 +163,22 @@ export default function LandingPage() {
                         <Link to="/benchmarks" className="nav-link">
                             Benchmarks
                         </Link>
+                        <Link to="/paper" className="nav-link">
+                            Paper
+                        </Link>
                     </div>
 
                     {/* CTA — split pill */}
                     <div className="nav-cta-wrap" style={{ gap: '0.75rem' }}>
+                        <a
+                            href="https://github.com/AlexLopezGomez/Quorum---Council-LLMs"
+                            className="nav-github-btn"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="View Quorum on GitHub"
+                        >
+                            <Github size={17} />
+                        </a>
                         <Link to="/login" className="nav-link" style={{ textDecoration: 'none' }}>
                             Sign In
                         </Link>
@@ -199,6 +211,14 @@ export default function LandingPage() {
                             style={{ textDecoration: 'none' }}
                         >
                             Benchmarks
+                        </Link>
+                        <Link
+                            to="/paper"
+                            className="nav-link nav-link--mobile"
+                            onClick={() => setMobileMenuOpen(false)}
+                            style={{ textDecoration: 'none' }}
+                        >
+                            Paper
                         </Link>
                         <Link
                             to="/login"
@@ -242,11 +262,11 @@ export default function LandingPage() {
 
                 <div className="hero-content max-w-5xl mx-auto px-6 text-center relative z-10">
                     <div className="hero-badge mb-8">
-                        RAG Evaluation Platform
+                        Open Source - RAG Evaluation Platform
                     </div>
 
                     <h1 className="hero-title mb-4">
-                        The modern way to{' '}
+                        The open source way to{' '}
                         <span className="rotating-wrapper">
                             <RotatingText
                                 texts={[

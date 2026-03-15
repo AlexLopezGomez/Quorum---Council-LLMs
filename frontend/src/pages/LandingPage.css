@@ -282,6 +282,27 @@ html {
     margin-top: 0.5rem;
 }
 
+.nav-github-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--card-border);
+    color: var(--text-sec);
+    background: transparent;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.nav-github-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--accent);
+    background: rgba(217, 144, 88, 0.07);
+}
+
 /* Responsive visibility */
 .nav-links-pill,
 .nav-cta-wrap {

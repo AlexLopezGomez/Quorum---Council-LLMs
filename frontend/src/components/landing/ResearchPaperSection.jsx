@@ -13,12 +13,12 @@ const STATS = [
 
 export default function ResearchPaperSection() {
     return (
-        <section className="pillars-section" style={{ borderTop: '1px solid var(--card-border)' }}>
+        <section className="features-section">
             <div className="max-w-6xl mx-auto px-6">
                 <p className="section-label">Research</p>
                 <h2 className="section-heading mt-3">Backed by a 5,000-case benchmark</h2>
 
-                <div className="mt-14" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2.5rem', alignItems: 'start' }}>
+                <div className="mt-14 research-grid">
                     {/* Left column */}
                     <SpotlightCard
                         className="pillar-card"
@@ -52,7 +52,7 @@ export default function ResearchPaperSection() {
                             Alex Lopez et al. &mdash; 2026
                         </p>
 
-                        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                             <Link
                                 to="/paper"
                                 style={{

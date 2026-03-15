@@ -156,16 +156,21 @@ export default function LandingPage() {
                             How it works
                             <span className="nav-active-dot" />
                         </a>
-                        <a href="#features" className={`nav-link ${activeSection === 'features' ? 'active' : ''}`}>
-                            Features
-                            <span className="nav-active-dot" />
+                        <div className="nav-dropdown">
+                            <button className="nav-link nav-dropdown-trigger">
+                                Research
+                                <svg width="10" height="6" viewBox="0 0 10 6" className="nav-dropdown-chevron">
+                                    <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </button>
+                            <div className="nav-dropdown-menu">
+                                <Link to="/paper" className="nav-dropdown-item">Paper</Link>
+                                <Link to="/benchmarks" className="nav-dropdown-item">Benchmarks</Link>
+                            </div>
+                        </div>
+                        <a href="https://docs.testquorum.com" className="nav-link" target="_blank" rel="noopener noreferrer">
+                            Docs
                         </a>
-                        <Link to="/benchmarks" className="nav-link">
-                            Benchmarks
-                        </Link>
-                        <Link to="/paper" className="nav-link">
-                            Paper
-                        </Link>
                     </div>
 
                     {/* CTA — split pill */}
@@ -203,22 +208,23 @@ export default function LandingPage() {
                     <div className="mobile-menu">
                         <a href="#demo" onClick={() => setMobileMenuOpen(false)} className="nav-link nav-link--mobile">Demo</a>
                         <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="nav-link nav-link--mobile">How it works</a>
-                        <a href="#features" onClick={() => setMobileMenuOpen(false)} className="nav-link nav-link--mobile">Features</a>
-                        <Link
-                            to="/benchmarks"
-                            className="nav-link nav-link--mobile"
-                            onClick={() => setMobileMenuOpen(false)}
-                            style={{ textDecoration: 'none' }}
-                        >
-                            Benchmarks
-                        </Link>
+                        <a href="https://docs.testquorum.com" onClick={() => setMobileMenuOpen(false)} className="nav-link nav-link--mobile" target="_blank" rel="noopener noreferrer">Docs</a>
+                        <div style={{ paddingLeft: '0.25rem', fontSize: '0.7rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--text-ter)', padding: '0.35rem 0.5rem 0.1rem' }}>Research</div>
                         <Link
                             to="/paper"
                             className="nav-link nav-link--mobile"
                             onClick={() => setMobileMenuOpen(false)}
-                            style={{ textDecoration: 'none' }}
+                            style={{ textDecoration: 'none', paddingLeft: '1rem' }}
                         >
                             Paper
+                        </Link>
+                        <Link
+                            to="/benchmarks"
+                            className="nav-link nav-link--mobile"
+                            onClick={() => setMobileMenuOpen(false)}
+                            style={{ textDecoration: 'none', paddingLeft: '1rem' }}
+                        >
+                            Benchmarks
                         </Link>
                         <Link
                             to="/login"

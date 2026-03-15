@@ -516,15 +516,15 @@ export default function PaperPage() {
                 <section>
                     <h2 style={h2Style}>References</h2>
                     <ol style={{ ...olStyle, fontSize: '0.8125rem', color: 'var(--text-ter)' }}>
-                        <li id="ref-kaushal" style={liStyle}>Kaushal et al. (2025). DeliberationBench: Evidence for negative results in deliberative evaluation protocols.</li>
-                        <li id="ref-niu" style={liStyle}>Niu et al. (2024). RAGTruth: A hallucination corpus for developing trustworthy retrieval-augmented language models.</li>
-                        <li id="ref-ravi" style={liStyle}>Ravi et al. (2024). HaluBench: A hallucination leaderboard for generation benchmarking.</li>
-                        <li id="ref-tian" style={liStyle}>Tian et al. (2025). Overconfidence in LLM-as-a-Judge: Calibration and reliability in automated evaluation.</li>
-                        <li id="ref-verga" style={liStyle}>Verga et al. (2024). Replacing judges with juries: Evaluating LLM generations with a panel of diverse models.</li>
+                        <li id="ref-kaushal" style={liStyle}>Kaushal et al. (2025). <a href="https://arxiv.org/abs/2601.08835" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>DeliberationBench: Evidence for negative results in deliberative evaluation protocols.</a></li>
+                        <li id="ref-niu" style={liStyle}>Niu et al. (2024). <a href="https://arxiv.org/abs/2401.00396" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>RAGTruth: A hallucination corpus for developing trustworthy retrieval-augmented language models.</a></li>
+                        <li id="ref-ravi" style={liStyle}>Ravi et al. (2024). <a href="https://arxiv.org/abs/2407.08488" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>HaluBench: A hallucination leaderboard for generation benchmarking.</a></li>
+                        <li id="ref-tian" style={liStyle}>Tian et al. (2025). <a href="https://arxiv.org/abs/2508.06225" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Overconfidence in LLM-as-a-Judge: Calibration and reliability in automated evaluation.</a></li>
+                        <li id="ref-verga" style={liStyle}>Verga et al. (2024). <a href="https://arxiv.org/abs/2404.18796" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Replacing judges with juries: Evaluating LLM generations with a panel of diverse models.</a></li>
                         <li id="ref-wang" style={liStyle}>Wang et al. (2025). Rating LLM outputs: Treating judge scores as model-dependent ratings.</li>
-                        <li id="ref-zhao" style={liStyle}>Zhao et al. (2026). CARE: Confounder-aware aggregation for robust ensemble evaluation.</li>
-                        <li id="ref-zheng" style={liStyle}>Zheng et al. (2024). Judging LLM-as-a-judge with MT-bench and chatbot arena.</li>
-                        <li id="ref-zhou" style={liStyle}>Zhou et al. (2025). SE-Jury: Dynamic judge selection for software engineering evaluation.</li>
+                        <li id="ref-zhao" style={liStyle}>Zhao et al. (2026). <a href="https://arxiv.org/abs/2603.00039" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>CARE: Confounder-aware aggregation for robust ensemble evaluation.</a></li>
+                        <li id="ref-zheng" style={liStyle}>Zheng et al. (2024). <a href="https://arxiv.org/abs/2306.05685" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Judging LLM-as-a-judge with MT-bench and chatbot arena.</a></li>
+                        <li id="ref-zhou" style={liStyle}>Zhou et al. (2025). <a href="https://arxiv.org/abs/2505.20854" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>SE-Jury: Dynamic judge selection for software engineering evaluation.</a></li>
                     </ol>
                 </section>
 

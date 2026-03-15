@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import { AppLog } from '../models/AppLog.js';
 import { AuditEvent } from '../models/AuditEvent.js';
 
@@ -91,12 +92,14 @@ async function persistEntry(level, event, context) {
   };
 
   if (level === 'audit') {
+    const hashedIp = context.ipAddress
+      ? createHash('sha256').update(context.ipAddress).digest('hex')
+      : undefined;
     await AuditEvent.create({
       ...baseDoc,
       level: 'audit',
       actor: context.actor || (context.userId ? 'user' : 'system'),
-      ipAddress: context.ipAddress,
-      userAgent: context.userAgent,
+      ipAddress: hashedIp,
     });
     return;
   }

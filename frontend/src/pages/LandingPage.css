@@ -267,6 +267,88 @@ html {
     /* match nav pill bottom corners */
 }
 
+/* ── Research dropdown ────────────────────────────────────── */
+.nav-dropdown {
+    position: relative;
+    /* invisible bridge prevents menu from closing on gap between trigger and menu */
+    padding-bottom: 8px;
+    margin-bottom: -8px;
+}
+
+.nav-dropdown-trigger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.nav-dropdown-chevron {
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.nav-dropdown:hover .nav-dropdown-chevron,
+.nav-dropdown:focus-within .nav-dropdown-chevron {
+    transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-6px);
+    background: var(--bg-surface);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 0.3rem;
+    min-width: 148px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+    z-index: 200;
+    /* hidden state */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+}
+
+/* Safe triangle: invisible bridge above the menu covering the gap and diagonal paths */
+.nav-dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: -24px;
+    right: -24px;
+    height: 12px;
+}
+
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+.nav-dropdown-item {
+    display: block;
+    padding: 0.5rem 0.9rem;
+    border-radius: 7px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-sec);
+    text-decoration: none;
+    transition: background 0.12s, color 0.12s;
+    white-space: nowrap;
+}
+
+.nav-dropdown-item:hover {
+    background: rgba(217, 144, 88, 0.08);
+    color: var(--accent);
+}
+
 /* Mobile nav link — full-width, more tap target */
 .nav-link--mobile {
     display: block;
@@ -649,6 +731,13 @@ html {
     gap: 20px;
 }
 
+.research-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+}
+
 .pillar-card {
     padding: 36px 28px;
     background: var(--card-bg);
@@ -898,6 +987,8 @@ html {
     padding: 120px 0;
     background: var(--bg);
     border-top: 1px solid var(--card-border);
+    position: relative;
+    overflow: hidden;
 }
 
 .scrambling-heading {
@@ -962,6 +1053,10 @@ html {
     }
 
     .pillars-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .research-grid {
         grid-template-columns: 1fr;
     }
 

@@ -25,7 +25,7 @@ async function send(payload) {
 }
 
 export async function sendPasswordResetEmail(to, rawToken) {
-  const link = `${APP_URL}/reset-password?token=${rawToken}`;
+  const link = `${APP_URL}/reset-password#token=${rawToken}`;
   await send({
     to,
     subject: 'Reset your Quorum password',

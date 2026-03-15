@@ -31,6 +31,12 @@ import { logger } from './utils/logger.js';
 import { validateProductionSecrets } from './utils/validateSecrets.js';
 import { serveFrontend } from './utils/staticServe.js';
 
+process.on('unhandledRejection', (reason) => logger.error('process.unhandledRejection', { metadata: { reason: String(reason) } }));
+process.on('uncaughtException', (err) => {
+  logger.error('process.uncaughtException', { metadata: { message: err?.message } });
+  process.exit(1);
+});
+
 const app = express();
 // TRUST_PROXY should match the number of upstream proxy hops in your infrastructure.
 // Set to 0 or omit when running without a reverse proxy to prevent IP spoofing.
@@ -41,6 +47,7 @@ app.set('trust proxy', TRUST_PROXY);
 app.set('query parser', 'simple');
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/quorum';
+let isShuttingDown = false;
 sseManager.setLogger(logger);
 
 const limiter = rateLimit({
@@ -122,6 +129,14 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
   });
+});
+
+app.get('/ready', (req, res) => {
+  const mongoReady = mongoose.connection.readyState === 1;
+  if (!mongoReady || isShuttingDown) {
+    return res.status(503).json({ status: 'not_ready', mongodb: mongoReady ? 'connected' : 'disconnected', shuttingDown: isShuttingDown });
+  }
+  res.json({ status: 'ready' });
 });
 
 app.use((err, req, res, next) => {
@@ -209,6 +224,7 @@ async function start() {
     });
 
     const shutdown = async (signal) => {
+      isShuttingDown = true;
       logger.warn('system.shutdown.started', { metadata: { signal } });
 
       batchPoller.stop();

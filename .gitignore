@@ -58,11 +58,16 @@ videos/
 .cache/
 .temp/
 .tmp/
-reference_diagram.png
 
 
-#docs
-/docs
+
+# Docs — personal notes excluded; ARCHITECTURE.md and DECISIONS.md are tracked
+/docs/ANALISIS_RAGSCOPE.md
+/docs/Explicacion.md
+/docs/observability-audit.md
+/docs/project-understanding-brief.md
+/docs/resumen-commits-3-4.md
+/docs/diagrams/
 
 RATE_LIMIT.md
 

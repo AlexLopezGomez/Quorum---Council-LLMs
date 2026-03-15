@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Loader2, CheckCircle } from 'lucide-react';
 import AuthLayout from '../components/auth/AuthLayout';
 import { authApi } from '../lib/api';
@@ -7,9 +7,8 @@ import { authApi } from '../lib/api';
 const INPUT_CLASS = 'w-full px-4 py-3 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors';
 
 export default function ResetPasswordPage() {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const token = searchParams.get('token');
+  const token = new URLSearchParams(window.location.hash.slice(1)).get('token');
 
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');

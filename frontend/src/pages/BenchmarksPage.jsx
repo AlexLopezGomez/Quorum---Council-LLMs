@@ -381,7 +381,7 @@ export default function BenchmarksPage() {
                         }}>
                             Go to App <ArrowRight size={14} />
                         </Link>
-                        <a href="#" target="_blank" rel="noopener noreferrer" style={{
+                        <Link to="/paper" style={{
                             display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
                             background: 'transparent', color: '#3b3c36',
                             border: '1px solid #DDD9D1',
@@ -389,7 +389,7 @@ export default function BenchmarksPage() {
                             fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none',
                         }}>
                             View Paper <ExternalLink size={14} />
-                        </a>
+                        </Link>
                     </div>
                 </section>
             </div>

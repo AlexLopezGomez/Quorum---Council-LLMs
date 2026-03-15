@@ -1,8 +1,17 @@
 {
   "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
-  }
+    },
+    "typeRoots": ["./node_modules/@types"],
+    "jsx": "react-jsx",
+    "checkJs": false,
+    "skipLibCheck": true
+  },
+  "exclude": ["node_modules", "dist"]
 }

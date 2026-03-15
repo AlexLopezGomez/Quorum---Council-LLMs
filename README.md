@@ -6,7 +6,7 @@
 
 **Adaptive RAG evaluation with a Council-of-LLMs — route each test case to the optimal strategy based on risk.**
 
-> **[Live Demo](https://quorum.onrender.com)** — zero setup, no API keys needed. Click "Run Demo" and watch adaptive orchestration in real time.
+> **[Live Demo](https://testquorum.com)** — zero setup, no API keys needed. Click "Run Demo" and watch adaptive orchestration in real time.
 
 ## The Problem
 

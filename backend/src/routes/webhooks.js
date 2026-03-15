@@ -10,6 +10,19 @@ const router = Router();
 
 const VALID_EVENTS = ['verdict_fail', 'score_below_threshold', 'high_risk_fail', 'cost_spike', 'evaluation_complete'];
 
+const BLOCKED_HOSTNAMES = ['127.0.0.1', 'localhost', '0.0.0.0', '::1', '169.254.169.254'];
+
+function isInternalUrl(urlString) {
+  try {
+    const { hostname } = new URL(urlString);
+    if (BLOCKED_HOSTNAMES.includes(hostname)) return true;
+    if (hostname.startsWith('10.') || hostname.startsWith('192.168.') || hostname.startsWith('172.')) return true;
+    return false;
+  } catch {
+    return true;
+  }
+}
+
 function toPublicWebhook(webhookDoc) {
   const webhook = typeof webhookDoc.toObject === 'function'
     ? webhookDoc.toObject()
@@ -37,7 +50,7 @@ function normalizeSecret(secretValue) {
 
 const createWebhookSchema = z.object({
   name: z.string().min(1).max(100),
-  url: z.string().url(),
+  url: z.string().url().refine(url => !isInternalUrl(url), { message: 'Internal URLs not allowed' }),
   secret: z.string().max(256).optional(),
   events: z.array(z.enum(VALID_EVENTS)).min(1),
   config: z.object({
@@ -48,7 +61,7 @@ const createWebhookSchema = z.object({
 
 const updateWebhookSchema = z.object({
   name: z.string().min(1).max(100).optional(),
-  url: z.string().url().optional(),
+  url: z.string().url().refine(url => !isInternalUrl(url), { message: 'Internal URLs not allowed' }).optional(),
   secret: z.string().max(256).nullable().optional(),
   events: z.array(z.enum(VALID_EVENTS)).min(1).optional(),
   config: z.object({

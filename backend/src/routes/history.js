@@ -6,6 +6,10 @@ import { logger } from '../utils/logger.js';
 const router = Router();
 const MAX_SEARCH_LENGTH = 100;
 
+const ALLOWED_STRATEGIES = new Set(['auto', 'council', 'hybrid', 'single']);
+const ALLOWED_VERDICTS = new Set(['PASS', 'WARN', 'FAIL']);
+const ALLOWED_STATUSES = new Set(['processing', 'complete', 'failed']);
+
 function escapeRegex(input) {
   return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -59,9 +63,18 @@ router.get('/', async (req, res) => {
       }
       filter._id = { $lt: cursor };
     }
-    if (status) filter.status = status;
-    if (strategy) filter['config.strategy'] = strategy;
-    if (verdict) filter['results.aggregator.verdict'] = verdict;
+    if (status) {
+      if (!ALLOWED_STATUSES.has(status)) return res.status(400).json({ error: 'Invalid status filter' });
+      filter.status = status;
+    }
+    if (strategy) {
+      if (!ALLOWED_STRATEGIES.has(strategy)) return res.status(400).json({ error: 'Invalid strategy filter' });
+      filter['config.strategy'] = strategy;
+    }
+    if (verdict) {
+      if (!ALLOWED_VERDICTS.has(verdict)) return res.status(400).json({ error: 'Invalid verdict filter' });
+      filter['results.aggregator.verdict'] = verdict;
+    }
     if (searchTerm) filter.name = { $regex: escapeRegex(searchTerm), $options: 'i' };
 
     const evaluations = await Evaluation.find(filter)

@@ -46,7 +46,7 @@ export async function evaluateContextRelevancy(testCase, apiKey) {
 
   return {
     judge: 'gemini',
-    metric: 'faithfulness',
+    metric: 'contextRelevancy',
     model: MODEL,
     score: parsed.score,
     reasoning: parsed.reasoning,

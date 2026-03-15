@@ -40,7 +40,7 @@ export async function requireServiceAuth(req, res, next) {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    ServiceKey.updateOne({ _id: serviceKey._id }, { $set: { lastUsedAt: new Date() } }).catch(() => {});
+    ServiceKey.updateOne({ _id: serviceKey._id }, { $set: { lastUsedAt: new Date() } }).catch(err => logger.warn('lastUsedAt update failed', { err }));
 
     logger.audit('auth.service_key.valid', logger.withReq(req, { actor: 'service', userId: user._id, metadata: { keyPrefix: serviceKey.keyPrefix } }));
 

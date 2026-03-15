@@ -1,10 +1,9 @@
-import { LayoutDashboard, History, Bell, Brain, Sparkles, Gem, FlaskConical } from 'lucide-react';
+import { LayoutDashboard, History, Bell, Brain, Sparkles, Gem } from 'lucide-react';
 
 // ─── Navigation ──────────────────────────────────────────────
 export const NAV_ITEMS = [
     { key: 'upload',   label: 'Evaluate', icon: LayoutDashboard, path: '/app' },
     { key: 'history',  label: 'History',  icon: History,         path: '/app/history' },
-    { key: 'benchmark',  label: 'Benchmark', icon: FlaskConical,    path: '/app/benchmark' },
     { key: 'webhooks',   label: 'Webhooks',  icon: Bell,            path: '/app/webhooks' },
 ];
 

@@ -11,7 +11,6 @@ import { WebhookManager } from './components/webhooks/WebhookManager';
 import { ApiKeysManager } from './components/ApiKeysManager';
 import { EvaluationDetail } from './components/EvaluationDetail';
 import { ErrorAlert } from './components/ui/ErrorAlert';
-import { BenchmarkDashboard } from './components/BenchmarkDashboard';
 import { VerifyEmailBanner } from './components/VerifyEmailBanner';
 
 function UploadRoute() {
@@ -127,7 +126,6 @@ function AppContent() {
             <Route path="history/:jobId" element={<EvaluationDetail />} />
             <Route path="webhooks" element={<WebhookManager />} />
             <Route path="settings" element={<ApiKeysManager />} />
-            <Route path="benchmark" element={<BenchmarkDashboard />} />
           </Routes>
         </div>
       </main>

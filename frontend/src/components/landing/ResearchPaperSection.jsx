@@ -1,9 +1,7 @@
-import { FileText, ExternalLink, ArrowUpRight } from 'lucide-react';
+import { FileText, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SpotlightCard from './SpotlightCard';
 import CountUp from './CountUp';
-
-const BLOG_POST_URL = 'https://open.substack.com/pub/alexlopez7/p/councils-of-llms-for-rag-evaluation';
 
 const STATS = [
     { value: 5000, suffix: '', label: 'Benchmark Scale', desc: 'RAGTruth + HaluBench, 3 domains' },
@@ -67,23 +65,6 @@ export default function ResearchPaperSection() {
                             >
                                 Read Paper <ExternalLink size={13} />
                             </Link>
-                            <a
-                                href={BLOG_POST_URL}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                    display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
-                                    padding: '0.5rem 1rem', borderRadius: 8,
-                                    background: 'transparent', color: 'var(--text-primary)',
-                                    border: '1px solid var(--card-border)',
-                                    fontSize: '0.8125rem', fontWeight: 600, textDecoration: 'none',
-                                    transition: 'border-color 0.15s',
-                                }}
-                                onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent)'}
-                                onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--card-border)'}
-                            >
-                                Blog Post <ArrowUpRight size={13} />
-                            </a>
                         </div>
                     </SpotlightCard>
 

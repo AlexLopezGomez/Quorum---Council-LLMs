@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
-import { Github, ExternalLink } from 'lucide-react';
+import { Github } from 'lucide-react';
 import './LandingPage.css';
 
 const GITHUB_URL = 'https://github.com/AlexLopezGomez/Quorum---Council-LLMs';
-const SUBSTACK_URL = 'https://open.substack.com/pub/alexlopez7/p/councils-of-llms-for-rag-evaluation';
 
 const bodyStyle = {
     fontSize: '1rem',
@@ -150,14 +149,6 @@ export default function PaperPage() {
                         style={{ fontSize: '0.75rem', fontWeight: 600, padding: '3px 10px', borderRadius: 99, background: 'var(--bg-surface)', color: 'var(--text-ter)', border: '1px solid var(--card-border)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                     >
                         <Github size={12} /> GitHub
-                    </a>
-                    <a
-                        href={SUBSTACK_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ fontSize: '0.75rem', fontWeight: 600, padding: '3px 10px', borderRadius: 99, background: 'var(--bg-surface)', color: 'var(--text-ter)', border: '1px solid var(--card-border)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
-                    >
-                        <ExternalLink size={12} /> Blog Post
                     </a>
                 </div>
 
@@ -548,20 +539,6 @@ export default function PaperPage() {
                             }}
                         >
                             <Github size={15} /> GitHub Repo
-                        </a>
-                        <a
-                            href={SUBSTACK_URL}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                                display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
-                                padding: '0.5rem 1.25rem', borderRadius: 8,
-                                background: 'transparent', color: 'var(--text-primary)',
-                                border: '1px solid var(--card-border)',
-                                fontSize: '0.875rem', fontWeight: 600, textDecoration: 'none',
-                            }}
-                        >
-                            <ExternalLink size={15} /> Blog Post
                         </a>
                     </div>
                 </div>

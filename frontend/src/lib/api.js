@@ -209,4 +209,11 @@ export const authApi = {
       body: JSON.stringify({ idToken }),
     });
   },
+  oauthLogin(idToken) {
+    return fetchJson(`${API_BASE}/auth/oauth`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken }),
+    });
+  },
 };

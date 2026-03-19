@@ -387,7 +387,9 @@ router.get('/verify-email', async (req, res) => {
   }
 });
 
-router.post('/google', loginLimiter, async (req, res) => {
+const FIREBASE_PROVIDER_MAP = { 'google.com': 'google', 'github.com': 'github' };
+
+async function handleOAuthLogin(req, res) {
   try {
     const { idToken } = req.body;
     if (!idToken || typeof idToken !== 'string') {
@@ -398,13 +400,14 @@ router.post('/google', loginLimiter, async (req, res) => {
     try {
       decoded = await getFirebaseAuth().verifyIdToken(idToken);
     } catch {
-      return res.status(401).json({ error: 'Invalid or expired Google token' });
+      return res.status(401).json({ error: 'Invalid or expired token' });
     }
 
     const { uid, email, name, picture, email_verified } = decoded;
+    const provider = FIREBASE_PROVIDER_MAP[decoded.firebase?.sign_in_provider] ?? 'google';
 
     if (!email) {
-      return res.status(400).json({ error: 'Google account must have an email address' });
+      return res.status(400).json({ error: 'OAuth account must have an email address' });
     }
 
     let user = await User.findOne({ firebaseUid: uid });
@@ -412,9 +415,9 @@ router.post('/google', loginLimiter, async (req, res) => {
     if (!user) {
       user = await User.findOne({ email });
       if (user) {
-        await User.updateOne({ _id: user._id }, { $set: { firebaseUid: uid, provider: 'google' } });
+        await User.updateOne({ _id: user._id }, { $set: { firebaseUid: uid, provider } });
         user.firebaseUid = uid;
-        user.provider = 'google';
+        user.provider = provider;
       }
     }
 
@@ -436,22 +439,23 @@ router.post('/google', loginLimiter, async (req, res) => {
         username,
         passwordHash: undefined,
         emailVerified: email_verified ?? true,
-        provider: 'google',
+        provider,
         firebaseUid: uid,
       });
       await user.save();
 
-      logger.audit('auth.google.register', logger.withReq(req, {
+      logger.audit('auth.oauth.register', logger.withReq(req, {
         actor: 'user',
         userId: user._id,
         statusCode: 201,
-        metadata: { username },
+        metadata: { username, provider },
       }));
     } else {
-      logger.audit('auth.google.login', logger.withReq(req, {
+      logger.audit('auth.oauth.login', logger.withReq(req, {
         actor: 'user',
         userId: user._id,
         statusCode: 200,
+        metadata: { provider },
       }));
     }
 
@@ -459,18 +463,25 @@ router.post('/google', loginLimiter, async (req, res) => {
     setTokenCookie(res, token);
     res.json({ user: user.toPublicJSON() });
   } catch (err) {
-    logger.error('auth.google.error', logger.withReq(req, {
+    logger.error('auth.oauth.error', logger.withReq(req, {
       statusCode: 500,
       metadata: { message: err.message },
     }));
-    res.status(500).json({ error: 'Google sign-in failed' });
+    res.status(500).json({ error: 'OAuth sign-in failed' });
   }
-});
+}
+
+router.post('/google', loginLimiter, handleOAuthLogin);
+router.post('/oauth', loginLimiter, handleOAuthLogin);
 
 router.post('/resend-verification', requireAuth, forgotPasswordLimiter, async (req, res) => {
   try {
     if (req.user.emailVerified) {
       return res.status(400).json({ error: 'Email is already verified' });
+    }
+
+    if (req.user.provider !== 'local') {
+      return res.status(400).json({ error: 'Email verification is not required for OAuth accounts' });
     }
 
     const { raw, hashed } = generateToken();

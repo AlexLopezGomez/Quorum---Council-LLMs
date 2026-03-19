@@ -1,6 +1,6 @@
 import { createContext, useContext, useReducer, useCallback, useEffect } from 'react';
 import { signInWithPopup, signOut as firebaseSignOut } from 'firebase/auth';
-import { auth, googleProvider } from '../config/firebase.js';
+import { auth, providers } from '../config/firebase.js';
 import { authApi } from '../lib/api';
 
 const initialState = {
@@ -61,16 +61,21 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const loginWithGoogle = useCallback(async () => {
+  const loginWithProvider = useCallback(async (providerName) => {
     dispatch({ type: 'LOADING' });
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, providers[providerName]);
       const idToken = await result.user.getIdToken();
-      const data = await authApi.googleLogin(idToken);
+      const data = await authApi.oauthLogin(idToken);
       dispatch({ type: 'AUTH_SUCCESS', payload: data.user });
     } catch (err) {
       await firebaseSignOut(auth).catch(() => {});
-      dispatch({ type: 'AUTH_ERROR', payload: err.message });
+      let message = err.message;
+      if (err.code === 'auth/account-exists-with-different-credential') {
+        const other = providerName === 'google' ? 'GitHub' : 'Google';
+        message = `An account with this email already exists. Try signing in with ${other} instead.`;
+      }
+      dispatch({ type: 'AUTH_ERROR', payload: message });
       throw err;
     }
   }, []);
@@ -92,7 +97,7 @@ export function AuthProvider({ children }) {
     ...state,
     register,
     login,
-    loginWithGoogle,
+    loginWithProvider,
     logout,
     clearError,
   };

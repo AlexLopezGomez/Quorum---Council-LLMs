@@ -17,19 +17,19 @@ const GITHUB_ICON = (
 );
 
 export default function SocialAuth() {
-  const { loginWithGoogle } = useAuth();
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const { loginWithProvider } = useAuth();
+  const [loadingProvider, setLoadingProvider] = useState(null);
   const [error, setError] = useState(null);
 
-  async function handleGoogleLogin() {
+  async function handleProviderLogin(providerName) {
     setError(null);
-    setGoogleLoading(true);
+    setLoadingProvider(providerName);
     try {
-      await loginWithGoogle();
+      await loginWithProvider(providerName);
     } catch (err) {
       setError(err.message);
     } finally {
-      setGoogleLoading(false);
+      setLoadingProvider(null);
     }
   }
 
@@ -48,19 +48,21 @@ export default function SocialAuth() {
       <div className="space-y-3">
         <button
           type="button"
-          onClick={handleGoogleLogin}
-          disabled={googleLoading}
+          onClick={() => handleProviderLogin('google')}
+          disabled={loadingProvider !== null}
           className="w-full py-3 bg-surface text-text-primary text-sm font-medium rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {GOOGLE_ICON}
-          {googleLoading ? 'Signing in...' : 'Continue with Google'}
+          {loadingProvider === 'google' ? 'Signing in...' : 'Continue with Google'}
         </button>
         <button
           type="button"
-          className="w-full py-3 bg-surface text-text-primary text-sm font-medium rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors flex items-center justify-center gap-3"
+          onClick={() => handleProviderLogin('github')}
+          disabled={loadingProvider !== null}
+          className="w-full py-3 bg-surface text-text-primary text-sm font-medium rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {GITHUB_ICON}
-          Continue with GitHub
+          {loadingProvider === 'github' ? 'Signing in...' : 'Continue with GitHub'}
         </button>
       </div>
     </div>

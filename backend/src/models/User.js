@@ -31,8 +31,18 @@ const userSchema = new mongoose.Schema(
     },
     passwordHash: {
       type: String,
-      required: true,
+      required: false,
       maxlength: 255,
+    },
+    firebaseUid: {
+      type: String,
+      index: true,
+      sparse: true,
+    },
+    provider: {
+      type: String,
+      enum: ['local', 'google'],
+      default: 'local',
     },
     tokenVersion: {
       type: Number,
@@ -83,6 +93,7 @@ userSchema.methods.toPublicJSON = function () {
     email: this.email,
     username: this.username,
     emailVerified: this.emailVerified,
+    provider: this.provider,
     createdAt: this.createdAt,
   };
 };

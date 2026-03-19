@@ -202,4 +202,11 @@ export const authApi = {
   resendVerification() {
     return fetchJson(`${API_BASE}/auth/resend-verification`, { method: 'POST' });
   },
+  googleLogin(idToken) {
+    return fetchJson(`${API_BASE}/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken }),
+    });
+  },
 };

@@ -76,7 +76,7 @@ app.use(
           : ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:", "blob:"],
-        connectSrc: ["'self'"],
+        connectSrc: ["'self'", "https://accounts.google.com", "https://*.googleapis.com", "https://securetoken.googleapis.com"],
         workerSrc: ["'self'", "blob:"],
         fontSrc: ["'self'"],
         objectSrc: ["'none'"],

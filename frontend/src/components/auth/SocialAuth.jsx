@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+
 const GOOGLE_ICON = (
   <svg width="18" height="18" viewBox="0 0 24 24">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
@@ -14,6 +17,22 @@ const GITHUB_ICON = (
 );
 
 export default function SocialAuth() {
+  const { loginWithGoogle } = useAuth();
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function handleGoogleLogin() {
+    setError(null);
+    setGoogleLoading(true);
+    try {
+      await loginWithGoogle();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setGoogleLoading(false);
+    }
+  }
+
   return (
     <div className="mt-2">
       <div className="flex items-center gap-3 my-6">
@@ -22,13 +41,19 @@ export default function SocialAuth() {
         <div className="flex-1 border-t border-surface-border" />
       </div>
 
+      {error && (
+        <p className="text-sm text-red-500 mb-3 text-center">{error}</p>
+      )}
+
       <div className="space-y-3">
         <button
           type="button"
-          className="w-full py-3 bg-surface text-text-primary text-sm font-medium rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors flex items-center justify-center gap-3"
+          onClick={handleGoogleLogin}
+          disabled={googleLoading}
+          className="w-full py-3 bg-surface text-text-primary text-sm font-medium rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {GOOGLE_ICON}
-          Continue with Google
+          {googleLoading ? 'Signing in...' : 'Continue with Google'}
         </button>
         <button
           type="button"

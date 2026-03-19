@@ -9,6 +9,7 @@ import { createValidationMiddleware } from '../utils/validation.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { logger } from '../utils/logger.js';
 import { sendPasswordResetEmail, sendVerificationEmail } from '../utils/email.js';
+import { getFirebaseAuth } from '../config/firebaseAdmin.js';
 
 const router = Router();
 const authRateLimitWindowMs = 15 * 60 * 1000;
@@ -383,6 +384,86 @@ router.get('/verify-email', async (req, res) => {
       metadata: { message: err.message },
     }));
     res.status(500).json({ error: 'Email verification failed' });
+  }
+});
+
+router.post('/google', loginLimiter, async (req, res) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken || typeof idToken !== 'string') {
+      return res.status(400).json({ error: 'idToken is required' });
+    }
+
+    let decoded;
+    try {
+      decoded = await getFirebaseAuth().verifyIdToken(idToken);
+    } catch {
+      return res.status(401).json({ error: 'Invalid or expired Google token' });
+    }
+
+    const { uid, email, name, picture, email_verified } = decoded;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Google account must have an email address' });
+    }
+
+    let user = await User.findOne({ firebaseUid: uid });
+
+    if (!user) {
+      user = await User.findOne({ email });
+      if (user) {
+        await User.updateOne({ _id: user._id }, { $set: { firebaseUid: uid, provider: 'google' } });
+        user.firebaseUid = uid;
+        user.provider = 'google';
+      }
+    }
+
+    if (!user) {
+      const base = (name || email.split('@')[0]).toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 26) || 'user';
+      let username;
+      let attempts = 0;
+      while (attempts < 10) {
+        const suffix = Math.floor(1000 + Math.random() * 9000);
+        const candidate = `${base}${suffix}`;
+        const exists = await User.findOne({ username: candidate });
+        if (!exists) { username = candidate; break; }
+        attempts++;
+      }
+      if (!username) username = `user${Date.now()}`;
+
+      user = new User({
+        email,
+        username,
+        passwordHash: undefined,
+        emailVerified: email_verified ?? true,
+        provider: 'google',
+        firebaseUid: uid,
+      });
+      await user.save();
+
+      logger.audit('auth.google.register', logger.withReq(req, {
+        actor: 'user',
+        userId: user._id,
+        statusCode: 201,
+        metadata: { username },
+      }));
+    } else {
+      logger.audit('auth.google.login', logger.withReq(req, {
+        actor: 'user',
+        userId: user._id,
+        statusCode: 200,
+      }));
+    }
+
+    const token = signToken(user._id, user.tokenVersion);
+    setTokenCookie(res, token);
+    res.json({ user: user.toPublicJSON() });
+  } catch (err) {
+    logger.error('auth.google.error', logger.withReq(req, {
+      statusCode: 500,
+      metadata: { message: err.message },
+    }));
+    res.status(500).json({ error: 'Google sign-in failed' });
   }
 });
 

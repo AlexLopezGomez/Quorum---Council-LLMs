@@ -1,4 +1,6 @@
 import { createContext, useContext, useReducer, useCallback, useEffect } from 'react';
+import { signInWithPopup, signOut as firebaseSignOut } from 'firebase/auth';
+import { auth, googleProvider } from '../config/firebase.js';
 import { authApi } from '../lib/api';
 
 const initialState = {
@@ -59,6 +61,20 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  const loginWithGoogle = useCallback(async () => {
+    dispatch({ type: 'LOADING' });
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+      const data = await authApi.googleLogin(idToken);
+      dispatch({ type: 'AUTH_SUCCESS', payload: data.user });
+    } catch (err) {
+      await firebaseSignOut(auth).catch(() => {});
+      dispatch({ type: 'AUTH_ERROR', payload: err.message });
+      throw err;
+    }
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await authApi.logout();
@@ -76,6 +92,7 @@ export function AuthProvider({ children }) {
     ...state,
     register,
     login,
+    loginWithGoogle,
     logout,
     clearError,
   };

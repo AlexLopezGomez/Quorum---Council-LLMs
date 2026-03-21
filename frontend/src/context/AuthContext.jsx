@@ -70,13 +70,23 @@ export function AuthProvider({ children }) {
       dispatch({ type: 'AUTH_SUCCESS', payload: data.user });
     } catch (err) {
       await firebaseSignOut(auth).catch(() => {});
-      let message = err.message;
+      if (err.code === 'auth/cancelled-popup-request') {
+        dispatch({ type: 'LOADING' });
+        return;
+      }
+      let message = 'Sign-in failed. Please try again.';
       if (err.code === 'auth/account-exists-with-different-credential') {
         const other = providerName === 'google' ? 'GitHub' : 'Google';
         message = `An account with this email already exists. Try signing in with ${other} instead.`;
+      } else if (err.code === 'auth/popup-blocked') {
+        message = 'Sign-in popup was blocked by your browser. Please allow popups for this site and try again.';
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        message = 'Sign-in window was closed. If this keeps happening, check that your browser allows popups for this site.';
+      } else if (err.code === 'auth/unauthorized-domain') {
+        message = 'This domain is not authorized for sign-in. Add the deployment URL to Firebase Console → Authentication → Authorized domains.';
       }
       dispatch({ type: 'AUTH_ERROR', payload: message });
-      throw err;
+      throw new Error(message);
     }
   }, []);
 

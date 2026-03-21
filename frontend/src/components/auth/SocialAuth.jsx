@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { firebaseConfigured } from '../../config/firebase.js';
 
 const GOOGLE_ICON = (
   <svg width="18" height="18" viewBox="0 0 24 24">
@@ -41,30 +42,36 @@ export default function SocialAuth() {
         <div className="flex-1 border-t border-surface-border" />
       </div>
 
-      {error && (
-        <p className="text-sm text-red-500 mb-3 text-center">{error}</p>
-      )}
+      {!firebaseConfigured ? (
+        <p className="text-xs text-text-tertiary text-center">Social sign-in is not configured.</p>
+      ) : (
+        <>
+          {error && (
+            <p className="text-sm text-red-500 mb-3 text-center">{error}</p>
+          )}
 
-      <div className="space-y-3">
-        <button
-          type="button"
-          onClick={() => handleProviderLogin('google')}
-          disabled={loadingProvider !== null}
-          className="w-full py-3 bg-surface text-text-primary text-sm font-medium rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {GOOGLE_ICON}
-          {loadingProvider === 'google' ? 'Signing in...' : 'Continue with Google'}
-        </button>
-        <button
-          type="button"
-          onClick={() => handleProviderLogin('github')}
-          disabled={loadingProvider !== null}
-          className="w-full py-3 bg-surface text-text-primary text-sm font-medium rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {GITHUB_ICON}
-          {loadingProvider === 'github' ? 'Signing in...' : 'Continue with GitHub'}
-        </button>
-      </div>
+          <div className="space-y-3">
+            <button
+              type="button"
+              onClick={() => handleProviderLogin('google')}
+              disabled={loadingProvider !== null}
+              className="w-full py-3 bg-surface text-text-primary text-sm font-medium rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {GOOGLE_ICON}
+              {loadingProvider === 'google' ? 'Signing in...' : 'Continue with Google'}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleProviderLogin('github')}
+              disabled={loadingProvider !== null}
+              className="w-full py-3 bg-surface text-text-primary text-sm font-medium rounded-lg border border-surface-border hover:bg-surface-secondary transition-colors flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {GITHUB_ICON}
+              {loadingProvider === 'github' ? 'Signing in...' : 'Continue with GitHub'}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

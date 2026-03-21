@@ -14,6 +14,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 import VerifyEmailPage from './pages/VerifyEmailPage.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
+import CookieBanner from './components/CookieBanner.jsx';
 import './index.css';
 
 function ScrollToTop() {
@@ -51,6 +52,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <ScrollToTop />
       <RouteTitle />
       <AuthProvider>
+        <CookieBanner />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />

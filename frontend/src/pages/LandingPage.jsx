@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import {
     Brain, BarChart3, Zap, Menu, X, Upload, Users, TrendingDown,
@@ -13,6 +14,7 @@ import ReflectiveCard from '../components/landing/ReflectiveCard';
 import MagicBento from '../components/landing/MagicBento';
 import TerminalDemo from '../components/landing/TerminalDemo';
 import ResearchPaperSection from '../components/landing/ResearchPaperSection';
+import GradientText from '../components/landing/GradientText';
 import './LandingPage.css';
 
 const FEATURES = [
@@ -330,7 +332,15 @@ export default function LandingPage() {
             <section id="how-it-works" className="steps-section">
                 <div className="max-w-6xl mx-auto px-6">
                     <SectionLabel>How It Works</SectionLabel>
-                    <h2 className="section-heading mt-3">Three steps to reliable evaluation</h2>
+                    <motion.h2
+                        className="section-heading mt-3"
+                        initial={{ opacity: 0, scale: 0.94, filter: 'blur(8px)' }}
+                        whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                        viewport={{ once: true, amount: 0.7 }}
+                        transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    >
+                        Three steps to reliable evaluation
+                    </motion.h2>
 
                     <div className="reflective-cards-row">
                         {HOW_IT_WORKS.map((step, i) => (
@@ -349,7 +359,13 @@ export default function LandingPage() {
             <section id="features" className="features-section">
                 <div className="max-w-4xl mx-auto px-6 text-center mb-10">
                     <SectionLabel>Features</SectionLabel>
-                    <h2 className="section-heading mt-3">Built for teams shipping RAG to production</h2>
+                    <GradientText
+                        className="section-heading mt-3"
+                        colors={['#d99058', '#f0b37e', '#b8692e', '#d99058']}
+                        animationSpeed={14}
+                    >
+                        Built for teams shipping RAG to production
+                    </GradientText>
                 </div>
 
                 <div className="max-w-5xl mx-auto px-6">
@@ -382,7 +398,20 @@ export default function LandingPage() {
             <section className="pillars-section">
                 <div className="max-w-6xl mx-auto px-6">
                     <SectionLabel>Why Quorum</SectionLabel>
-                    <h2 className="section-heading mt-3">The foundation for trustworthy evaluation</h2>
+                    <h2 className="section-heading mt-3" style={{ perspective: '1000px' }}>
+                        {['The', 'foundation', 'for', 'trustworthy', 'evaluation'].map((word, i) => (
+                            <motion.span
+                                key={i}
+                                style={{ display: 'inline-block', marginRight: '0.3em', transformOrigin: 'top center' }}
+                                initial={{ opacity: 0, rotateX: -90, y: -10 }}
+                                whileInView={{ opacity: 1, rotateX: 0, y: 0 }}
+                                viewport={{ once: true, amount: 0.8 }}
+                                transition={{ duration: 0.5, delay: i * 0.075, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                                {word}
+                            </motion.span>
+                        ))}
+                    </h2>
 
                     <div className="pillars-grid mt-14">
                         <SpotlightCard
@@ -419,16 +448,29 @@ export default function LandingPage() {
             {/* ─── Scrambling Section ────────────────────────────── */}
             <section className="scrambling-section">
                 <div className="section-container">
-                    <h2 className="scrambling-heading">
+                    <motion.h2
+                        className="scrambling-heading"
+                        initial={{ opacity: 0, y: 40 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.4 }}
+                        transition={{ type: 'spring', damping: 18, stiffness: 160 }}
+                    >
                         Stop flying blind.<br />Start shipping confidently.
-                    </h2>
+                    </motion.h2>
                     <div className="scrambling-rows">
                         {SCRAMBLING_ROWS.map((row, i) => (
-                            <div key={i} className="scrambling-row">
+                            <motion.div
+                                key={i}
+                                className="scrambling-row"
+                                initial={{ opacity: 0, y: 16 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, amount: 0.5 }}
+                                transition={{ duration: 0.45, ease: 'easeOut', delay: i * 0.08 }}
+                            >
                                 <span className="scrambling-before">{row.before}</span>
                                 <span className="scrambling-arrow">→</span>
                                 <span className="scrambling-after">{row.after}</span>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
                 </div>
@@ -438,12 +480,24 @@ export default function LandingPage() {
             <section className="cta-section">
                 <div className="cta-glow" />
                 <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
-                    <h2 className="cta-heading">
+                    <motion.h2
+                        className="cta-heading"
+                        initial={{ opacity: 0, y: 32, letterSpacing: '0.12em' }}
+                        whileInView={{ opacity: 1, y: 0, letterSpacing: '-0.025em' }}
+                        viewport={{ once: true, amount: 0.6 }}
+                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    >
                         Start evaluating your RAG pipeline today
-                    </h2>
-                    <p className="cta-sub mt-4">
+                    </motion.h2>
+                    <motion.p
+                        className="cta-sub mt-4"
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.8 }}
+                        transition={{ duration: 0.5, ease: 'easeOut', delay: 0.3 }}
+                    >
                         Deploy in minutes. Self-host for free. No credit card required.
-                    </p>
+                    </motion.p>
                     <Link to="/register" className="cta-waitlist-btn mt-10">
                         Get Started <ArrowRight size={16} className="inline ml-1.5" />
                     </Link>
@@ -472,7 +526,17 @@ export default function LandingPage() {
 /* ─── Sub-components ──────────────────────────────────────── */
 
 function SectionLabel({ children }) {
-    return <p className="section-label">{children}</p>;
+    return (
+        <motion.p
+            className="section-label"
+            initial={{ opacity: 0, y: 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.8 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+        >
+            {children}
+        </motion.p>
+    );
 }
 
 /* ─── Brand SVGs ──────────────────────────────────────────── */

@@ -1,5 +1,5 @@
 FROM alpine:3.23 AS builder
-RUN apk upgrade --no-cache && apk add --no-cache nodejs-20 npm
+RUN apk upgrade --no-cache && apk add --no-cache nodejs npm
 
 WORKDIR /app
 

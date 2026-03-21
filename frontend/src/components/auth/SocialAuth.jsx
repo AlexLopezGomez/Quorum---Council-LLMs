@@ -17,20 +17,13 @@ const GITHUB_ICON = (
 );
 
 export default function SocialAuth() {
-  const { loginWithProvider } = useAuth();
+  const { loginWithProvider, error: authError } = useAuth();
   const [loadingProvider, setLoadingProvider] = useState(null);
-  const [error, setError] = useState(null);
 
   async function handleProviderLogin(providerName) {
-    setError(null);
     setLoadingProvider(providerName);
-    try {
-      await loginWithProvider(providerName);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoadingProvider(null);
-    }
+    await loginWithProvider(providerName);
+    // Page navigates away on redirect — loading state clears on return
   }
 
   return (
@@ -41,8 +34,8 @@ export default function SocialAuth() {
         <div className="flex-1 border-t border-surface-border" />
       </div>
 
-      {error && (
-        <p className="text-sm text-red-500 mb-3 text-center">{error}</p>
+      {authError && (
+        <p className="text-sm text-red-500 mb-3 text-center">{authError}</p>
       )}
 
       <div className="space-y-3">

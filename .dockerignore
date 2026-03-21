@@ -1,0 +1,25 @@
+# Secrets — never bake into image
+backend/.env
+backend/.env.*
+backend/.env.local
+frontend/.env
+frontend/.env.*
+frontend/.env.local
+
+# Git metadata
+.git
+.gitignore
+.gitattributes
+
+# Local dev artifacts
+**/node_modules
+**/.DS_Store
+**/npm-debug.log*
+**/*.log
+
+# IDE
+.vscode
+.idea
+
+# Build outputs (multi-stage handles these)
+frontend/dist

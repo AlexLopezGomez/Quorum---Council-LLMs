@@ -133,3 +133,46 @@ After implementing UI changes, verify the running app serves the latest code. St
 
 When instructed to review a plan or enter "Plan Mode", you **MUST** read and strictly adhere to the workflow, review stages, and engineering preferences defined in `PLAN_MODE.md`.
 
+---
+
+## Docker & Deployment Rules
+
+**Base images — NEVER use `node:XX-alpine` official images:**
+- `node:XX.X-alpine` bundles npm outside Alpine's APK database; Docker Scout reports CVEs per-layer even after `npm install -g npm@newer` (the old layer remains visible to the scanner)
+- ALWAYS use `FROM alpine:X.XX` + `RUN apk upgrade --no-cache && apk add --no-cache nodejs npm` for all Node build/runtime stages
+- On Alpine 3.23, the Node.js package name is `nodejs` — NOT `nodejs-20` (does not exist), NOT `node`
+
+**Lock files — tracked in git, use npm install in Docker:**
+- `frontend/package-lock.json`, `backend/package-lock.json`, `demo/rag-chatbot/package-lock.json` are committed — `.gitignore` has explicit `!` exceptions for them; never remove these files from git
+- NEVER use `npm ci` in Dockerfiles — lock files generated on Windows lack Linux platform-specific optional packages (`@esbuild/linux-*`, `@rollup/rollup-linux-*`); always use `npm install` (or `npm install --omit=dev`) instead
+- IF "Missing: @esbuild/linux-* from lock file" → lock file generated on non-Linux; switch `npm ci` to `npm install`
+- IF "npm ci can only install with an existing package-lock.json" → lock file not committed; check `.gitignore` exceptions
+
+**Layer cache invalidation:**
+- Changing any `FROM` line invalidates ALL subsequent layer caches on Render; any previously-hidden issue (missing build-arg env vars, missing files in git) will surface on the next fresh build
+
+## Firebase Auth Rules
+
+**Architecture (fixed — do not change):**
+- ALWAYS use `signInWithPopup` — NEVER `signInWithRedirect` (Chrome 115+ storage partitioning permanently broke redirect auth)
+- COOP header must be `same-origin-allow-popups` — set in `backend/src/index.js` via Helmet; do not change it
+
+**Environment variables (Vite bakes these at build time):**
+- `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID` must exist in Render's environment variables panel BEFORE triggering a deploy
+- If these vars are absent at build time, Firebase initializes with empty strings and `signInWithPopup` silently fails with `auth/popup-closed-by-user` (popup opens to malformed URL, closes immediately)
+- IF `auth/popup-closed-by-user` on a fresh deploy → first check: are the three `VITE_FIREBASE_*` vars set in Render?
+
+**New deployment checklist (every new domain/service):**
+1. Set `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID` in Render environment
+2. Add the deployment URL to Firebase Console → Authentication → Settings → Authorized domains
+
+**Error code reference:**
+- `auth/popup-closed-by-user` = popup failed internally (check env vars + authorized domains) OR user closed it
+- `auth/unauthorized-domain` = deployment URL missing from Firebase authorized domains → add it to Firebase Console
+- `auth/popup-blocked` = browser blocked popup → user must allow popups for the site
+- `auth/cancelled-popup-request` = two popups opened simultaneously → silently ignore (already handled)
+
+**Code contract (do not regress):**
+- `AuthContext.loginWithProvider` must `throw new Error(cleanMessage)` — NOT `throw err` — so callers receive readable text, not raw Firebase SDK strings
+- `SocialAuth.jsx` checks `firebaseConfigured` (from `frontend/src/config/firebase.js`) and shows "Social sign-in is not configured." when Firebase vars are absent
+

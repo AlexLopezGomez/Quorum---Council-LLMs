@@ -21,5 +21,16 @@ frontend/.env.local
 .vscode
 .idea
 
+# Claude / project docs (never bake into image)
+.claude
+.agents
+*.md
+
+# Dev compose overrides
+docker-compose.override.yml
+
+# Test artifacts
+coverage
+
 # Build outputs (multi-stage handles these)
 frontend/dist

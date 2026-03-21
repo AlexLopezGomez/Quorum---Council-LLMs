@@ -1,15 +1,18 @@
-FROM node:20.19.1-alpine3.21@sha256:b18325f01afbb59e65e32609c3337f46358ebcb13784103e6d4e41cee6180fa0 AS frontend-builder
+FROM alpine:3.23 AS frontend-builder
+RUN apk upgrade --no-cache && apk add --no-cache nodejs-20 npm
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm ci
 COPY frontend/ .
 RUN npm run build
 
-FROM node:20.19.1-alpine3.21@sha256:b18325f01afbb59e65e32609c3337f46358ebcb13784103e6d4e41cee6180fa0 AS backend-deps
+FROM alpine:3.23 AS backend-deps
+RUN apk upgrade --no-cache && apk add --no-cache nodejs-20 npm
 WORKDIR /app/backend
 COPY backend/package*.json ./
 RUN npm ci --omit=dev
 
+# Pin by digest: docker pull gcr.io/distroless/nodejs20-debian12 && docker inspect --format='{{index .RepoDigests 0}}' gcr.io/distroless/nodejs20-debian12
 FROM gcr.io/distroless/nodejs20-debian12
 
 WORKDIR /app/backend

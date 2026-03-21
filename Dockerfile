@@ -1,5 +1,5 @@
 FROM alpine:3.23 AS frontend-builder
-RUN apk upgrade --no-cache && apk add --no-cache nodejs-20 npm
+RUN apk upgrade --no-cache && apk add --no-cache nodejs npm
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm ci
@@ -7,7 +7,7 @@ COPY frontend/ .
 RUN npm run build
 
 FROM alpine:3.23 AS backend-deps
-RUN apk upgrade --no-cache && apk add --no-cache nodejs-20 npm
+RUN apk upgrade --no-cache && apk add --no-cache nodejs npm
 WORKDIR /app/backend
 COPY backend/package*.json ./
 RUN npm ci --omit=dev

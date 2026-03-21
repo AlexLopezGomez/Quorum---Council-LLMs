@@ -72,13 +72,21 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: process.env.NODE_ENV === 'production'
-          ? ["'self'"]
-          : ["'self'", "'unsafe-inline'"],
+          ? ["'self'", "https://apis.google.com"]
+          : ["'self'", "'unsafe-inline'", "https://apis.google.com"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:", "blob:"],
-        connectSrc: ["'self'", "https://accounts.google.com", "https://*.googleapis.com", "https://securetoken.googleapis.com"],
+        connectSrc: [
+          "'self'",
+          "https://accounts.google.com",
+          "https://*.googleapis.com",
+          "https://securetoken.googleapis.com",
+          "https://identitytoolkit.googleapis.com",
+          "https://*.firebaseio.com",
+        ],
+        frameSrc: ["'self'", "https://*.firebaseapp.com", "https://accounts.google.com"],
         workerSrc: ["'self'", "blob:"],
-        fontSrc: ["'self'"],
+        fontSrc: ["'self'", "data:"],
         objectSrc: ["'none'"],
         frameAncestors: ["'none'"],
       },

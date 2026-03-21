@@ -1,11 +1,13 @@
-FROM node:20-alpine AS builder
+FROM alpine:3.23 AS builder
+RUN apk upgrade --no-cache && apk add --no-cache nodejs-20 npm
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 
-FROM node:20-alpine
+FROM alpine:3.23
+RUN apk upgrade --no-cache && apk add --no-cache nodejs-20
 
 WORKDIR /app
 

@@ -52,17 +52,44 @@ export default function CookieBanner() {
           from { opacity: 1; transform: translateY(0); }
           to   { opacity: 0; transform: translateY(12px); }
         }
+        .cookie-banner-outer {
+          position: fixed;
+          right: 1.5rem;
+          bottom: 1.5rem;
+          z-index: 50;
+        }
+        .cookie-banner-inner {
+          width: 20rem;
+        }
+        @media (max-width: 479px) {
+          .cookie-banner-outer {
+            left: 0.75rem;
+            right: 0.75rem;
+            bottom: 0.75rem;
+          }
+          .cookie-banner-inner {
+            width: auto;
+          }
+          .cookie-banner-actions {
+            justify-content: stretch !important;
+          }
+          .cookie-banner-actions button {
+            flex: 1;
+            justify-content: center;
+          }
+        }
       `}</style>
 
       <div
         role="dialog"
         aria-label="Cookie consent"
         aria-modal="false"
-        style={{ position: 'fixed', right: '1.5rem', bottom: '1.5rem', zIndex: 50, ...animationStyle }}
+        className="cookie-banner-outer"
+        style={animationStyle}
       >
         <div
+          className="cookie-banner-inner"
           style={{
-            width: '20rem',
             backgroundColor: '#FFFFFF',
             border: '1px solid #DDD9D1',
             borderRadius: '0.75rem',
@@ -108,7 +135,7 @@ export default function CookieBanner() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem', justifyContent: 'flex-end' }}>
+          <div className="cookie-banner-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem', justifyContent: 'flex-end' }}>
             <button
               onClick={() => dismiss('declined')}
               style={{

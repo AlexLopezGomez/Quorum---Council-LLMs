@@ -1,6 +1,6 @@
 services:
   mongodb:
-    image: mongo:7
+    image: mongo:7.0.21
     container_name: quorum-mongodb
     restart: unless-stopped
     environment:
@@ -24,7 +24,7 @@ services:
     container_name: quorum-backend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     env_file:
       - ./backend/.env
     environment:

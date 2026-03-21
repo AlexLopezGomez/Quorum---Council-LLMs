@@ -83,6 +83,7 @@ app.use(
           "https://securetoken.googleapis.com",
           "https://identitytoolkit.googleapis.com",
           "https://*.firebaseio.com",
+          "https://*.firebaseapp.com",
         ],
         frameSrc: ["'self'", "https://*.firebaseapp.com", "https://accounts.google.com"],
         workerSrc: ["'self'", "blob:"],

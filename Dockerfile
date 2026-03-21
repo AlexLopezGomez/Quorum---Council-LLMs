@@ -1,26 +1,34 @@
-FROM node:20-alpine AS frontend-build
-
+FROM node:20-alpine AS frontend-builder
 WORKDIR /app/frontend
-COPY frontend/package.json ./
+COPY frontend/package*.json ./
 RUN npm install
-COPY frontend/ ./
+COPY frontend/ .
 RUN npm run build
+
+FROM node:20-alpine AS backend-deps
+WORKDIR /app/backend
+COPY backend/package*.json ./
+RUN npm install --omit=dev
 
 FROM node:20-alpine
 
-WORKDIR /app
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
 
-COPY backend/package.json ./backend/
-RUN cd backend && npm install --omit=dev
+WORKDIR /app/backend
 
-COPY backend/ ./backend/
-COPY --from=frontend-build /app/frontend/dist ./frontend/dist
+COPY --from=backend-deps /app/backend/node_modules ./node_modules
+COPY --chown=nodejs:nodejs backend/ .
+
+# staticServe.js resolves __dirname/../../../frontend/dist = /app/frontend/dist
+COPY --from=frontend-builder --chown=nodejs:nodejs /app/frontend/dist /app/frontend/dist
+
+USER nodejs
 
 ENV NODE_ENV=production
-ENV PORT=3000
-
 EXPOSE 3000
 
-USER node
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-CMD ["node", "backend/src/index.js"]
+CMD ["node", "src/index.js"]

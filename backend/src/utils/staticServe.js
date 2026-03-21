@@ -19,7 +19,7 @@ function buildIndexHtml() {
 export function serveFrontend(app) {
   if (!fs.existsSync(DIST_DIR)) return;
 
-  app.use(express.static(DIST_DIR));
+  app.use(express.static(DIST_DIR, { index: false }));
 
   const indexHtml = buildIndexHtml();
 

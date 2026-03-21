@@ -4,7 +4,7 @@ RUN apk upgrade --no-cache && apk add --no-cache nodejs npm
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 FROM alpine:3.23
 RUN apk upgrade --no-cache && apk add --no-cache nodejs npm

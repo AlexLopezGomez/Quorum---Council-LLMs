@@ -2,7 +2,7 @@ FROM alpine:3.23 AS frontend-builder
 RUN apk upgrade --no-cache && apk add --no-cache nodejs npm
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
-RUN npm ci
+RUN npm install
 COPY frontend/ .
 RUN npm run build
 
@@ -10,7 +10,7 @@ FROM alpine:3.23 AS backend-deps
 RUN apk upgrade --no-cache && apk add --no-cache nodejs npm
 WORKDIR /app/backend
 COPY backend/package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Pin by digest: docker pull gcr.io/distroless/nodejs20-debian12 && docker inspect --format='{{index .RepoDigests 0}}' gcr.io/distroless/nodejs20-debian12
 FROM gcr.io/distroless/nodejs20-debian12

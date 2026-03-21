@@ -4,7 +4,7 @@ RUN apk upgrade --no-cache && apk add --no-cache nodejs npm
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 COPY . .
 

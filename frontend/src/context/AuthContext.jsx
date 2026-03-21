@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useCallback, useEffect } from 'react';
-import { signInWithRedirect, getRedirectResult, signOut as firebaseSignOut } from 'firebase/auth';
+import { signInWithPopup, signOut as firebaseSignOut } from 'firebase/auth';
 import { auth, providers } from '../config/firebase.js';
 import { authApi } from '../lib/api';
 
@@ -34,32 +34,10 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const controller = new AbortController();
-
-    async function init() {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result) {
-          const idToken = await result.user.getIdToken();
-          const data = await authApi.oauthLogin(idToken);
-          dispatch({ type: 'AUTH_SUCCESS', payload: data.user });
-          return;
-        }
-      } catch (err) {
-        let message = err.message;
-        if (err.code === 'auth/account-exists-with-different-credential') {
-          message = 'An account with this email already exists. Try signing in with a different provider.';
-        }
-        dispatch({ type: 'AUTH_ERROR', payload: message });
-        return;
-      }
-
-      authApi
-        .me(controller.signal)
-        .then((data) => dispatch({ type: 'AUTH_SUCCESS', payload: data.user }))
-        .catch(() => dispatch({ type: 'LOGOUT' }));
-    }
-
-    init();
+    authApi
+      .me(controller.signal)
+      .then((data) => dispatch({ type: 'AUTH_SUCCESS', payload: data.user }))
+      .catch(() => dispatch({ type: 'LOGOUT' }));
     return () => controller.abort();
   }, []);
 
@@ -86,9 +64,18 @@ export function AuthProvider({ children }) {
   const loginWithProvider = useCallback(async (providerName) => {
     dispatch({ type: 'LOADING' });
     try {
-      await signInWithRedirect(auth, providers[providerName]);
+      const result = await signInWithPopup(auth, providers[providerName]);
+      const idToken = await result.user.getIdToken();
+      const data = await authApi.oauthLogin(idToken);
+      dispatch({ type: 'AUTH_SUCCESS', payload: data.user });
     } catch (err) {
-      dispatch({ type: 'AUTH_ERROR', payload: err.message });
+      await firebaseSignOut(auth).catch(() => {});
+      let message = err.message;
+      if (err.code === 'auth/account-exists-with-different-credential') {
+        const other = providerName === 'google' ? 'GitHub' : 'Google';
+        message = `An account with this email already exists. Try signing in with ${other} instead.`;
+      }
+      dispatch({ type: 'AUTH_ERROR', payload: message });
       throw err;
     }
   }, []);

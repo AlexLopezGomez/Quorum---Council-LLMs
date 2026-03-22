@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.1.0] - 2026-03-22
+
+### Fixed
+- Social auth errors now display inside the `SocialAuth` component and call `clearError()` to prevent double-display in parent forms (`SignInForm`, `SignUpFlow`)
+- Fixed regression where social auth failure on `RegisterPage` Step 1 was silently invisible — error now shown in the correct step context
+- `auth/popup-closed-by-user` error message updated to mention env var and Firebase Authorized Domains as common causes on fresh deployments
+- Error color in `SocialAuth` unified to use design system token `text-verdict-fail` instead of hardcoded `text-red-500`
+- `firebaseConfigured` export added to `firebase.js` — `SocialAuth` renders "Social sign-in is not configured." when Firebase env vars are absent
+
+### Added
+- Meta tag fallback for Firebase config (`fb-api-key`, `fb-auth-domain`, `fb-project-id`) enables Docker runtime injection path as alternative to build-time env vars
+- Named error handling for `auth/account-exists-with-different-credential`, `auth/popup-blocked`, `auth/popup-closed-by-user`, `auth/unauthorized-domain` with readable user-facing messages
+- CLAUDE.md: Docker base image rules, npm install vs npm ci rules, Firebase auth deployment checklist and error code reference
+- TODOS.md: created with P2 items for Firebase health endpoint and Vitest auth unit tests
+
 ## [Unreleased]
 
 ### Added

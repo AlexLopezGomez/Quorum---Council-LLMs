@@ -81,7 +81,7 @@ export function AuthProvider({ children }) {
       } else if (err.code === 'auth/popup-blocked') {
         message = 'Sign-in popup was blocked by your browser. Please allow popups for this site and try again.';
       } else if (err.code === 'auth/popup-closed-by-user') {
-        message = 'Sign-in window was closed. If this keeps happening, check that your browser allows popups for this site.';
+        message = 'Sign-in window was closed. On a new deployment, verify VITE_FIREBASE_* env vars are set and the domain is in Firebase Authorized Domains. Otherwise, allow popups for this site.';
       } else if (err.code === 'auth/unauthorized-domain') {
         message = 'This domain is not authorized for sign-in. Add the deployment URL to Firebase Console → Authentication → Authorized domains.';
       }

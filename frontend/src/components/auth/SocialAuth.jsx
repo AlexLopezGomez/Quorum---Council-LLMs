@@ -18,16 +18,17 @@ const GITHUB_ICON = (
 );
 
 export default function SocialAuth() {
-  const { loginWithProvider } = useAuth();
+  const { loginWithProvider, clearError } = useAuth();
   const [loadingProvider, setLoadingProvider] = useState(null);
   const [error, setError] = useState(null);
 
   async function handleProviderLogin(providerName) {
-    setError(null);
     setLoadingProvider(providerName);
+    setError(null);
     try {
       await loginWithProvider(providerName);
     } catch (err) {
+      clearError(); // prevent parent form from double-displaying this error
       setError(err.message);
     } finally {
       setLoadingProvider(null);
@@ -47,7 +48,7 @@ export default function SocialAuth() {
       ) : (
         <>
           {error && (
-            <p className="text-sm text-red-500 mb-3 text-center">{error}</p>
+            <p className="text-sm text-verdict-fail mb-3 text-center">{error}</p>
           )}
 
           <div className="space-y-3">

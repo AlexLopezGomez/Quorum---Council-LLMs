@@ -176,3 +176,13 @@ When instructed to review a plan or enter "Plan Mode", you **MUST** read and str
 - `AuthContext.loginWithProvider` must `throw new Error(cleanMessage)` — NOT `throw err` — so callers receive readable text, not raw Firebase SDK strings
 - `SocialAuth.jsx` checks `firebaseConfigured` (from `frontend/src/config/firebase.js`) and shows "Social sign-in is not configured." when Firebase vars are absent
 
+## gstack
+
+Use `/browse` from gstack for all web browsing. Never use `mcp__claude-in-chrome__*` tools.
+If gstack skills aren't working, run `cd ~/.claude/skills/gstack && ./setup` to build the binary and register skills.
+
+Available skills: /office-hours, /plan-ceo-review, /plan-eng-review, /plan-design-review,
+/autoplan, /design-consultation, /review, /ship, /land-and-deploy, /canary, /benchmark,
+/browse, /qa, /qa-only, /design-review, /setup-browser-cookies, /setup-deploy, /retro,
+/investigate, /document-release, /careful, /freeze, /guard, /unfreeze, /gstack-upgrade.
+

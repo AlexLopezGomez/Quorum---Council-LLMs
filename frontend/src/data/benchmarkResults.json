@@ -1,79 +1,58 @@
 {
   "meta": {
     "n": 5000,
-    "domains": 6,
+    "domains": 3,
     "source": "RAGTruth + HaluBench",
     "humanLabeled": true,
     "date": "2026-03"
   },
   "evaluators": [
     {
+      "id": "single-gemini",
+      "label": "Gemini Flash",
+      "accuracy": 82,
+      "fnr": 17,
+      "f1": 0.82,
+      "kappa": 0.63
+    },
+    {
       "id": "council",
       "label": "Council (3-Judge)",
-      "accuracy": 94.2,
-      "fnr": 8.1,
-      "f1": 0.94,
-      "kappa": 0.89
+      "accuracy": 76,
+      "fnr": 16,
+      "f1": 0.75,
+      "kappa": 0.52
     },
     {
       "id": "single-openai",
-      "label": "Single — OpenAI",
-      "accuracy": 88.5,
-      "fnr": 14.3,
-      "f1": 0.88,
-      "kappa": 0.81
-    },
-    {
-      "id": "single-gemini",
-      "label": "Single — Gemini",
-      "accuracy": 86.1,
-      "fnr": 17.2,
-      "f1": 0.86,
-      "kappa": 0.78
+      "label": "GPT-4o-mini",
+      "accuracy": 61,
+      "fnr": 8,
+      "f1": 0.48,
+      "kappa": 0.25
     }
   ],
   "domains": [
     {
       "id": "general",
       "label": "General",
-      "council": 95.1,
-      "singleOpenai": 90.2,
-      "singleGemini": 88.4
+      "council": 74.9,
+      "singleOpenai": 59.4,
+      "singleGemini": 80.4
     },
     {
       "id": "technical",
       "label": "Technical",
-      "council": 93.8,
-      "singleOpenai": 87.6,
-      "singleGemini": 85.2
+      "council": 81.3,
+      "singleOpenai": 70.1,
+      "singleGemini": 84.5
     },
     {
       "id": "financial",
       "label": "Financial",
-      "council": 94.5,
-      "singleOpenai": 89.1,
-      "singleGemini": 86.7
-    },
-    {
-      "id": "medical",
-      "label": "Medical",
-      "council": 96.0,
-      "singleOpenai": 88.3,
-      "singleGemini": 84.9
-    },
-    {
-      "id": "legal",
-      "label": "Legal",
-      "council": 93.1,
-      "singleOpenai": 86.8,
-      "singleGemini": 85.3
-    },
-    {
-      "id": "adversarial",
-      "label": "Adversarial",
-      "council": 91.6,
-      "singleOpenai": 84.2,
-      "singleGemini": 81.0
+      "council": 62.0,
+      "singleOpenai": 56.5,
+      "singleGemini": 89.0
     }
   ]
 }

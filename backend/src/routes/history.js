@@ -267,7 +267,7 @@ router.get('/stats', async (req, res) => {
   try {
     const [totalEvals, recentEvals] = await Promise.all([
       Evaluation.countDocuments({ userId: req.user._id }),
-      Evaluation.find({ status: 'complete', source: 'batch', userId: req.user._id })
+      Evaluation.find({ status: 'complete', source: { $ne: 'live' }, userId: req.user._id })
         .sort({ _id: -1 })
         .limit(100)
         .select('summary config results')

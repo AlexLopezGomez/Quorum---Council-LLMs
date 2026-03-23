@@ -18,6 +18,8 @@ import serviceKeysRouter from './routes/serviceKeys.js';
 import observabilityRouter from './routes/observability.js';
 import waitlistRouter from './routes/waitlist.js';
 import benchmarkRouter from './routes/benchmark.js';
+import sampleRouter from './routes/sample.js';
+import monitoringRouter from './routes/monitoring.js';
 import * as batchPoller from './services/batchPoller.js';
 import swaggerUi from 'swagger-ui-express';
 import { sseManager } from './utils/sse.js';
@@ -26,6 +28,7 @@ import { BenchmarkRun } from './models/BenchmarkRun.js';
 import { spec } from './utils/openapi.js';
 import { requireAuth, requireAnyAuth } from './middleware/requireAuth.js';
 import { requireServiceScope } from './middleware/requireServiceAuth.js';
+import { DriftAlert } from './models/DriftAlert.js';
 import { requestContext } from './middleware/requestContext.js';
 import { logger } from './utils/logger.js';
 import { validateProductionSecrets } from './utils/validateSecrets.js';
@@ -52,7 +55,7 @@ sseManager.setLogger(logger);
 
 const limiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 30,
+  max: 200,
   message: { error: 'Too many requests, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -131,6 +134,8 @@ app.use('/api/keys', requireAuth, keysRouter);
 app.use('/api/service-keys', requireAuth, serviceKeysRouter);
 app.use('/api/observability', requireAuth, observabilityRouter);
 app.use('/api', requireAuth, benchmarkRouter);
+app.use('/api/sample', requireAnyAuth, requireServiceScope(['ingest', 'evaluate']), sampleRouter);
+app.use('/api/monitoring', requireAnyAuth, requireServiceScope(['ingest', 'evaluate']), monitoringRouter);
 
 app.get('/health', (req, res) => {
   logger.info('system.health.check', logger.withReq(req, { statusCode: 200 }));
@@ -191,10 +196,28 @@ async function connectWithRetry(retries = 5, delay = 5000) {
   throw new Error('Failed to connect to MongoDB after multiple attempts');
 }
 
+async function migrateLegacyIndexes() {
+  try {
+    const collection = mongoose.connection.collection('evaluations');
+    const indexes = await collection.indexes();
+    const legacyIndex = indexes.find((idx) => idx.name === 'uniq_processing_evaluation_per_user');
+    // Drop only if it lacks the source filter (old version)
+    if (legacyIndex && !legacyIndex.partialFilterExpression?.source) {
+      await collection.dropIndex('uniq_processing_evaluation_per_user');
+      logger.info('system.migration.index_dropped', {
+        metadata: { index: 'uniq_processing_evaluation_per_user', reason: 'recreating with source:batch filter' },
+      });
+    }
+  } catch (err) {
+    logger.warn('system.migration.index_drop_failed', { metadata: { message: err.message } });
+  }
+}
+
 async function cleanupStaleJobs() {
   try {
+    // Scope to non-live only: live samples that were processing on restart are dead but harmless to leave failed
     const evalResult = await Evaluation.updateMany(
-      { status: 'processing' },
+      { status: 'processing', source: { $ne: 'live' } },
       {
         $set: { status: 'failed', completedAt: new Date() },
         $push: { events: { type: 'server_restart', data: { reason: 'Server restarted while evaluation was in progress' }, timestamp: new Date() } },
@@ -224,6 +247,7 @@ async function start() {
   try {
     validateProductionSecrets();
     await connectWithRetry();
+    await migrateLegacyIndexes();
     await cleanupStaleJobs();
     batchPoller.start();
 

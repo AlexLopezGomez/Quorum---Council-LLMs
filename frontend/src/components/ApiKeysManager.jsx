@@ -1,10 +1,11 @@
 import { useState, useCallback } from 'react';
-import { Lock, Pencil, Trash2, X } from 'lucide-react';
+import { Info, Lock, Pencil, Trash2, X } from 'lucide-react';
 import { sileo } from 'sileo';
-import { PageHeader } from './PageHeader';
 import { ErrorAlert } from './ui/ErrorAlert';
 import { getKeys, setKey, deleteKey } from '../lib/api';
 import { useApiQuery } from '../hooks/useApiQuery';
+
+const ONBOARDING_BANNER_KEY = 'settings-api-keys-banner-dismissed';
 
 const PROVIDERS = [
   { id: 'openai',    label: 'OpenAI',    meta: 'Faithfulness · gpt-4o-mini',                                    dot: 'bg-openai',    bar: 'bg-openai' },
@@ -55,12 +56,13 @@ export function ApiKeysManager() {
   const { data, loading, error, refetch } = useApiQuery(fetchFn);
   const configured = data?.configured ?? { openai: false, anthropic: false, google: false };
 
-  const [inputs,  setInputs]  = useState({ openai: '', anthropic: '', google: '' });
-  const [saving,  setSaving]  = useState({ openai: false, anthropic: false, google: false });
-  const [editing, setEditing] = useState({ openai: false, anthropic: false, google: false });
-  const [deleting,setDeleting]= useState({ openai: false, anthropic: false, google: false });
-  const [errors,  setErrors]  = useState({ openai: '', anthropic: '', google: '' });
-  const [confirm, setConfirm] = useState(null);
+  const [inputs,         setInputs]         = useState({ openai: '', anthropic: '', google: '' });
+  const [saving,         setSaving]         = useState({ openai: false, anthropic: false, google: false });
+  const [editing,        setEditing]        = useState({ openai: false, anthropic: false, google: false });
+  const [deleting,       setDeleting]       = useState({ openai: false, anthropic: false, google: false });
+  const [errors,         setErrors]         = useState({ openai: '', anthropic: '', google: '' });
+  const [confirm,        setConfirm]        = useState(null);
+  const [bannerDismissed, setBannerDismissed] = useState(() => !!localStorage.getItem(ONBOARDING_BANNER_KEY));
 
   async function handleSave(id) {
     const key = inputs[id].trim();
@@ -102,12 +104,36 @@ export function ApiKeysManager() {
 
   const confirmProvider = confirm ? PROVIDERS.find(p => p.id === confirm) : null;
 
+  const allUnconfigured = !configured.openai && !configured.anthropic && !configured.google;
+  const showBanner = !loading && allUnconfigured && !bannerDismissed;
+
+  function dismissBanner() {
+    localStorage.setItem(ONBOARDING_BANNER_KEY, 'true');
+    setBannerDismissed(true);
+  }
+
   return (
-    <div>
-      <PageHeader
-        title="API Keys"
-        subtitle="Keys are AES-256 encrypted at rest. Falls back to shared server keys when none are configured."
-      />
+    <div className="animate-fadeInUp">
+      <p className="text-xs text-text-tertiary mb-6 flex items-center gap-1.5">
+        <Lock size={12} />
+        Keys are AES-256 encrypted at rest. Falls back to shared server keys when none are configured.
+      </p>
+
+      {showBanner && (
+        <div className="bg-surface-secondary border border-surface-border rounded-xl p-4 mb-6 flex items-start gap-3">
+          <Info size={16} className="text-accent shrink-0 mt-0.5" />
+          <p className="text-sm text-text-secondary flex-1">
+            Configure at least one provider key to run evaluations. Your own keys bypass shared rate limits and give you full cost visibility.
+          </p>
+          <button
+            onClick={dismissBanner}
+            className="text-xs text-text-tertiary hover:text-text-primary transition-colors shrink-0"
+          >
+            Got it
+          </button>
+        </div>
+      )}
+
       <ErrorAlert message={error?.message} className="mb-6" />
 
       {loading ? (

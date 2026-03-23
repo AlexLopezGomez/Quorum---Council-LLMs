@@ -104,3 +104,45 @@
 **Priority:** P2
 
 **Depends on:** Nothing. Can be bundled with next frontend feature session.
+
+---
+
+## P3 — Settings
+
+### ARIA labels for "Configured" badge on provider cards
+
+**What:** Add `aria-label="{Provider} key configured"` to the "Configured" badge `<span>` in `ApiKeysManager` for each provider card.
+
+**Why:** Screen readers currently announce "Configured" three times in sequence with no provider context. A user navigating by keyboard hears "Configured, Configured, Configured" — the provider name is visible in the DOM but not associated to the badge.
+
+**Pros:** 3-line fix. Correct a11y behavior.
+
+**Cons:** None.
+
+**Context:** Surfaced in 2026-03-23 Settings page design review. File: `frontend/src/components/ApiKeysManager.jsx`, the `<span>` with "Configured" text near line 147.
+
+**Effort:** XS (human ~5 min) → XS with CC+gstack (~1 min)
+
+**Priority:** P3
+
+**Depends on:** Can be done in any PR that touches ApiKeysManager.
+
+---
+
+### Full Account settings tab
+
+**What:** Build out the Account tab in Settings (`/app/settings/account`) with: display name edit, email change (requires re-authentication), password change form, and danger zone (delete account with confirmation).
+
+**Why:** The Account tab currently ships as a read-only stub showing email/username. Users expect to manage their account from Settings. Password change and email change are standard auth operations.
+
+**Pros:** Completes the settings experience. Reduces "where do I change my email?" support friction.
+
+**Cons:** Email change requires Firebase re-auth flow. Danger zone (account deletion) requires backend cascade (delete evaluations, keys, user doc). Non-trivial backend work.
+
+**Context:** Surfaced in 2026-03-23 Settings page design review. The tab stub (`/app/settings/account`) will ship in the initial Settings refactor PR to reserve the route. Full implementation is a separate PR. Auth flows must use `signInWithPopup` for re-auth (per CLAUDE.md Firebase rules).
+
+**Effort:** L (human ~3 days) → M with CC+gstack (~45 min)
+
+**Priority:** P2
+
+**Depends on:** Settings refactor PR must ship first (adds the Account tab route).

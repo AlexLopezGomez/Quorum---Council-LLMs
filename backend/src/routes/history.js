@@ -9,6 +9,7 @@ const MAX_SEARCH_LENGTH = 100;
 const ALLOWED_STRATEGIES = new Set(['auto', 'council', 'hybrid', 'single']);
 const ALLOWED_VERDICTS = new Set(['PASS', 'WARN', 'FAIL']);
 const ALLOWED_STATUSES = new Set(['processing', 'complete', 'failed']);
+const ALLOWED_SOURCES = new Set(['batch', 'live']);
 
 function escapeRegex(input) {
   return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -53,7 +54,7 @@ router.get('/', async (req, res) => {
     const limit = Number.isFinite(parsedLimit)
       ? Math.min(Math.max(parsedLimit, 1), 50)
       : 20;
-    const { cursor, strategy, verdict, status, search } = req.query;
+    const { cursor, strategy, verdict, status, source, search } = req.query;
     const searchTerm = normalizeSearchTerm(search);
 
     const filter = { userId: req.user._id };
@@ -66,6 +67,10 @@ router.get('/', async (req, res) => {
     if (status) {
       if (!ALLOWED_STATUSES.has(status)) return res.status(400).json({ error: 'Invalid status filter' });
       filter.status = status;
+    }
+    if (source) {
+      if (!ALLOWED_SOURCES.has(source)) return res.status(400).json({ error: 'Invalid source filter' });
+      filter.source = source;
     }
     if (strategy) {
       if (!ALLOWED_STRATEGIES.has(strategy)) return res.status(400).json({ error: 'Invalid strategy filter' });
@@ -262,7 +267,7 @@ router.get('/stats', async (req, res) => {
   try {
     const [totalEvals, recentEvals] = await Promise.all([
       Evaluation.countDocuments({ userId: req.user._id }),
-      Evaluation.find({ status: 'complete', userId: req.user._id })
+      Evaluation.find({ status: 'complete', source: 'batch', userId: req.user._id })
         .sort({ _id: -1 })
         .limit(100)
         .select('summary config results')

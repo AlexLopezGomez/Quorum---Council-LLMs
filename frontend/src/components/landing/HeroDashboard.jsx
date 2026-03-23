@@ -47,23 +47,29 @@ const TAGLINE = [
 ];
 
 export default function HeroDashboard() {
+  /* Discrete state only — no animated values here */
   const [phase, setPhase]           = useState(0);
   const [avgScore, setAvgScore]     = useState(81);
-  const [scanH, setScanH]           = useState(0);   // 0→1 healthy beam
-  const [scanD, setScanD]           = useState(0);   // 0→1 drop beam
-  const [hAreaOp, setHAreaOp]       = useState(0);   // area fill opacity
+  const [hAreaOp, setHAreaOp]       = useState(0);
   const [dAreaOp, setDAreaOp]       = useState(0);
   const [showBeacon, setShowBeacon] = useState(false);
   const [kpiShaking, setKpiShaking] = useState(false);
   const [alertActive, setAlertActive] = useState(false);
   const [alertDetail, setAlertDetail] = useState(false);
   const [showTagline, setShowTagline] = useState(false);
-  const [loopKey, setLoopKey]       = useState(0);   // forces ripple remount
 
   const timers = useRef([]);
   const rafH   = useRef(null);
   const rafD   = useRef(null);
   const rafC   = useRef(null);
+
+  /* DOM refs for SVG elements driven by scan animation */
+  const clipHRect   = useRef(null);
+  const clipDRect   = useRef(null);
+  const beamHLine   = useRef(null);
+  const beamDLine   = useRef(null);
+  const dotCircles  = useRef([]);   // indexed by ALL_PTS index
+  const dotRipples  = useRef([]);   // indexed by ALL_PTS index
 
   const cancelRafs = useCallback(() => {
     if (rafH.current) { cancelAnimationFrame(rafH.current); rafH.current = null; }
@@ -81,12 +87,45 @@ export default function HeroDashboard() {
     timers.current.push(setTimeout(fn, ms));
   }, []);
 
-  /* rAF-driven progress scanner: 0→1 over `duration` ms */
-  const runScan = useCallback((setter, rafRef, duration, onDone) => {
+  /* rAF-driven scan — updates SVG DOM directly, no setState */
+  const runScan = useCallback((
+    clipRect, beamLine, dotIndices, startX, width, rafRef, duration, onDone
+  ) => {
     const start = performance.now();
     function frame(now) {
-      const t = Math.min(1, (now - start) / duration);
-      setter(easeInOutQuad(t));
+      const t   = Math.min(1, (now - start) / duration);
+      const pos = easeInOutQuad(t);
+
+      if (clipRect) clipRect.setAttribute('width', Math.max(0, pos * width + 10).toFixed(1));
+
+      if (beamLine) {
+        if (pos > 0.01 && pos < 0.99) {
+          const x = (startX + pos * width).toFixed(1);
+          beamLine.setAttribute('x1', x);
+          beamLine.setAttribute('x2', x);
+          beamLine.setAttribute('opacity', (0.55 * (1 - pos * 0.4)).toFixed(3));
+          beamLine.style.display = '';
+        } else {
+          beamLine.style.display = 'none';
+        }
+      }
+
+      const thresh = startX + pos * width + 1;
+      dotIndices.forEach(i => {
+        const dotEl    = dotCircles.current[i];
+        const rippleEl = dotRipples.current[i];
+        if (!dotEl) return;
+        const nowVisible = ALL_PTS[i].x <= thresh;
+        const wasHidden  = dotEl.getAttribute('opacity') === '0';
+        dotEl.setAttribute('opacity', nowVisible ? '1' : '0');
+        if (nowVisible && wasHidden && rippleEl) {
+          rippleEl.style.display = '';
+          rippleEl.style.animation = 'none';
+          void rippleEl.offsetWidth; // force reflow to restart CSS animation
+          rippleEl.style.animation = '';
+        }
+      });
+
       if (t < 1) {
         rafRef.current = requestAnimationFrame(frame);
       } else {
@@ -115,31 +154,44 @@ export default function HeroDashboard() {
   const runLoop = useCallback(() => {
     clearTimers();
 
-    /* ── Reset ── */
+    /* ── Reset DOM scan state ── */
+    if (clipHRect.current) clipHRect.current.setAttribute('width', '0');
+    if (clipDRect.current) clipDRect.current.setAttribute('width', '0');
+    if (beamHLine.current) beamHLine.current.style.display = 'none';
+    if (beamDLine.current) beamDLine.current.style.display = 'none';
+    dotCircles.current.forEach(el => el?.setAttribute('opacity', '0'));
+    dotRipples.current.forEach(el => { if (el) el.style.display = 'none'; });
+
+    /* ── Reset React state ── */
     setPhase(0);
     setAvgScore(81);
-    setScanH(0); setScanD(0);
     setHAreaOp(0); setDAreaOp(0);
     setShowBeacon(false);
     setKpiShaking(false);
     setAlertActive(false);
     setAlertDetail(false);
     setShowTagline(false);
-    setLoopKey(k => k + 1);
 
-    /* ── t=300ms: healthy line beam starts ── */
+    /* ── t=300ms: healthy scan ── */
     tick(() => {
       setPhase(1);
-      runScan(setScanH, rafH, 1500, () => setHAreaOp(1));
+      runScan(
+        clipHRect.current, beamHLine.current,
+        Array.from({ length: SPLIT }, (_, i) => i),
+        CX, CW, rafH, 1500,
+        () => setHAreaOp(1)
+      );
     }, 300);
 
-    /* ── t=2000ms: drop line beam starts ── */
+    /* ── t=2000ms: drop scan ── */
     tick(() => {
       setPhase(2);
-      runScan(setScanD, rafD, 1200, () => {
-        setDAreaOp(1);
-        setShowBeacon(true);
-      });
+      runScan(
+        clipDRect.current, beamDLine.current,
+        Array.from({ length: SCORES.length - SPLIT }, (_, i) => SPLIT + i),
+        DROP_START_X, DROP_WIDTH, rafD, 1200,
+        () => { setDAreaOp(1); setShowBeacon(true); }
+      );
     }, 2000);
 
     /* ── t=3400ms: alert fires ── */
@@ -167,16 +219,10 @@ export default function HeroDashboard() {
     return () => { clearTimeout(t); clearTimers(); };
   }, [runLoop, clearTimers]);
 
-  /* ── Derived ── */
+  /* ── Derived (only recalculated when avgScore changes) ── */
   const kpiColor   = avgScore < 70 ? '#EF4444' : avgScore < 78 ? '#F59E0B' : '#10B981';
   const trendText  = avgScore < 70 ? 'Degraded ↓' : avgScore < 78 ? 'Declining ↓' : 'Stable →';
   const cardBorder = avgScore < 70 ? '#3d1515' : avgScore < 78 ? '#3d2a0a' : '#1a2d1a';
-
-  /* dot visibility driven by beam position */
-  function isDotVisible(i) {
-    if (i < SPLIT) return ALL_PTS[i].x <= CX + scanH * CW + 1;
-    return ALL_PTS[i].x <= DROP_START_X + scanD * DROP_WIDTH + 1;
-  }
 
   return (
     <motion.div
@@ -259,15 +305,12 @@ export default function HeroDashboard() {
                   <stop offset="0%" stopColor="#EF4444" stopOpacity={0.32} />
                   <stop offset="100%" stopColor="#EF4444" stopOpacity={0} />
                 </linearGradient>
-                <filter id="hdBeamBlur" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="2.5" />
-                </filter>
                 {/* Clip paths reveal lines as beam travels */}
                 <clipPath id="hdClipH">
-                  <rect x={CX - 10} y={-10} width={Math.max(0, scanH * CW + 10)} height={CY + CH + 60} />
+                  <rect ref={clipHRect} x={CX - 10} y={-10} width={0} height={CY + CH + 60} />
                 </clipPath>
                 <clipPath id="hdClipD">
-                  <rect x={DROP_START_X - 10} y={-10} width={Math.max(0, scanD * DROP_WIDTH + 10)} height={CY + CH + 60} />
+                  <rect ref={clipDRect} x={DROP_START_X - 10} y={-10} width={0} height={CY + CH + 60} />
                 </clipPath>
               </defs>
 
@@ -285,7 +328,7 @@ export default function HeroDashboard() {
                 stroke="#d99058" strokeWidth={1} strokeDasharray="4 6" opacity={0.22} />
               <text x={CX + CW + 4} y={sy(81) + 4} fill="#d99058" fontSize={9} opacity={0.4}>baseline</text>
 
-              {/* ── Healthy area fill (fades in after beam) ── */}
+              {/* ── Healthy area fill ── */}
               {phase >= 1 && (
                 <path
                   d={area(HEALTHY_PTS, CHART_BOTTOM)}
@@ -295,7 +338,7 @@ export default function HeroDashboard() {
                 />
               )}
 
-              {/* ── Drop area fill (fades in after beam) ── */}
+              {/* ── Drop area fill ── */}
               {phase >= 2 && (
                 <path
                   d={area(DROP_PTS, CHART_BOTTOM)}
@@ -305,7 +348,7 @@ export default function HeroDashboard() {
                 />
               )}
 
-              {/* ── Healthy line (revealed by clip beam) ── */}
+              {/* ── Healthy line ── */}
               {phase >= 1 && (
                 <g clipPath="url(#hdClipH)">
                   <path d={line(HEALTHY_PTS)} fill="none" stroke="#10B981"
@@ -313,18 +356,19 @@ export default function HeroDashboard() {
                 </g>
               )}
 
-              {/* ── Healthy beam glow ── */}
-              {phase >= 1 && scanH > 0.01 && scanH < 0.99 && (
+              {/* ── Healthy beam — always rendered, display toggled by DOM ref ── */}
+              {phase >= 1 && (
                 <line
-                  x1={CX + scanH * CW} y1={CY - 8}
-                  x2={CX + scanH * CW} y2={CY + CH + 12}
+                  ref={beamHLine}
+                  x1={CX} y1={CY - 8}
+                  x2={CX} y2={CY + CH + 12}
                   stroke="#10B981" strokeWidth={4}
-                  opacity={0.55 * (1 - scanH * 0.4)}
-                  filter="url(#hdBeamBlur)"
+                  opacity={0}
+                  style={{ display: 'none', filter: 'blur(2.5px)', willChange: 'transform' }}
                 />
               )}
 
-              {/* ── Drop line (revealed by clip beam) ── */}
+              {/* ── Drop line ── */}
               {phase >= 2 && (
                 <g clipPath="url(#hdClipD)">
                   <path d={line(DROP_PTS)} fill="none" stroke="#EF4444"
@@ -332,49 +376,46 @@ export default function HeroDashboard() {
                 </g>
               )}
 
-              {/* ── Drop beam glow ── */}
-              {phase >= 2 && scanD > 0.01 && scanD < 0.99 && (
+              {/* ── Drop beam ── */}
+              {phase >= 2 && (
                 <line
-                  x1={DROP_START_X + scanD * DROP_WIDTH} y1={CY - 8}
-                  x2={DROP_START_X + scanD * DROP_WIDTH} y2={CY + CH + 12}
+                  ref={beamDLine}
+                  x1={DROP_START_X} y1={CY - 8}
+                  x2={DROP_START_X} y2={CY + CH + 12}
                   stroke="#EF4444" strokeWidth={4}
-                  opacity={0.55 * (1 - scanD * 0.4)}
-                  filter="url(#hdBeamBlur)"
+                  opacity={0}
+                  style={{ display: 'none', filter: 'blur(2.5px)', willChange: 'transform' }}
                 />
               )}
 
-              {/* ── Dots with ripple animation ── */}
+              {/* ── Dots — always rendered, opacity controlled via DOM ref ── */}
               {ALL_PTS.map((p, i) => {
-                const visible  = isDotVisible(i);
                 const isDrop   = i >= SPLIT;
                 const dotColor = isDrop ? '#EF4444' : '#10B981';
                 return (
                   <g key={i}>
-                    {/* ripple fires once on mount, remounts each loop via loopKey */}
-                    {visible && phase >= 1 && (
-                      <circle
-                        key={`r-${i}-${loopKey}`}
-                        cx={p.x} cy={p.y} r={3.5}
-                        fill="none" stroke={dotColor} strokeWidth={1.5}
-                        className="hd-dot-ripple"
-                      />
-                    )}
-                    {/* dot fades in when beam passes */}
                     <circle
+                      ref={el => { dotRipples.current[i] = el; }}
+                      cx={p.x} cy={p.y} r={3.5}
+                      fill="none" stroke={dotColor} strokeWidth={1.5}
+                      className="hd-dot-ripple"
+                      style={{ display: 'none' }}
+                    />
+                    <circle
+                      ref={el => { dotCircles.current[i] = el; }}
                       cx={p.x} cy={p.y} r={3.5}
                       fill={dotColor}
                       stroke="#141210" strokeWidth={1.5}
-                      opacity={visible && phase >= 1 ? 1 : 0}
+                      opacity={0}
                       style={{ transition: 'opacity 0.25s ease' }}
                     />
                   </g>
                 );
               })}
 
-              {/* ── Inflection point beacon (amber pulse at split) ── */}
+              {/* ── Inflection point beacon ── */}
               {showBeacon && phase >= 2 && (
                 <circle
-                  key={`beacon-${loopKey}`}
                   cx={ALL_PTS[SPLIT - 1].x} cy={ALL_PTS[SPLIT - 1].y}
                   r={6} fill="none" stroke="#d99058" strokeWidth={1.5}
                   className="hd-beacon"

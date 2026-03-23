@@ -15,7 +15,7 @@ function isDuplicateKeyError(error) {
 }
 
 async function findActiveEvaluationForUser(userId) {
-  return Evaluation.findOne({ userId, status: 'processing' })
+  return Evaluation.findOne({ userId, status: 'processing', source: 'batch' })
     .sort({ createdAt: -1 })
     .select('jobId status createdAt name');
 }
@@ -117,22 +117,26 @@ router.get('/active', async (req, res) => {
 router.post('/', validateEvaluateRequest, async (req, res) => {
   try {
     const { testCases, options, name } = req.validatedBody;
-    const existingActiveEvaluation = await findActiveEvaluationForUser(req.user._id);
-    if (existingActiveEvaluation) {
-      logger.warn(
-        'evaluation.create.conflict',
-        logger.withReq(req, {
-          statusCode: 409,
-          userId: req.user._id,
-          jobId: existingActiveEvaluation.jobId,
-        })
-      );
-      return res.status(409).json({
-        error: 'An evaluation is already running. Resume the active evaluation before starting a new one.',
-        code: ACTIVE_CONFLICT_CODE,
-        status: 'processing',
-        activeJobId: existingActiveEvaluation.jobId,
-      });
+    const isDemo = Boolean(options?.demo);
+
+    if (!isDemo) {
+      const existingActiveEvaluation = await findActiveEvaluationForUser(req.user._id);
+      if (existingActiveEvaluation) {
+        logger.warn(
+          'evaluation.create.conflict',
+          logger.withReq(req, {
+            statusCode: 409,
+            userId: req.user._id,
+            jobId: existingActiveEvaluation.jobId,
+          })
+        );
+        return res.status(409).json({
+          error: 'An evaluation is already running. Resume the active evaluation before starting a new one.',
+          code: ACTIVE_CONFLICT_CODE,
+          status: 'processing',
+          activeJobId: existingActiveEvaluation.jobId,
+        });
+      }
     }
 
     const jobId = nanoid(12);
@@ -153,11 +157,12 @@ router.post('/', validateEvaluateRequest, async (req, res) => {
       jobId,
       name: name || '',
       userId: req.user._id,
+      source: 'batch',
       status: 'processing',
       testCases,
       results: [],
       events: [],
-      config: { strategy: options?.strategy || 'auto' },
+      config: { strategy: options?.strategy || 'auto', demo: isDemo },
     });
     try {
       await evaluation.save();

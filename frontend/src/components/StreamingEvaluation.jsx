@@ -2,6 +2,7 @@ import { useMemo, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { sileo } from 'sileo';
 import { Activity } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { TestCaseResult } from './TestCaseResult';
 import { CostBreakdown } from './CostBreakdown';
 import { PageHeader } from './PageHeader';
@@ -93,7 +94,8 @@ MetricsPanel.propTypes = {
   }).isRequired,
 };
 
-export function StreamingEvaluation({ events, testCases, currentTestCase, onNavigate, jobId }) {
+export function StreamingEvaluation({ events, testCases, currentTestCase, onNavigate, jobId, isDemo }) {
+  const navigate = useNavigate();
   const [tickerItems, setTickerItems] = useState([]);
   const toastFiredRef = useRef(null);
 
@@ -221,6 +223,13 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
         }
       />
 
+      {isDemo && (
+        <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-surface border border-surface-border text-xs text-text-secondary -mt-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+          Demo mode — results are simulated
+        </div>
+      )}
+
       {/* Progress bar — enhanced with accent glow and percentage label */}
       <div className="animate-fadeInUp -mt-4">
         <div className="flex items-center justify-between mb-1.5">
@@ -272,6 +281,23 @@ export function StreamingEvaluation({ events, testCases, currentTestCase, onNavi
           <div className="animate-staggerFadeIn" style={{ '--stagger-delay': '300ms' }}>
             <CostBreakdown jobId={jobId} summary={summary} />
           </div>
+          {isDemo && (
+            <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden animate-staggerFadeIn" style={{ '--stagger-delay': '400ms' }}>
+              <div className="h-0.5 bg-accent" />
+              <div className="p-6 flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-text-primary">Ready to evaluate your own RAG system?</p>
+                  <p className="text-sm text-text-secondary mt-0.5">Add your API keys to run real evaluations with full cost visibility.</p>
+                </div>
+                <button
+                  onClick={() => navigate('/app/settings/api-keys')}
+                  className="shrink-0 px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors"
+                >
+                  Configure Keys
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

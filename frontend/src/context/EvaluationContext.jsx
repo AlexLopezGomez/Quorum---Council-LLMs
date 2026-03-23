@@ -18,6 +18,7 @@ const initialState = {
     error: null,
     currentTestCase: 0,
     activeEvaluation: null,
+    isDemo: false,
 };
 
 function evaluationReducer(state, action) {
@@ -31,6 +32,7 @@ function evaluationReducer(state, action) {
                 jobId: action.payload.jobId,
                 testCases: action.payload.testCases,
                 currentTestCase: 0,
+                isDemo: action.payload.isDemo || false,
                 activeEvaluation: {
                     jobId: action.payload.jobId,
                     status: 'processing',
@@ -54,6 +56,7 @@ function evaluationReducer(state, action) {
                 isLoading: false,
                 error: null,
                 currentTestCase: 0,
+                isDemo: false,
             };
         default:
             return state;
@@ -142,6 +145,7 @@ export function EvaluationProvider({ children }) {
                     testCases: cases,
                     name: options?.name || '',
                     createdAt: new Date().toISOString(),
+                    isDemo: Boolean(options?.demo),
                 },
             });
             return response.jobId;

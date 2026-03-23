@@ -15,6 +15,7 @@ import MagicBento from '../components/landing/MagicBento';
 import TerminalDemo from '../components/landing/TerminalDemo';
 import ResearchPaperSection from '../components/landing/ResearchPaperSection';
 import GradientText from '../components/landing/GradientText';
+import HeroDashboard from '../components/landing/HeroDashboard';
 import './LandingPage.css';
 
 const FEATURES = [
@@ -307,6 +308,8 @@ export default function LandingPage() {
                     </p>
                 </div>
 
+                <HeroDashboard />
+
                 <div className="hero-scroll-hint">
                     <div className="scroll-dot" />
                 </div>
@@ -315,7 +318,7 @@ export default function LandingPage() {
             {/* ─── Terminal Demo ─────────────────────────────────── */}
             <section id="demo" className="terminal-section">
                 <div className="section-container">
-                    <SectionLabel>Live Demo</SectionLabel>
+                    <SectionLabel>Evaluation in Action</SectionLabel>
                     <BlurText
                         text="Watch evaluations stream in real time"
                         animateBy="words"

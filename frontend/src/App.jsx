@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Routes, Route, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { Toaster, sileo } from 'sileo';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { EvaluationProvider, useEvaluation } from './context/EvaluationContext';
@@ -8,10 +8,16 @@ import { TestCaseUpload } from './components/TestCaseUpload';
 import { StreamingEvaluation } from './components/StreamingEvaluation';
 import { EvaluationHistory } from './components/EvaluationHistory';
 import { WebhookManager } from './components/webhooks/WebhookManager';
-import { ApiKeysManager } from './components/ApiKeysManager';
 import { EvaluationDetail } from './components/EvaluationDetail';
+import { SettingsPage, AccountTab } from './pages/SettingsPage';
+import { ApiKeysManager } from './components/ApiKeysManager';
+import { ServiceKeysManager } from './components/ServiceKeysManager';
+import { MonitoringDashboard } from './components/MonitoringDashboard';
 import { ErrorAlert } from './components/ui/ErrorAlert';
 import { VerifyEmailBanner } from './components/VerifyEmailBanner';
+import { DemoWelcome } from './components/DemoWelcome';
+import { getKeys } from './lib/api';
+import { DEMO_TEST_CASES } from './lib/demoTestCases';
 
 function UploadRoute() {
   const {
@@ -24,9 +30,13 @@ function UploadRoute() {
     syncActiveEvaluation,
   } = useEvaluation();
   const navigate = useNavigate();
+  const [hasKeys, setHasKeys] = useState(null);
 
   useEffect(() => {
     syncActiveEvaluation().catch(() => { });
+    getKeys()
+      .then(data => setHasKeys(data.configured.openai || data.configured.anthropic || data.configured.google))
+      .catch(() => setHasKeys(true));
   }, [syncActiveEvaluation]);
 
   const resumeActiveEvaluation = () => {
@@ -48,14 +58,15 @@ function UploadRoute() {
       return;
     }
 
+    const isDemo = Boolean(options?.demo);
     const evalPromise = submitEvaluation(cases, options).then((jobId) => {
       if (jobId) return jobId;
       throw new Error('Failed to start evaluation');
     });
 
     sileo.promise(evalPromise, {
-      loading: { title: 'Starting evaluation...' },
-      success: { title: 'Evaluation started!' },
+      loading: { title: isDemo ? 'Starting demo...' : 'Starting evaluation...' },
+      success: { title: isDemo ? 'Demo started!' : 'Evaluation started!' },
       error: (err) => ({ title: 'Failed to start', description: err?.message }),
     });
 
@@ -68,12 +79,51 @@ function UploadRoute() {
       });
   };
 
+  const handleDismiss = () => {
+    localStorage.setItem('demo_dismissed', 'true');
+    setHasKeys(true);
+  };
+
+  if (hasKeys === null) {
+    return (
+      <TestCaseUpload onSubmit={() => {}} isLoading={true} activeEvaluation={null} onResumeActive={null} />
+    );
+  }
+
+  const demoDismissed = localStorage.getItem('demo_dismissed') === 'true';
+
+  if (!hasKeys && !demoDismissed) {
+    const handleDemoSubmit = () => {
+      const evalPromise = submitEvaluation(DEMO_TEST_CASES, { strategy: 'council', name: 'Demo Evaluation', demo: true }).then(jobId => {
+        if (jobId) return jobId;
+        throw new Error('Failed to start demo');
+      });
+      sileo.promise(evalPromise, {
+        loading: { title: 'Starting demo...' },
+        success: { title: 'Demo started!' },
+        error: (err) => ({ title: 'Failed to start', description: err?.message }),
+      });
+      evalPromise.then(jobId => navigate(`/app/evaluate/${jobId}`)).catch(() => {});
+    };
+
+    return (
+      <DemoWelcome
+        onRunDemo={handleDemoSubmit}
+        onConfigureKeys={() => navigate('/app/settings/api-keys')}
+        onDismiss={handleDismiss}
+        isLoading={isLoading}
+      />
+    );
+  }
+
   return (
     <TestCaseUpload
       onSubmit={handleSubmit}
       isLoading={isLoading}
       activeEvaluation={activeEvaluation}
       onResumeActive={resumeActiveEvaluation}
+      hasKeys={hasKeys}
+      onConfigureKeys={() => navigate('/app/settings/api-keys')}
     />
   );
 }
@@ -81,7 +131,7 @@ function UploadRoute() {
 function EvaluateRoute() {
   const { jobId } = useParams();
   const navigate = useNavigate();
-  const { testCases, currentTestCase, setCurrentTestCase, events, jobId: ctxJobId } = useEvaluation();
+  const { testCases, currentTestCase, setCurrentTestCase, events, jobId: ctxJobId, isDemo } = useEvaluation();
   const hasStreamingContext = Boolean(ctxJobId && ctxJobId === jobId && testCases.length > 0);
   const wasStreaming = useRef(hasStreamingContext);
 
@@ -106,6 +156,7 @@ function EvaluateRoute() {
       currentTestCase={currentTestCase}
       onNavigate={setCurrentTestCase}
       jobId={jobId}
+      isDemo={isDemo}
     />
   );
 }
@@ -124,14 +175,21 @@ function AppContent() {
             <Route path="evaluate/:jobId" element={<EvaluateRoute />} />
             <Route path="history" element={<EvaluationHistory />} />
             <Route path="history/:jobId" element={<EvaluationDetail />} />
+            <Route path="monitoring" element={<MonitoringDashboard />} />
             <Route path="webhooks" element={<WebhookManager />} />
-            <Route path="settings" element={<ApiKeysManager />} />
+            <Route path="settings" element={<SettingsPage />}>
+              <Route index element={<Navigate to="/app/settings/api-keys" replace />} />
+              <Route path="api-keys" element={<ApiKeysManager />} />
+              <Route path="service-keys" element={<ServiceKeysManager />} />
+              <Route path="account" element={<AccountTab />} />
+            </Route>
           </Routes>
         </div>
       </main>
     </div>
   );
 }
+
 
 export default function App() {
   return (

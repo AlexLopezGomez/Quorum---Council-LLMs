@@ -183,6 +183,30 @@ npx quorum validate                        # Validate test case format
 Community contributions are welcome. Start with [CONTRIBUTING.md](./CONTRIBUTING.md)
 for local setup, architecture notes, and pull request expectations.
 
+## Production Monitoring
+
+Monitor live RAG traffic with the council. After any inference call, submit the sample fire-and-forget — it never blocks your production path:
+
+```js
+// After your RAG pipeline response
+fetch('https://your-quorum.app/api/sample', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + process.env.QUORUM_SERVICE_KEY,
+  },
+  body: JSON.stringify({
+    query,       // the user's question
+    response,    // your model's answer
+    contexts,    // retrieved context passages (array of strings)
+  }),
+}).catch(() => {}); // never await, never throw
+```
+
+Quorum samples at 5% by default (configurable via `SAMPLE_RATE` env var). View the **Monitoring** dashboard for score trends, baseline comparison, and drift alerts.
+
+**Rate limit note:** The `/api/sample` endpoint shares the global 30 RPM limit across all `/api` routes. At 5% sample rate, you need fewer than 600 RPM of production traffic to stay under the limit.
+
 ## License
 
 [MIT](./LICENSE)

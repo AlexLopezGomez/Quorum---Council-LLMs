@@ -103,6 +103,17 @@ export async function updateEvaluationName(jobId, name) {
 }
 
 
+// ─── Monitoring ──────────────────────────────────────────────
+
+export async function getMonitoringScores(limit, signal) {
+  const params = limit ? `?limit=${limit}` : '';
+  return fetchJson(`${API_BASE}/monitoring/scores${params}`, {}, signal);
+}
+
+export async function getMonitoringAlerts(signal) {
+  return fetchJson(`${API_BASE}/monitoring/alerts`, {}, signal);
+}
+
 // ─── Webhooks ────────────────────────────────────────────────
 
 export async function getWebhooks(signal) {
@@ -157,6 +168,24 @@ export async function setKey(provider, key) {
 
 export async function deleteKey(provider) {
   return fetchJson(`${API_BASE}/keys/${provider}`, { method: 'DELETE' });
+}
+
+// ─── Service Keys ──────────────────────────────────────────
+
+export async function getServiceKeys(signal) {
+  return fetchJson(`${API_BASE}/service-keys`, {}, signal);
+}
+
+export async function createServiceKey(name, scopes) {
+  return fetchJson(`${API_BASE}/service-keys`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, scopes }),
+  });
+}
+
+export async function deleteServiceKey(keyId) {
+  return fetchJson(`${API_BASE}/service-keys/${keyId}`, { method: 'DELETE' });
 }
 
 // ─── Auth ───────────────────────────────────────────────────

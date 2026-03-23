@@ -1,8 +1,86 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Github } from 'lucide-react';
 import './LandingPage.css';
 
 const GITHUB_URL = 'https://github.com/AlexLopezGomez/Quorum---Council-LLMs';
+
+const TOC_SECTIONS = [
+    { id: 'intro', label: '1. Introduction' },
+    { id: 'related', label: '2. Related Work' },
+    { id: 'benchmark', label: '3. Benchmark Design' },
+    { id: 'results', label: '4. Results' },
+    { id: 'discussion', label: '5. Discussion' },
+    { id: 'limitations', label: '6. Limitations' },
+    { id: 'conclusion', label: '7. Conclusion' },
+    { id: 'appendix', label: 'A. Judge Prompts' },
+];
+
+const PAPER_STYLES = `
+    .paper-toc-sidebar {
+        display: none;
+        width: 188px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 48px;
+        max-height: calc(100vh - 96px);
+        overflow-y: auto;
+        padding-right: 1rem;
+        padding-top: 2px;
+    }
+    .paper-toc-mobile-btn {
+        display: flex;
+        align-items: center;
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        z-index: 20;
+        background: var(--bg-surface);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 0.4375rem 0.875rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--text-sec);
+        cursor: pointer;
+        font-family: 'New York', ui-serif, Georgia, serif;
+        box-shadow: 0 2px 8px rgba(59,60,54,0.12);
+    }
+    .paper-toc-static { display: block; }
+    .paper-back-to-top {
+        position: fixed;
+        bottom: 4.75rem;
+        right: 1.5rem;
+        z-index: 10;
+        background: var(--bg-surface);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--text-sec);
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(59,60,54,0.1);
+        font-family: 'New York', ui-serif, Georgia, serif;
+    }
+    @media (min-width: 768px) {
+        .paper-toc-sidebar { display: flex; flex-direction: column; }
+        .paper-toc-mobile-btn { display: none; }
+        .paper-toc-static { display: none; }
+        .paper-back-to-top { bottom: 1.5rem; }
+    }
+    @media print {
+        .paper-toc-sidebar,
+        .paper-toc-mobile-btn,
+        .paper-bottom-cta,
+        .paper-back-to-top { display: none !important; }
+        body { font-size: 11pt; color: #000; background: #fff; }
+        a::after { content: ' (' attr(href) ')'; font-size: 9pt; color: #555; }
+        a[href^="#"]::after { content: ''; }
+        figure { break-inside: avoid; page-break-inside: avoid; }
+        h2, h3 { break-after: avoid; page-break-after: avoid; }
+    }
+`;
 
 const bodyStyle = {
     fontSize: '1rem',
@@ -108,9 +186,64 @@ const liStyle = {
 };
 
 export default function PaperPage() {
+    const [activeSection, setActiveSection] = useState('intro');
+    const [tocOpen, setTocOpen] = useState(false);
+    const [showBackToTop, setShowBackToTop] = useState(false);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            entries => {
+                const visible = entries.find(e => e.isIntersecting);
+                if (visible) setActiveSection(visible.target.id);
+            },
+            { rootMargin: '-8px 0px -60% 0px', threshold: 0 }
+        );
+        TOC_SECTIONS.forEach(s => {
+            const el = document.getElementById(s.id);
+            if (el) observer.observe(el);
+        });
+        return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const handler = () => setShowBackToTop(window.scrollY > 400);
+        window.addEventListener('scroll', handler, { passive: true });
+        return () => window.removeEventListener('scroll', handler);
+    }, []);
+
     return (
         <div className="landing-root" style={{ minHeight: '100vh', padding: '0 0 80px' }}>
-            <div style={{ maxWidth: '760px', margin: '0 auto', padding: '48px 24px 0' }}>
+            <style>{PAPER_STYLES}</style>
+            <a href="#main-content" className="sr-only">Skip to content</a>
+            <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px 0', display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
+                <aside className="paper-toc-sidebar" aria-label="Table of contents">
+                    <p style={{ fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-ter)', marginBottom: '0.875rem' }}>
+                        Contents
+                    </p>
+                    <nav>
+                        {TOC_SECTIONS.map(s => (
+                            <a
+                                key={s.id}
+                                href={`#${s.id}`}
+                                style={{
+                                    display: 'block',
+                                    fontSize: '0.8125rem',
+                                    color: activeSection === s.id ? 'var(--accent)' : 'var(--text-ter)',
+                                    fontWeight: activeSection === s.id ? 600 : 400,
+                                    textDecoration: 'none',
+                                    padding: '0.25rem 0',
+                                    paddingLeft: '0.625rem',
+                                    borderLeft: activeSection === s.id ? '2px solid var(--accent)' : '2px solid transparent',
+                                    transition: 'color 0.15s, border-color 0.15s',
+                                    lineHeight: 1.5,
+                                }}
+                            >
+                                {s.label}
+                            </a>
+                        ))}
+                    </nav>
+                </aside>
+                <main id="main-content" style={{ flex: 1, minWidth: 0 }}>
 
                 {/* Top bar */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '48px' }}>
@@ -148,7 +281,7 @@ export default function PaperPage() {
                         rel="noopener noreferrer"
                         style={{ fontSize: '0.75rem', fontWeight: 600, padding: '3px 10px', borderRadius: 99, background: 'var(--bg-surface)', color: 'var(--text-ter)', border: '1px solid var(--card-border)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                     >
-                        <Github size={12} /> GitHub
+                        <Github size={12} aria-hidden="true" /> GitHub
                     </a>
                 </div>
 
@@ -167,7 +300,7 @@ export default function PaperPage() {
                 </div>
 
                 {/* Table of Contents */}
-                <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--card-border)', borderRadius: 10, padding: '1.25rem 1.75rem', marginBottom: '3rem' }}>
+                <div className="paper-toc-static" style={{ background: 'var(--bg-surface)', border: '1px solid var(--card-border)', borderRadius: 10, padding: '1.25rem 1.75rem', marginBottom: '3rem' }}>
                     <p style={{ fontSize: '0.8125rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-ter)', marginBottom: '0.75rem' }}>Contents</p>
                     <ol style={{ ...olStyle, marginBottom: 0, listStyleType: 'decimal' }}>
                         {[
@@ -522,7 +655,7 @@ export default function PaperPage() {
                 <hr style={{ border: 'none', borderTop: '1px solid var(--card-border)', margin: '2rem 0' }} />
 
                 {/* Bottom CTA */}
-                <div style={{ textAlign: 'center', padding: '1.5rem 0 0' }}>
+                <div className="paper-bottom-cta" style={{ textAlign: 'center', padding: '1.5rem 0 0' }}>
                     <p style={{ fontSize: '0.875rem', color: 'var(--text-ter)', marginBottom: '1.25rem' }}>
                         arXiv submission pending · Preprint, March 2026
                     </p>
@@ -538,12 +671,85 @@ export default function PaperPage() {
                                 fontSize: '0.875rem', fontWeight: 600, textDecoration: 'none',
                             }}
                         >
-                            <Github size={15} /> GitHub Repo
+                            <Github size={15} aria-hidden="true" /> GitHub Repo
                         </a>
+                        <Link
+                            to="/benchmarks"
+                            style={{
+                                display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
+                                padding: '0.5rem 1.25rem', borderRadius: 8,
+                                background: 'transparent', border: '1px solid var(--card-border)',
+                                color: 'var(--text-primary)',
+                                fontSize: '0.875rem', fontWeight: 600, textDecoration: 'none',
+                            }}
+                        >
+                            View Benchmarks
+                        </Link>
                     </div>
                 </div>
 
+                </main>
             </div>
+
+            {tocOpen && (
+                <div
+                    onClick={() => setTocOpen(false)}
+                    style={{
+                        position: 'fixed', inset: 0, zIndex: 30,
+                        background: 'rgba(59,60,54,0.4)', backdropFilter: 'blur(4px)',
+                    }}
+                >
+                    <div
+                        onClick={e => e.stopPropagation()}
+                        style={{
+                            position: 'absolute', bottom: 0, left: 0, right: 0,
+                            background: 'var(--bg-surface)', borderRadius: '16px 16px 0 0',
+                            padding: '1.5rem 1.5rem 2.5rem',
+                            maxHeight: '70vh', overflowY: 'auto',
+                        }}
+                    >
+                        <p style={{ fontSize: '0.6875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-ter)', marginBottom: '0.875rem' }}>
+                            Contents
+                        </p>
+                        {TOC_SECTIONS.map(s => (
+                            <a
+                                key={s.id}
+                                href={`#${s.id}`}
+                                onClick={() => setTocOpen(false)}
+                                style={{
+                                    display: 'block', fontSize: '1rem',
+                                    color: activeSection === s.id ? 'var(--accent)' : 'var(--text-primary)',
+                                    fontWeight: activeSection === s.id ? 600 : 400,
+                                    textDecoration: 'none',
+                                    padding: '0.625rem 0',
+                                    borderBottom: '1px solid var(--card-border)',
+                                }}
+                            >
+                                {s.label}
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            <button
+                className="paper-toc-mobile-btn"
+                onClick={() => setTocOpen(!tocOpen)}
+                aria-label="Table of contents"
+                aria-expanded={tocOpen}
+            >
+                Contents ▾
+            </button>
+
+            {showBackToTop && (
+                <button
+                    className="paper-back-to-top"
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    aria-label="Back to top"
+                >
+                    ↑ Top
+                </button>
+            )}
         </div>
     );
 }

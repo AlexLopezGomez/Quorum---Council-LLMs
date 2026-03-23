@@ -49,8 +49,8 @@ function computeTokens(text) {
 }
 
 export async function mockFaithfulness(testCase) {
-  await randomDelay(800, 2200);
   const startTime = Date.now();
+  await randomDelay(800, 2200);
 
   const text = testCase.input + testCase.actualOutput;
   const score = Math.round(deterministicScore(text, 'faithfulness') * 100) / 100;
@@ -71,8 +71,8 @@ export async function mockFaithfulness(testCase) {
 }
 
 export async function mockGroundedness(testCase) {
-  await randomDelay(1200, 3000);
   const startTime = Date.now();
+  await randomDelay(1200, 3000);
 
   const text = testCase.input + testCase.actualOutput;
   const score = Math.round(deterministicScore(text, 'groundedness') * 100) / 100;
@@ -93,8 +93,8 @@ export async function mockGroundedness(testCase) {
 }
 
 export async function mockContextRelevancy(testCase) {
-  await randomDelay(600, 1800);
   const startTime = Date.now();
+  await randomDelay(600, 1800);
 
   const text = testCase.input + testCase.actualOutput;
   const score = Math.round(deterministicScore(text, 'contextRelevancy') * 100) / 100;
@@ -115,8 +115,8 @@ export async function mockContextRelevancy(testCase) {
 }
 
 export async function mockAggregate(testCase, judgeResults) {
-  await randomDelay(1500, 4000);
   const startTime = Date.now();
+  await randomDelay(1500, 4000);
 
   const scores = [];
   const judges = [];
@@ -139,7 +139,7 @@ export async function mockAggregate(testCase, judgeResults) {
     ? [`Score spread of ${scoreRange.toFixed(2)} across judges indicates ${agreement}`]
     : [];
 
-  const text = testCase.input + JSON.stringify(judgeResults);
+  const text = testCase.input;
   const tokens = computeTokens(text);
   const cost = Math.round(((tokens.input / 1000) * 0.003 + (tokens.output / 1000) * 0.015) * 1000000) / 1000000;
 

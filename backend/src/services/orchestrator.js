@@ -1,4 +1,5 @@
 import { evaluateFaithfulness, evaluateGroundedness, evaluateContextRelevancy, aggregateResults } from './judges/index.js';
+import { mockFaithfulness, mockGroundedness, mockContextRelevancy, mockAggregate } from './judges/mock.js';
 import { routeTestCase } from '../orchestrator/adaptiveRouter.js';
 import { CostTracker } from './costTracker.js';
 import { fireWebhooks } from './webhookService.js';
@@ -16,18 +17,24 @@ async function runJudgeWithTimeout(name, judgeFn, testCase, timeout) {
   return Promise.race([judgeFn(testCase), timeoutPromise]);
 }
 
-export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveEvent, userKeys = {}) {
+export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveEvent, userKeys = {}, isDemo = false) {
   const results = {
     testCaseIndex,
     judges: {},
     aggregator: null,
   };
 
-  const judges = [
-    { name: 'openai', provider: 'openai', fn: (tc) => evaluateFaithfulness(tc, userKeys.openai), metric: 'faithfulness' },
-    { name: 'anthropic', provider: 'anthropic', fn: (tc) => evaluateGroundedness(tc, userKeys.anthropic), metric: 'groundedness' },
-    { name: 'gemini', provider: 'gemini', fn: (tc) => evaluateContextRelevancy(tc, userKeys.google), metric: 'contextRelevancy' },
-  ];
+  const judges = isDemo
+    ? [
+        { name: 'openai', provider: 'openai', fn: (tc) => mockFaithfulness(tc), metric: 'faithfulness' },
+        { name: 'anthropic', provider: 'anthropic', fn: (tc) => mockGroundedness(tc), metric: 'groundedness' },
+        { name: 'gemini', provider: 'gemini', fn: (tc) => mockContextRelevancy(tc), metric: 'contextRelevancy' },
+      ]
+    : [
+        { name: 'openai', provider: 'openai', fn: (tc) => evaluateFaithfulness(tc, userKeys.openai), metric: 'faithfulness' },
+        { name: 'anthropic', provider: 'anthropic', fn: (tc) => evaluateGroundedness(tc, userKeys.anthropic), metric: 'groundedness' },
+        { name: 'gemini', provider: 'gemini', fn: (tc) => evaluateContextRelevancy(tc, userKeys.google), metric: 'contextRelevancy' },
+      ];
 
   const emitAndSave = (event, data) => {
     emitEvent(event, data);
@@ -103,7 +110,7 @@ export async function evaluateTestCase(testCase, testCaseIndex, emitEvent, saveE
       const aggregatorResult = await executeWithProviderResilience({
         provider: 'anthropic',
         operation: 'aggregate',
-        run: () => aggregateResults(testCase, results.judges, userKeys.anthropic),
+        run: () => isDemo ? mockAggregate(testCase, results.judges) : aggregateResults(testCase, results.judges, userKeys.anthropic),
         emitEvent: emitAndSave,
         context: { component: 'aggregator', testCaseIndex },
       });
@@ -156,7 +163,8 @@ export async function runEvaluation(testCases, jobId, emitEvent, saveEvent, upda
   let totalCost = 0;
   const costTracker = new CostTracker();
 
-  const useAdaptive = ADAPTIVE_MODE && options.strategy !== 'council';
+  const isDemo = Boolean(options.demo);
+  const useAdaptive = !isDemo && ADAPTIVE_MODE && options.strategy !== 'council';
   logger.audit('evaluation.started', {
     actor: 'system',
     jobId,
@@ -193,7 +201,10 @@ export async function runEvaluation(testCases, jobId, emitEvent, saveEvent, upda
     });
 
     let result;
-    if (useAdaptive) {
+    if (isDemo) {
+      result = await evaluateTestCase(testCases[i], i, emitEvent, saveEvent, {}, true);
+      result.strategy = 'council';
+    } else if (useAdaptive) {
       result = await routeTestCase(testCases[i], i, emitEvent, saveEvent, costTracker, options, userKeys);
     } else {
       result = await evaluateTestCase(testCases[i], i, emitEvent, saveEvent, userKeys);
@@ -231,7 +242,7 @@ export async function runEvaluation(testCases, jobId, emitEvent, saveEvent, upda
     completedAt: new Date(),
   });
 
-  fireWebhooks({ jobId, testCases, results: allResults, summary, config: options }).catch(() => {});
+  if (!options.suppressWebhooks) fireWebhooks({ jobId, testCases, results: allResults, summary, config: options }).catch(() => {});
   logger.audit('evaluation.completed', {
     actor: 'system',
     jobId,

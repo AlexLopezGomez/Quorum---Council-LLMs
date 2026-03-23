@@ -161,7 +161,7 @@ function PreviewModal({ testCases, onClose }) {
   );
 }
 
-export function TestCaseUpload({ onSubmit, isLoading, activeEvaluation, onResumeActive }) {
+export function TestCaseUpload({ onSubmit, isLoading, activeEvaluation, onResumeActive, hasKeys, onConfigureKeys }) {
   const [testCases, setTestCases] = useState([]);
   const [error, setError] = useState(null);
   const [strategy, setStrategy] = useState('auto');
@@ -211,6 +211,10 @@ export function TestCaseUpload({ onSubmit, isLoading, activeEvaluation, onResume
       setError('Please upload test cases or load sample data first');
       return;
     }
+    if (hasKeys === false) {
+      setError('No API keys configured. Configure at least one provider key to run evaluations.');
+      return;
+    }
     onSubmit(testCases, { strategy, name: name.trim() });
   };
 
@@ -219,7 +223,7 @@ export function TestCaseUpload({ onSubmit, isLoading, activeEvaluation, onResume
       onResumeActive?.();
       return;
     }
-    onSubmit(DEMO_TEST_CASES, { strategy: 'auto', name: 'Adaptive Demo' });
+    onSubmit(DEMO_TEST_CASES, { strategy: 'auto', name: 'Adaptive Demo', demo: true });
   };
 
   return (
@@ -382,11 +386,32 @@ export function TestCaseUpload({ onSubmit, isLoading, activeEvaluation, onResume
           {/* Preview Modal */}
           {isPreviewModalOpen && <PreviewModal testCases={testCases} onClose={() => setIsPreviewModalOpen(false)} />}
 
+          {/* No-keys notice */}
+          {testCases.length > 0 && hasKeys === false && (
+            <div className="flex items-center justify-between gap-3 px-4 py-3 bg-surface-tertiary rounded-lg border border-surface-border text-sm">
+              <span className="text-text-secondary">No API keys configured — real evaluations require at least one provider.</span>
+              <div className="flex items-center gap-3 shrink-0">
+                <button
+                  onClick={onConfigureKeys}
+                  className="text-accent hover:text-accent-hover font-medium transition-colors"
+                >
+                  Configure Keys
+                </button>
+                <button
+                  onClick={runDemo}
+                  className="text-text-secondary hover:text-text-primary transition-colors"
+                >
+                  Run Demo
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Run button */}
           {testCases.length > 0 && (
             <button
               onClick={handleSubmit}
-              disabled={isLoading || hasActiveEvaluation}
+              disabled={isLoading || hasActiveEvaluation || hasKeys === false}
               className="w-full px-4 py-3 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
             >
               {isLoading ? (
@@ -479,4 +504,6 @@ TestCaseUpload.propTypes = {
     createdAt: PropTypes.string,
   }),
   onResumeActive: PropTypes.func,
+  hasKeys: PropTypes.bool,
+  onConfigureKeys: PropTypes.func,
 };

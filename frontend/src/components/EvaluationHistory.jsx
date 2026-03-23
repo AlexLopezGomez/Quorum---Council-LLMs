@@ -297,6 +297,11 @@ export function EvaluationHistory() {
                     style={{ '--stagger-delay': `${Math.min(idx * 40, 400)}ms` }}
                   >
                     <TableCell className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                      {eval_.config?.demo && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-surface-tertiary text-text-secondary border border-surface-border mr-2">
+                          Demo
+                        </span>
+                      )}
                       <NameCell
                         jobId={eval_.jobId}
                         initialName={nameOverrides[eval_.jobId] ?? eval_.name}

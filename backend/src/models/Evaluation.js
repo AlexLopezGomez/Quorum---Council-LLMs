@@ -112,6 +112,11 @@ const evaluationSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    source: {
+      type: String,
+      enum: ['batch', 'live'],
+      default: 'batch',
+    },
     status: {
       type: String,
       enum: ['processing', 'complete', 'failed'],
@@ -131,13 +136,16 @@ evaluationSchema.index({ userId: 1, createdAt: -1 });
 evaluationSchema.index({ createdAt: -1 });
 evaluationSchema.index({ status: 1 });
 evaluationSchema.index({ status: 1, completedAt: -1 });
+// Scoped to source:'batch' — live samples must not block batch evals
 evaluationSchema.index(
   { userId: 1, status: 1 },
   {
     unique: true,
-    partialFilterExpression: { status: 'processing' },
+    partialFilterExpression: { status: 'processing', source: 'batch' },
     name: 'uniq_processing_evaluation_per_user',
   }
 );
+// For drift detector queries: recent live evals per user
+evaluationSchema.index({ userId: 1, source: 1, status: 1, completedAt: -1 });
 
 export const Evaluation = mongoose.model('Evaluation', evaluationSchema);

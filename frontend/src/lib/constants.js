@@ -1,10 +1,11 @@
-import { LayoutDashboard, History, Bell, Brain, Sparkles, Gem } from 'lucide-react';
+import { LayoutDashboard, History, Bell, Brain, Sparkles, Gem, Activity } from 'lucide-react';
 
 // ─── Navigation ──────────────────────────────────────────────
 export const NAV_ITEMS = [
-    { key: 'upload',   label: 'Evaluate', icon: LayoutDashboard, path: '/app' },
-    { key: 'history',  label: 'History',  icon: History,         path: '/app/history' },
-    { key: 'webhooks',   label: 'Webhooks',  icon: Bell,            path: '/app/webhooks' },
+    { key: 'upload',      label: 'Evaluate',   icon: LayoutDashboard, path: '/app' },
+    { key: 'history',     label: 'History',    icon: History,         path: '/app/history' },
+    { key: 'monitoring',  label: 'Monitoring', icon: Activity,        path: '/app/monitoring' },
+    { key: 'webhooks',    label: 'Webhooks',   icon: Bell,            path: '/app/webhooks' },
 ];
 
 // ─── Evaluation Strategies ───────────────────────────────────

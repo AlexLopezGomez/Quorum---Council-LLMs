@@ -38,6 +38,7 @@ export const evaluateRequestSchema = z.object({
   options: z.object({
     strategy: z.enum(['auto', 'single', 'hybrid', 'council']).default('auto'),
     riskOverride: z.number().min(0).max(1).optional(),
+    demo: z.boolean().optional().default(false),
   }).optional().default({ strategy: 'auto' }),
 });
 

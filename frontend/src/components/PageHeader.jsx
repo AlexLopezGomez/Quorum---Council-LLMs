@@ -4,7 +4,7 @@ export function PageHeader({ title, subtitle, badge, action, icon: Icon }) {
   return (
     <div className="animate-fadeInUp">
       <div className="h-0.5 bg-gradient-to-r from-accent to-transparent rounded-full mb-6" />
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-8">
         <div className="flex items-start gap-3">
           {Icon && (
             <div className="w-9 h-9 shrink-0 rounded-lg bg-surface border border-surface-border flex items-center justify-center text-accent shadow-sm">

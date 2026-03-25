@@ -77,7 +77,7 @@ export function WebhookManager() {
                     <p className="text-xs text-text-tertiary">Add a webhook to get notified about evaluation events</p>
                 </div>
             ) : (
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     {webhooks.map(w => (
                         <WebhookCard key={w._id} webhook={w} onToggle={handleToggle} onDelete={handleDelete} />
                     ))}

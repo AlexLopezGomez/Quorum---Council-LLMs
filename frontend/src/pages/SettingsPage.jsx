@@ -16,7 +16,7 @@ export function SettingsPage() {
     <>
       <PageHeader title="Settings" subtitle="Manage keys and integrations" />
       <nav aria-label="Settings navigation">
-        <div className="flex gap-1 border-b border-surface-border">
+        <div className="flex flex-wrap gap-1 border-b border-surface-border">
           {TABS.map(tab => (
             <NavLink
               key={tab.id}

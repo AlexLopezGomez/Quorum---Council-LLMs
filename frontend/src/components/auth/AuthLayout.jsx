@@ -29,7 +29,7 @@ export default function AuthLayout({ children, rightPanel }) {
         </div>
 
         <div className="bg-surface rounded-xl border border-surface-border shadow-sm overflow-hidden grid grid-cols-1 md:grid-cols-2 min-h-[520px]">
-          <div className="p-10 md:p-12 flex flex-col justify-center border-r border-surface-border">
+          <div className="p-8 md:p-12 flex flex-col justify-center border-b md:border-b-0 md:border-r border-surface-border">
             {children}
           </div>
           {rightPanel}

@@ -110,7 +110,7 @@ export default function Stepper({
             {currentStep !== 1 && (
               <button
                 onClick={handleBack}
-                className="text-sm text-text-secondary hover:text-text-primary transition-colors px-2 py-1"
+                className="text-sm text-text-secondary hover:text-text-primary transition-colors px-3 py-2.5 min-h-[44px]"
                 {...backButtonProps}
               >
                 {backButtonText}
@@ -118,7 +118,7 @@ export default function Stepper({
             )}
             <button
               onClick={isLastStep ? handleComplete : handleNext}
-              className="bg-accent text-white rounded-full hover:bg-accent-hover text-sm font-semibold px-5 py-2 transition-colors disabled:opacity-50"
+              className="bg-accent text-white rounded-full hover:bg-accent-hover text-sm font-semibold px-5 py-2.5 min-h-[44px] transition-colors disabled:opacity-50"
               {...nextButtonProps}
             >
               {isLastStep ? lastStepText : nextButtonText}

@@ -232,3 +232,140 @@ All badges: `inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 ro
 - No sans-serif font — 'New York' serif is the brand font (Tailwind `font-sans` maps to it)
 - No warm/cool accent color mixing in a single view
 - No hardcoded hex values in JSX — always use Tailwind tokens from `tailwind.config.js`
+
+---
+
+## 11. Responsive Design
+
+**Rule:** Mobile-first. Write base styles for mobile, add `sm:`/`md:`/`lg:` overrides for larger screens.
+
+### Breakpoints
+
+| Prefix | Width | Target |
+|--------|-------|--------|
+| (none) | 0px+  | Mobile — base styles always go here |
+| `sm:`  | 640px | Large phones / landscape |
+| `md:`  | 768px | Tablet — sidebar appears permanently |
+| `lg:`  | 1024px | Laptop |
+| `xl:`  | 1280px | Desktop |
+
+**Sidebar collapse breakpoint: `md` (768px).** All sidebar/nav visibility decisions use this breakpoint consistently.
+
+---
+
+### Pattern: Data Tables
+
+Tables with 5+ columns do not fit on a phone. Use the dual-layout pattern at build time — not as a later refactor:
+
+```jsx
+{/* Mobile: card list */}
+<div className="sm:hidden divide-y divide-surface-border">
+  {items.map(item => (
+    <div className="px-4 py-4 cursor-pointer hover:bg-surface-secondary transition-colors">
+      {/* Row 1: title + primary badge */}
+      {/* Row 2: key metrics */}
+      {/* Row 3: date / meta */}
+    </div>
+  ))}
+</div>
+
+{/* Desktop: full table */}
+<div className="hidden sm:block overflow-x-auto">
+  <Table className="min-w-[600px]">...</Table>
+</div>
+```
+
+---
+
+### Pattern: Toolbars / Filter Rows
+
+Filter bars (search input + selects) must wrap on mobile:
+
+```jsx
+<div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+  <div className="relative flex-1 sm:flex-none">
+    <input className="w-full sm:w-40 md:w-44 ..." />
+  </div>
+  <select className="..." />
+  <select className="..." />
+</div>
+```
+
+---
+
+### Pattern: Form Rows with Buttons
+
+Any `flex` row containing an input + button (save, submit, modify) must have:
+
+```jsx
+<div className="flex flex-wrap items-center gap-3">
+  <input className="flex-1 min-w-0 ..." />
+  <button>Save</button>
+</div>
+```
+
+- `flex-wrap` on the row — buttons wrap to next line instead of getting clipped
+- `min-w-0` on the input — allows flex shrink below intrinsic width
+- `flex-1` on the input — takes available space
+
+---
+
+### Pattern: Content Grids
+
+Always start single-column. Never write a grid that begins at 2+ columns:
+
+```jsx
+{/* ✅ */}
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+
+{/* ❌ breaks on mobile */}
+<div className="grid grid-cols-4 gap-4">
+```
+
+---
+
+### Pattern: Page Padding
+
+Scale padding with breakpoints:
+
+```jsx
+{/* ✅ */}
+<div className="px-4 py-4 sm:px-6 md:px-8 md:py-8">
+
+{/* ❌ too wide on mobile */}
+<div className="px-8 py-8">
+```
+
+---
+
+### Touch Targets
+
+Minimum **44×44px** on all interactive elements:
+
+```jsx
+className="min-h-[44px] min-w-[44px] flex items-center justify-center"
+```
+
+Nav items: `py-3 md:py-2` (larger tap area on mobile, compact on desktop).
+Icon-only buttons: `p-2.5` minimum.
+
+---
+
+### Typography — fluid scaling
+
+Use `clamp()` for hero/display text. Do not use discrete `@media` breakpoint overrides for font-size:
+
+```css
+.hero-title { font-size: clamp(2.25rem, 5vw + 1rem, 5rem); }
+```
+
+---
+
+### What Never To Do (responsive)
+
+- No `width: 320px` or any fixed pixel width on a card/container — use `max-width` + `width: 100%`
+- No `overflow: hidden` on a wrapper around an animated canvas or SVG — clips the animation
+- No `overflow-x: hidden` on `<body>` or page root — breaks `position: sticky`
+- No Tailwind `hidden sm:block` wrapper around components that use CSS class selectors for their own display — use `display: none` inside the component's CSS file instead
+- No flat `px-8` padding as the only value — always include a mobile base
+- No table without `overflow-x-auto` + `min-w-[Npx]` on the table element

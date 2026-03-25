@@ -86,7 +86,7 @@ export function EvaluationDetail() {
     return (
       <div className="space-y-6">
         <PageHeader title="Evaluation Detail" subtitle="Loading…" action={backButton} icon={ClipboardCheck} />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <div key={`skeleton-${i}`} className="animate-staggerFadeIn" style={{ '--stagger-delay': `${i * 80}ms` }}>
               <SkeletonCard />

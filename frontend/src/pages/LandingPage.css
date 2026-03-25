@@ -469,7 +469,7 @@ html {
 
 /* Hero headline + rotating text */
 .hero-title {
-    font-size: 3.75rem;
+    font-size: clamp(2.25rem, 5vw + 1rem, 5rem);
     font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1.1;
@@ -477,17 +477,6 @@ html {
     text-align: center;
 }
 
-@media (min-width: 768px) {
-    .hero-title {
-        font-size: 4.5rem;
-    }
-}
-
-@media (min-width: 1024px) {
-    .hero-title {
-        font-size: 5rem;
-    }
-}
 
 .rotating-wrapper {
     display: inline-flex;
@@ -1249,10 +1238,6 @@ html {
         padding-bottom: 60px;
     }
 
-    .hero-title {
-        font-size: 2.5rem !important;
-    }
-
     .pillars-grid {
         grid-template-columns: 1fr;
     }
@@ -1286,5 +1271,11 @@ html {
     .scrambling-before,
     .scrambling-after {
         font-size: 0.875rem;
+    }
+
+    .footer-nav-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
     }
 }

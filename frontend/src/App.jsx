@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Routes, Route, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useParams, useLocation } from 'react-router-dom';
+import { Menu } from 'lucide-react';
 import { Toaster, sileo } from 'sileo';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { EvaluationProvider, useEvaluation } from './context/EvaluationContext';
@@ -164,11 +165,45 @@ function EvaluateRoute() {
 
 function AppContent() {
   const { error } = useEvaluation();
+  const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
+
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const handleResize = () => { if (window.innerWidth >= 768) setSidebarOpen(false); };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [sidebarOpen]);
+
+  useEffect(() => {
+    document.body.style.overflow = sidebarOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [sidebarOpen]);
+
   return (
     <div className="flex min-h-screen bg-surface-secondary">
-      <Sidebar />
-      <main className="ml-60 flex-1 min-h-screen">
-        <div className="max-w-6xl mx-auto px-8 py-8">
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/30 z-40 md:hidden"
+          aria-hidden="true"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <main className="md:ml-60 flex-1 min-h-screen">
+        <div className="sticky top-0 z-30 flex items-center h-14 px-4 bg-surface-secondary/80 backdrop-blur-sm border-b border-surface-border md:hidden">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open menu"
+            aria-expanded={sidebarOpen}
+            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-text-secondary hover:bg-surface-tertiary transition-colors"
+          >
+            <Menu size={20} />
+          </button>
+        </div>
+        <div className="max-w-6xl mx-auto px-4 py-4 sm:px-6 md:px-8 md:py-8">
           <VerifyEmailBanner />
           <ErrorAlert message={error} className="mb-6" />
           <Routes>

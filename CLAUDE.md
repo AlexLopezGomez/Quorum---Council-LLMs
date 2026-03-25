@@ -107,6 +107,21 @@ Follow DESIGN_SYSTEM.md for all frontend components. Every component must use th
 
 When implementing features, always deliver both backend AND frontend changes together. Never submit a backend-only implementation when the task implies a user-facing feature.
 
+## Mobile-First
+
+Every feature ships mobile-ready. No exceptions. Test every new UI at 375px before considering it done.
+
+**Pre-ship checklist (every UI feature):**
+- [ ] No fixed pixel widths on containers — use `w-full`, `max-w-*`, or `flex-1`
+- [ ] No horizontal overflow — every scrollable region has `overflow-x-auto`
+- [ ] Tables always get `min-w-[Npx]` + `overflow-x-auto` wrapper; tables with 5+ columns get a card list for `<sm` (see DESIGN_SYSTEM.md §11)
+- [ ] Flex rows that can overflow must have `flex-wrap`
+- [ ] All interactive elements meet 44px minimum touch target (`min-h-[44px] min-w-[44px]`)
+- [ ] Inputs inside flex rows have `min-w-0` so they can shrink
+- [ ] Grid layouts start single-column: `grid-cols-1 sm:grid-cols-2 md:grid-cols-3`
+- [ ] Padding scales with breakpoints: `px-4 py-4 sm:px-6 md:px-8 md:py-8` — never flat `px-8` as the only value
+- [ ] Verify at: 375px (iPhone 14), 640px (sm), 768px (md/tablet), 1280px (desktop)
+
 ## UI/Styling
 
 Always use the existing design system palette and color variables. Never default to dark theme or introduce new color schemes unless explicitly asked.

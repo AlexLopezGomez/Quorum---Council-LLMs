@@ -178,8 +178,8 @@ export function ApiKeysManager() {
 
                 <div className="p-6">
                   {isConfigured && !isEditing ? (
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1 px-3 py-2 bg-surface-secondary border border-surface-border rounded-lg font-mono text-sm text-text-tertiary tracking-widest select-none">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex-1 min-w-0 px-3 py-2 bg-surface-secondary border border-surface-border rounded-lg font-mono text-sm text-text-tertiary tracking-widest select-none">
                         ••••••••••••••••••••••••••••••••
                       </div>
                       <button
@@ -198,7 +198,7 @@ export function ApiKeysManager() {
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
                       <input
                         type="password"
                         value={inputs[p.id]}
@@ -206,7 +206,7 @@ export function ApiKeysManager() {
                         onKeyDown={e => e.key === 'Enter' && handleSave(p.id)}
                         placeholder={isEditing ? 'Paste replacement key…' : 'Paste your key…'}
                         autoFocus={isEditing}
-                        className="flex-1 px-3 py-2 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
+                        className="flex-1 min-w-0 px-3 py-2 text-sm bg-surface border border-surface-border rounded-lg text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
                       />
                       <button
                         onClick={() => handleSave(p.id)}

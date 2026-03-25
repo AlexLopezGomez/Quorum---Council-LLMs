@@ -2,7 +2,8 @@
 
 .reflective-card {
     position: relative;
-    width: 320px;
+    width: 100%;
+    max-width: 320px;
     background: #ffffff;
     border: 1px solid var(--card-border, #DDD9D1);
     border-radius: 20px;

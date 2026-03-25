@@ -54,7 +54,7 @@ function MetricsPanel({ summary }) {
       <div className="h-0.5 bg-gradient-to-r from-accent to-transparent" />
       <div className="p-5">
         <p className="text-xs text-text-secondary font-medium uppercase tracking-wide mb-3">Per-Metric Averages</p>
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
           <div>
             <span className="text-xs text-text-tertiary">Faithfulness</span>
             <p className="text-lg font-semibold text-text-primary mt-0.5">

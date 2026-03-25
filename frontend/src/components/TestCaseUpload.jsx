@@ -245,9 +245,9 @@ export function TestCaseUpload({ onSubmit, isLoading, activeEvaluation, onResume
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left 2/3: upload + preview */}
-        <div className="col-span-2 space-y-4">
+        <div className="md:col-span-2 space-y-4">
           <div className="bg-surface rounded-xl border border-surface-border shadow-sm">
             <div className="px-6 py-4 border-b border-surface-border">
               <h3 className="text-sm font-semibold text-text-primary">Upload Test Cases</h3>

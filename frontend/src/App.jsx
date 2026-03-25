@@ -18,6 +18,7 @@ import { VerifyEmailBanner } from './components/VerifyEmailBanner';
 import { DemoWelcome } from './components/DemoWelcome';
 import { getKeys } from './lib/api';
 import { DEMO_TEST_CASES } from './lib/demoTestCases';
+import NotFoundPage from './pages/NotFoundPage.jsx';
 
 function UploadRoute() {
   const {
@@ -183,6 +184,7 @@ function AppContent() {
               <Route path="service-keys" element={<ServiceKeysManager />} />
               <Route path="account" element={<AccountTab />} />
             </Route>
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>
       </main>

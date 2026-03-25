@@ -15,6 +15,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 import VerifyEmailPage from './pages/VerifyEmailPage.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import CookieBanner from './components/CookieBanner.jsx';
+import NotFoundPage from './pages/NotFoundPage.jsx';
 import './index.css';
 
 function ScrollToTop() {
@@ -38,6 +39,7 @@ function RouteTitle() {
             '/forgot-password': 'Forgot Password — Quorum',
             '/reset-password': 'Reset Password — Quorum',
             '/verify-email': 'Verify Email — Quorum',
+            '/404': 'Page Not Found — Quorum',
         };
 
         document.title = titles[pathname] ?? 'Quorum';
@@ -69,7 +71,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/404" element={<NotFoundPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
